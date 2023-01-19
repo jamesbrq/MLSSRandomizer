@@ -507,7 +507,7 @@
 0x3c06a2,Shop,
 0x2753EA,Surf Minigame,
 0x1E9434,Beanbean Outskirts,
-0x2779c8,Shop,
+0x2779c8,Beanbean Outskirts,
 0x3C05F0,Shop,
 0x3C05F2,Shop,
 0x3C05F4,Shop,
@@ -532,4 +532,10 @@
 0x3C067C,Shop,
 0x3C0614,Shop,
 0x3C0680,Shop,
-0x255E8F,Beanbean Castle Town
+0x255E8F,Beanbean Castle Town,
+0x255E8F,Beanbean Castle Town,
+0x39e462,Gwarhar Lagoon,
+0x39e4d3,Woohoo Hooniversity,
+0x39e5e0,Teehee Valley,
+0x277956,Ocean Whirlpool,
+0x1E9437,Gwarhar Lagoon

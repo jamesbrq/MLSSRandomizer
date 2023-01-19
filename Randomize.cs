@@ -42,6 +42,8 @@ namespace MLSSRandomizerForm
             rom.SpoilerGen();
             rom.EnemyRandomize();
             rom.RandomizeStats();
+            rom.MusicRandomize();
+            rom.ColorSwap();
             rom.stream.Close();
             rom.Inject();
             return new string[2] { Environment.CurrentDirectory + "\\asm\\mlss_loop.gba", Convert.ToString(rom.hash) };
@@ -69,10 +71,39 @@ namespace MLSSRandomizerForm
         public List<EnemyGroup> groups = new List<EnemyGroup>();
         public List<StatCount> enemyCount = new List<StatCount>();
 
-        public int healthMax = 155;
+        public int healthMax = 160;
         public int defenceMax = 130;
         public int speedMax = 100;
         public float fightCeil = 200.0f;
+
+
+        public Rom(string path, string seed)
+        {
+            if (!File.Exists(Environment.CurrentDirectory + "\\asm\\mlss.gba"))
+                File.Copy(path, Environment.CurrentDirectory + "\\asm\\mlss.gba");
+            stream = new FileStream(Environment.CurrentDirectory + "\\asm\\mlss.gba", FileMode.Open);
+            FreshArrayPopulate();
+            SeedInitialize(seed);
+            CheckOptions();
+            ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "\\items\\AllAddresses.txt"));
+        }
+
+
+        public struct Color
+        {
+            public Color(byte brown, byte blue, byte dBrown, byte dBlue)
+            {
+                this.brown = brown;
+                this.blue = blue;
+                this.dBrown = dBrown;
+                this.dBlue = dBlue;
+            }
+
+            public byte brown;
+            public byte blue;
+            public byte dBrown;
+            public byte dBlue;
+        }
 
 
         public struct SpoilerItem
@@ -123,15 +154,7 @@ namespace MLSSRandomizerForm
         }
 
         public struct EnemyGroup
-        { 
-            public EnemyGroup(List<byte> id, List<byte> type, int position, byte[] data)
-            {
-                this.id = id;
-                this.type = type;
-                this.position = position;
-                this.data = data;
-                boss = 0;
-            }
+        {
 
             public EnemyGroup(List<byte> id, List<byte> type, int position, byte[] data, int boss)
             {
@@ -140,6 +163,17 @@ namespace MLSSRandomizerForm
                 this.position = position;
                 this.data = data;
                 this.boss = boss;
+                groupType = 0x64;
+            }
+
+            public EnemyGroup(byte groupType, List<byte> id, List<byte> type, int position, byte[] data, int boss)
+            {
+                this.id = id;
+                this.type = type;
+                this.position = position;
+                this.data = data;
+                this.boss = boss;
+                this.groupType = groupType;
             }
 
             public int size { get { return id.Count; } set { } }
@@ -148,6 +182,7 @@ namespace MLSSRandomizerForm
             public byte[] data;
             public int position;
             public int boss;
+            public byte groupType;
         }
 
         public struct StatCount
@@ -166,7 +201,7 @@ namespace MLSSRandomizerForm
 
         public struct LocationData
         {
-            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash)
+            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle)
             {
                 this.location = location;
                 this.item = item;
@@ -185,6 +220,10 @@ namespace MLSSRandomizerForm
                 this.under = under;
                 this.dash = dash;
                 this.crash = crash;
+                this.neon = neon;
+                totalBeanfruit = beanfruit;
+                currentBeanfruit = 0;
+                this.spangle = spangle;
             }
 
             public LocationData(int def)
@@ -206,6 +245,10 @@ namespace MLSSRandomizerForm
                 under = false;
                 dash = false;
                 crash = false;
+                neon = 0;
+                totalBeanfruit = 0;
+                currentBeanfruit = 0;
+                spangle = false;
             }
 
             public uint location;
@@ -225,10 +268,27 @@ namespace MLSSRandomizerForm
             public bool under;
             public bool dash;
             public bool crash;
+            public int neon;
+            public int totalBeanfruit;
+            public int currentBeanfruit;
+            public bool spangle;
         }
 
         public void UpdateState(byte item)
         {
+            if(item == 0x56 || item == 0x57 || (item >= 0x60 && item <= 0x64))
+            {
+                gameState.neon += 1;
+                return;
+            }
+
+            if (item == 0x47 || (item >= 0x50 && item <= 0x55))
+            {
+                gameState.totalBeanfruit += 1;
+                gameState.currentBeanfruit += 1;
+                return;
+            }
+
             switch (item)
             {
 
@@ -296,21 +356,14 @@ namespace MLSSRandomizerForm
                     gameState.crash = true;
                     break;
 
+                case 0x72:
+                    gameState.spangle = true;
+                    break;
+
                 default:
                     break;
 
             }
-        }
-
-        public Rom(string path, string seed)
-        {
-            if (!File.Exists(Environment.CurrentDirectory + "\\asm\\mlss.gba"))
-                File.Copy(path, Environment.CurrentDirectory + "\\asm\\mlss.gba");
-            stream = new FileStream(Environment.CurrentDirectory + "\\asm\\mlss.gba", FileMode.Open);
-            FreshArrayPopulate();
-            SeedInitialize(seed);
-            CheckOptions();
-            ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "\\items\\AllAddresses.txt"));
         }
 
         public void FreshArrayPopulate()
@@ -329,8 +382,10 @@ namespace MLSSRandomizerForm
             int i = locationArray.Count - 1;
             foreach (LocationData data in locationArray.Reverse<LocationData>())
             {
-                if (gameState.hammerState >= data.hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(data.rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(data.brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(data.fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(data.thunder) && gameState.fruitState >= data.fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(data.membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(data.winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(data.beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(data.dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(data.mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(data.under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(data.dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(data.crash))
+                if (gameState.hammerState >= data.hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(data.rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(data.brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(data.fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(data.thunder) && gameState.fruitState >= data.fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(data.membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(data.winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(data.beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(data.dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(data.mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(data.under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(data.dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(data.crash) && gameState.neon >= data.neon && gameState.currentBeanfruit >= data.totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(data.spangle))
                 {
+                    if (data.totalBeanfruit >= 1)
+                        gameState.currentBeanfruit -= 1;
                     validLocations.Add(data);
                     locationArray.RemoveAt(i);
                 }
@@ -360,7 +415,7 @@ namespace MLSSRandomizerForm
 
         public void SpoilerGen()
         {
-            List<string> fileString = new List<string>();
+            List<string> fileString = SeedInfo();
             foreach (Spoiler spoiler in spoilerArray.ToList())
             {
                 fileString.Add(spoiler.itemName + " - " + spoiler.locationName + " - " + spoiler.locationHex);
@@ -368,41 +423,50 @@ namespace MLSSRandomizerForm
             File.WriteAllLines(Environment.CurrentDirectory + "\\spoilers\\" + hash + " Spoiler.txt", fileString);
         }
 
+        public List<string> SeedInfo()
+        {
+            List<string> list = new List<string>();
+            list.Add("Seed: " + hash);
+            list.Add("Chuckle: " + Form1.chuckle);
+            list.Add("Rose: " + Form1.rose);
+            list.Add("Brooch: " + Form1.brooch);
+            list.Add("Chuckola Fruit: " + Form1.chuckola);
+            list.Add("Membership Card: " + Form1.membership);
+            list.Add("Winkle Card: " + Form1.winkle);
+            list.Add("Extra Dress: " + Form1.dress);
+            list.Add("Fake Beanstar: " + Form1.beanstar);
+            list.Add("Secret Scrolls: " + Form1.scrolls);
+            list.Add("Beanfruit: " + Form1.fruit);
+            list.Add("Neon Eggs: " + Form1.eggs);
+            list.Add("Beanstones: " + Form1.beanstone);
+            list.Add("Beanlets: " + Form1.beanlet);
+            list.Add("Hammers: " + Form1.hammers);
+            list.Add("Hammer Moves: " + Form1.goblets);
+            list.Add("Hands: " + Form1.hands);
+            list.Add("Hand Moves: " + Form1.pearls);
+            list.Add("Item Shops: " + Form1.shops);
+            list.Add("Badges: " + Form1.badges);
+            list.Add("Pants: " + Form1.pants);
+            list.Add("Espresso: " + Form1.espresso);
+            list.Add("BP Costs: " + Form1.brosBp);
+            list.Add("Item Heal: " + Form1.itemHeal);
+            list.Add("Espresso Stats: " + Form1.coffeeValue);
+            list.Add("Music: " + Form1.music);
+            list.Add("Enemies: " + Form1.enemy);
+            list.Add("Battle Backgrounds: " + Form1.background);
+            list.Add("Disable Mush: " + Form1.mush);
+            list.Add("Disable Surf: " + Form1.surf);
+            list.Add("Skip Bowsers: " + Form1.castle);
+            list.Add("Skip intro: " + Form1.intro);
+            list.Add("Mario Color: " + Form1.mColor);
+            list.Add("Luigi Color: " + Form1.lColor);
+            list.Add(" ");
+            return list;
+        }
+
         public bool CheckValidity()
         {
             byte temp;
-            if (Form1.Hands())
-            {
-                stream.Seek(0x1e9408, SeekOrigin.Begin);
-                if (stream.ReadByte() == 0x39)
-                    return false;
-
-
-                stream.Seek(0x1e9409, SeekOrigin.Begin);
-                if (stream.ReadByte() == 0x3A)
-                    return false;
-            }
-
-            if (Form1.Hammers())
-            {
-                stream.Seek(0x39d731, SeekOrigin.Begin);
-                if (stream.ReadByte() == 0x38)
-                    return false;
-
-                stream.Seek(0x1E9403, SeekOrigin.Begin);
-                if (stream.ReadByte() == 0x38)
-                    return false;
-
-                stream.Seek(0x1E9404, SeekOrigin.Begin);
-                if (stream.ReadByte() == 0x38)
-                    return false;
-
-                stream.Seek(0x1E9405, SeekOrigin.Begin);
-                if (stream.ReadByte() == 0x38)
-                    return false;
-            }
-
-
             locationArray = new List<LocationData>(freshLocationArray);
             vBegin:
             if (validLocations.Count >= 1)
@@ -440,9 +504,9 @@ namespace MLSSRandomizerForm
             }
             else
             {
-                //Console.WriteLine(gameState.fruitState);
-               // Console.Write(gameState.hammerState + " " + gameState.brooch + " " + gameState.rose + " " + gameState.fire + " " + gameState.thunder + " " + gameState.beanstar + " " + gameState.dress);
-                if (gameState.hammerState == 3 && gameState.fruitState == 3 && gameState.brooch && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash)
+                if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash)
+                    return true;
+                if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.winkle)
                     return true;
             }
             return false;
@@ -602,6 +666,12 @@ namespace MLSSRandomizerForm
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
                 }
+
+                if(data.item == 0x72)
+                {
+                    ValidArrayAdd(data);
+                }
+
                 optionsArray.Remove(data);
             }
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\BrosItems.txt"));
@@ -616,8 +686,6 @@ namespace MLSSRandomizerForm
                     else
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
-                        stream.Seek(0x1e9410, SeekOrigin.Begin);
-                        stream.WriteByte(0x1);
                     }
                 }
 
@@ -692,6 +760,12 @@ namespace MLSSRandomizerForm
                     goto mushSkip;
                 }
 
+                if(data.item == 0x9E)
+                {
+                    ItemInject(data.location, data.itemType, 0x9E);
+                    goto mushSkip;
+                }
+
                 if (Form1.Badges())
                 {
                     ValidArrayAdd(data);
@@ -754,8 +828,185 @@ namespace MLSSRandomizerForm
             }
         }
 
+        public void ColorSwap()
+        {
+            Color mColor = GenColor(Form1.mColor);
+            byte[] mBytes = { mColor.brown, mColor.blue, mColor.dBrown, mColor.dBlue };
+            Color lColor = GenColor(Form1.lColor);
+            byte[] lBytes = { lColor.brown, lColor.blue, lColor.dBrown, lColor.dBlue };
+
+            //Mario Palette Colors
+            stream.Seek(0x3CC884, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x4F4CDC, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x5193E8, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x51A98C, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x51AD2C, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x51A4AC, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x3CC984, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x3D0E16, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.brown, mColor.blue, mColor.brown, mColor.blue, mColor.dBrown, mColor.dBlue }, 0, 6);
+            stream.Seek(0x519018, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue, mColor.brown, mColor.blue }, 0, 6);
+            stream.Seek(0x4FB684, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue, mColor.brown, mColor.blue }, 0, 6);
+            stream.Seek(0x4FB786, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.brown, mColor.blue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
+            stream.Seek(0x9F9A28, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
+            stream.Seek(0x9F9A34, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
+            stream.Seek(0x9F9A48, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
+            stream.Seek(0x9F9A56, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 4);
+            stream.Seek(0xA5DD3E, SeekOrigin.Begin);
+            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 14);
+
+            //Luigi Palette Colors
+            stream.Seek(0x4F4D1C, SeekOrigin.Begin);
+            stream.Write(lBytes, 0, 4);
+            stream.Seek(0x3CC8C4, SeekOrigin.Begin);
+            stream.Write(lBytes, 0, 4);
+            stream.Seek(0x519408, SeekOrigin.Begin);
+            stream.Write(lBytes, 0, 4);
+            stream.Seek(0x51A96C, SeekOrigin.Begin);
+            stream.Write(lBytes, 0, 4);
+            stream.Seek(0x51AD4C, SeekOrigin.Begin);
+            stream.Write(lBytes, 0, 4);
+            stream.Seek(0x51A4CC, SeekOrigin.Begin);
+            stream.Write(lBytes, 0, 4);
+            stream.Seek(0x3D0E08, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.brown, lColor.blue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x519038, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x4FB6A4, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x4FB7A6, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.brown, lColor.blue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x9F9A2E, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x9F9A3A, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x9F9A4E, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
+            stream.Seek(0x9F9A5C, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 4);
+            stream.Seek(0xA5DD5E, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 14);
+
+            //Fungitown Mirror Colors
+            stream.Seek(0x3D4B50, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+            stream.Seek(0x3D4B54, SeekOrigin.Begin);
+            stream.Write(mBytes, 0, 4);
+
+            //Battle Colors
+            stream.Seek(0x4F51D8, SeekOrigin.Begin);
+            stream.Write(new byte[] { lColor.brown, lColor.blue, lColor.brown, lColor.blue, mColor.brown, mColor.blue, mColor.brown, mColor.blue }, 0, 8);
+            stream.Seek(0x4F51E8, SeekOrigin.Begin);
+            stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+        }
+
+        public Color GenColor(string color)
+        {
+            switch(color)
+            {
+                case "Red":
+                    return new Color(0x3B, 0x4, 0x13, 0x0);
+
+                case "Green":
+                    return new Color(0x41, 0x3, 0x80, 0x2);
+
+                case "Purple":
+                    return new Color(0x10, 0x7C, 0xE, 0x74);
+
+                case "Yellow":
+                    return new Color(0xFF, 0x1F, 0xBC, 0xB);
+
+                case "Black":
+                    return new Color(0x84, 0x10, 0x63, 0xC);
+
+                case "Pink":
+                    return new Color(0xDF, 0x6E, 0xFF, 0x5D);
+
+                case "Cyan":
+                    return new Color(0xED, 0x7F, 0xA5, 0x77);
+
+                case "Blue":
+                    return new Color(0x0, 0xF1, 0x0, 0xF0);
+
+                case "Orange":
+                    return new Color(0x7F, 0x2, 0x3C, 0x2);
+
+                case "White":
+                    return new Color(0xFF, 0xFF, 0x79, 0x67);
+
+                default:
+                    break;
+            }
+            return new Color(0x0, 0x0, 0x0, 0x0);
+        }
+
+
+        public void MusicRandomize()
+        {
+            if(!Form1.music)
+                return;
+
+            List<int> changed = new List<int>();
+            for (int i = 0; i < 0x32; i++)
+            {
+                int j = 0;
+                stream.Seek(0x3a78E8, SeekOrigin.Begin);
+                bool iterate = true;
+                retry:
+                byte rand = (byte)random.Next(0x0, 0x32);
+                if (rand == 0x1A || rand == i)
+                    goto retry;
+                while (iterate)
+                {
+                    int temp = stream.ReadByte();
+                    if (temp == i)
+                        stream.Seek(-1, SeekOrigin.Current);
+                    else
+                        goto skip;
+                    foreach(int k in changed)
+                    {
+                        if (k == j)
+                            goto skip;
+                    }
+                    stream.WriteByte(rand);
+                    changed.Add(j);
+                    skip:
+                    if (stream.Position >= 0x3AA8D0)
+                        iterate = false;
+                    stream.Seek(0x17, SeekOrigin.Current);
+                    j++;
+                }
+            }
+        }
+
         public void EnemyRandomize()
         {
+            if(Form1.background)
+            {
+                string[] location = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\Encounters.txt");
+                string[] boss = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\BossEncounters.txt");
+                location = location.Concat(boss).ToArray();
+                foreach(string str in location)
+                {
+                    stream.Seek(Convert.ToUInt32(str, 16) + 3, SeekOrigin.Begin);
+                    stream.WriteByte((byte)random.Next(0, 0x27));
+                }
+            }
+
             if (!Form1.enemy)
                 return;
             PopulateEnemyArray();
@@ -781,8 +1032,8 @@ namespace MLSSRandomizerForm
                 count++;
                 EnemyGroup tempgroup = groups[0];
                 groups.RemoveAt(0);
-                stream.Seek(Convert.ToUInt32(str, 16) + 3, SeekOrigin.Begin);
-                stream.WriteByte((byte)random.Next(0, 0x27));
+                stream.Seek(Convert.ToUInt32(str, 16), SeekOrigin.Begin);
+                stream.WriteByte(tempgroup.groupType);
                 for(int i = 0; i < 6; i++)
                 {
                     if (i < tempgroup.id.Count)
@@ -797,6 +1048,8 @@ namespace MLSSRandomizerForm
                                 break;
                             }
                         }
+                        if (tempgroup.id[i] == 0x60)
+                            Console.WriteLine("a");
                         stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
                         stream.WriteByte(tempgroup.id[i]);
                         stream.Seek(1, SeekOrigin.Current);
@@ -834,30 +1087,32 @@ namespace MLSSRandomizerForm
             {
                 List<byte> id = new List<byte>();
                 List<byte> type = new List<byte>();
+                byte[] script = { 0xEE, 0x2C, 0x28, 0x8 };
                 int nut = 0;
                 int special = 0;
                 for (int i = 0; i < size; i++)
                 {
                     if (enemies[0].id == 0x20 || enemies[0].id == 0x34)
                         nut++;
+                    if (enemies[0].id == 0x52 || enemies[0].id == 0x2C || enemies[0].id == 0x4A)
+                        special = 1;
+                    if(enemies[0].id == 0x52)
+                        script = new byte[] { 0x67, 0xAB, 0x28, 0x8 };
                     id.Add(enemies[0].id);
                     type.Add(enemies[0].type);
                     enemies.RemoveAt(0);
                 }
                 for(int i = 0; i < nut; i++)
                 {
+                    for(int j = id.Count; j < (6 - nut); j++)
+                    {
+                        id.Add(0x0);
+                        type.Add(0x7);
+                    }
                     id.Add(0xF);
                     type.Add(0x3);
                 }
-                foreach(byte by in id)
-                {
-                    if (by == 4)
-                    {
-                        special = 1;
-                        break;
-                    }
-                }
-                groups.Add(new EnemyGroup(id, type, size, new byte[4] { 0xEE, 0x2C, 0x28, 0x8 }, special));
+                groups.Add(new EnemyGroup(id, type, size, script, special));
             }
         }
 
@@ -880,10 +1135,10 @@ namespace MLSSRandomizerForm
                         float temp = sc.total / fightCeil;
                         stream.Seek(Convert.ToUInt32(locations[i], 16) + 6, SeekOrigin.Begin);
                         stream.WriteByte((byte)Math.Round(healthMax * temp));
-                        stream.Seek(17, SeekOrigin.Current);
-                        stream.WriteByte((byte)Math.Round(defenceMax * temp));
-                        stream.Seek(1, SeekOrigin.Current);
-                        stream.WriteByte((byte)Math.Round(speedMax * temp));
+                       // stream.Seek(17, SeekOrigin.Current);
+                       // stream.WriteByte((byte)Math.Round(defenceMax * temp));
+                       // stream.Seek(1, SeekOrigin.Current);
+                       // stream.WriteByte((byte)Math.Round(speedMax * temp));
                         break;
                     }
                 }
@@ -909,8 +1164,6 @@ namespace MLSSRandomizerForm
                 {
                     stream.Seek(Convert.ToUInt32(str, 16) + 10 + (i * 4), SeekOrigin.Begin);
                     byte type = (byte)stream.ReadByte();
-                    if (type == 0x7)
-                        break;
                     types.Add(type);
                     stream.Seek(-3, SeekOrigin.Current);
                     id.Add((byte)stream.ReadByte());
@@ -919,7 +1172,7 @@ namespace MLSSRandomizerForm
                         break;
                 }
                 stream.Seek(Convert.ToUInt32(str, 16) + 1, SeekOrigin.Begin);
-                groups.Add(new EnemyGroup(id, types, stream.ReadByte(), data, boss));
+                groups.Add(new EnemyGroup(0xE4, id, types, stream.ReadByte(), data, boss));
             }
         }
 
@@ -935,11 +1188,15 @@ namespace MLSSRandomizerForm
                 {
                     stream.Seek(Convert.ToUInt32(str, 16) + 10 + (i * 4), SeekOrigin.Begin);
                     byte type = (byte)stream.ReadByte();
+                    if (type == 0x0)
+                        type = 0x4;
                     int id = 0;
                     if(type == 0x7)
                         break;
                     stream.Seek(-3, SeekOrigin.Current);
                     id = stream.ReadByte();
+                    if (id == 0x18 || id == 0x53 || id == 0x4B)
+                        type = 0x4;
                     if (enemyCount.Count == 0)
                         enemyCount.Add(new StatCount(id));
                     else
@@ -1030,7 +1287,7 @@ namespace MLSSRandomizerForm
 
         public void ArrayInitialize(int array, string[] data)
         {
-            for (int i = 0; i < data.Length; i += 17)
+            for (int i = 0; i < data.Length; i += 20)
             {
                 if (array == 1)
                 {
@@ -1050,7 +1307,10 @@ namespace MLSSRandomizerForm
                                                        Convert.ToBoolean(Convert.ToInt32(data[i + 13], 16)),
                                                        Convert.ToBoolean(Convert.ToInt32(data[i + 14], 16)),
                                                        Convert.ToBoolean(Convert.ToInt32(data[i + 15], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16))));
+                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
+                                                       Convert.ToInt32(data[i + 17], 16),
+                                                       Convert.ToInt32(data[i + 18], 16),
+                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
                 }
 
                 if (array == 2)
@@ -1071,7 +1331,10 @@ namespace MLSSRandomizerForm
                                                        Convert.ToBoolean(Convert.ToInt32(data[i + 13], 16)),
                                                        Convert.ToBoolean(Convert.ToInt32(data[i + 14], 16)),
                                                        Convert.ToBoolean(Convert.ToInt32(data[i + 15], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16))));
+                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
+                                                       Convert.ToInt32(data[i + 17], 16),
+                                                       Convert.ToInt32(data[i + 18], 16),
+                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
                 }
             }
         }

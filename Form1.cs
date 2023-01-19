@@ -44,6 +44,11 @@ namespace MLSSRandomizerForm
         public static bool brosBp = false;
         public static bool itemHeal = false;
         public static bool coffeeValue = false;
+        public static bool music = false;
+        public static bool background = false;
+        public static int seedType = 1;
+        public static string mColor = "Red";
+        public static string lColor = "Green";
 
         public Form1()
         {
@@ -384,6 +389,51 @@ namespace MLSSRandomizerForm
         private void checkBox28_CheckedChanged(object sender, EventArgs e)
         {
             coffeeValue = checkBox28.Checked;
+        }
+
+        private void checkBox29_CheckedChanged(object sender, EventArgs e)
+        {
+            music = checkBox29.Checked;
+        }
+
+        private void checkBox30_CheckedChanged(object sender, EventArgs e)
+        {
+            background = checkBox30.Checked;
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            mColor = comboBox1.Text;
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lColor = comboBox2.Text;
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox30_CheckedChanged_1(object sender, EventArgs e)
+        {
+            background = checkBox30.Checked;
+        }
+
+        private void radioButton4_CheckedChanged(object sender, EventArgs e)
+        {
+            seedType = 1;
+        }
+
+        private void radioButton5_CheckedChanged(object sender, EventArgs e)
+        {
+            seedType = 2;
         }
     }
 }

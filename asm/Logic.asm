@@ -20,33 +20,6 @@
     .org 0x082000A4
         db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA
 
-    .org MOLE_FIX_HOOK
-        bl MOLE_FIX_SUBR
-
-    .org MOLE_FIX_SUBR
-    push lr
-    cmp r4, #0x23
-    beq .mole_fix
-    strb r4, [r0]
-    .mole_fix:
-    mov r1, r8
-    pop pc
-    .pool
-
-    .org MOLE_FLAG_FIX_HOOK
-        bl MOLE_FLAG_FIX_SUBR
-
-    .org MOLE_FLAG_FIX_SUBR
-    push { r2, lr }
-    ldr r2, =0x02004935
-    cmp r1, r2
-    beq .mole_flag_fix
-    strb r0, [r1]
-    .mole_flag_fix:
-    ldr r1, [r2]
-    pop { r2, pc }
-    .pool
-
     .org GRASS_FIX
         db 0x24, 0x40
 
@@ -56,8 +29,17 @@
     .org SHOP_FIX2
         db 0xFF
 
+    .org 0x082209BA
+        db 0x20, 0xA0
+
+    .org 0x08220A96
+        db 0x20, 0xB0
+
+    .org 0x0822075A
+        db 0x21, 0x60
+
     .org OVERRIDE
-      ;  db 0x0, 0x0, 0x0, 0x0
+       ; db 0x0, 0x0, 0x0, 0x0
 
     .org HIGH_JUMP
         db 0xAA
@@ -88,7 +70,7 @@
         db 0x48, 0x61, 0x6D, 0x6D, 0x65, 0x72, 0x73, 0x0
 
     .org SHAMMERS_SHOP2
-        dw SHAMMERS_SHOPNAME
+       dw SHAMMERS_SHOPNAME
         dw SHAMMERS_SHOPNAME
 
     .org SHAMMERS_SHOPNAME
@@ -114,6 +96,18 @@
 
     .org THUNDER_SHOPNAME
         db 0x54, 0x68, 0x75, 0x6E, 0x64, 0x65, 0x72, 0x20, 0x68, 0x61, 0x6E, 0x64, 0x0
+
+
+
+
+    .org YOSHI_ARRAY
+        dw 0x08240EBE
+        dw 0x08241000
+        dw 0x08241155
+        dw 0x08241297
+        dw 0x08241AFA
+        dw 0x08241C3C
+        dw 0x08241D7E
 
 
 
@@ -307,7 +301,7 @@
         dw 0x08486F08
         dw 0x08486F08
         dw 0x083FFEE0
-        dw 0x00000000 ; sprangle
+        dw 0x08488E68 ; sprangle
         dw 0x083FACF0
         dw 0x083FACF0
         dw 0x083FACF0
@@ -355,6 +349,12 @@
     .org FRUIT_FIX
         db 0x16
 
+    .org SPANGLE_FIX
+        db 0x16
+
+    .org UP_SUPER_FIX
+        db 0x16
+
     .org MAP_FIX
         db 0x23
 
@@ -366,6 +366,9 @@
 
     .org BEANLET_FIX
         db 0x16
+
+    .org FLAG_FIX 
+        mov r0, r0
 
     .org ULTRA_MUSHROOM_TEXT
         db 0x13, 0x2, 0xFF, 0xB, 0x1, 0xFF, 0x41, 0xFF, 0x25
@@ -505,8 +508,8 @@
     .org SHOP_INJECT_HOOK
         bl SHOP_INJECT_SUBR
 
-    .org LAKITOO_BLOCK_HOOK
-        bl LAKITOO_BLOCK_SUBR
+    .org SPRING_BLOCK_HOOK
+        bl SPRING_BLOCK
 
     .org PRICE_INJECT_HOOK
         bl PRICE_INJECT_SUBR
@@ -514,10 +517,207 @@
     .org PEARL_RFIX_HOOK
         bl PEARL_RFIX_SUBR
 
+    .org FIRST_STRIKE_HOOK
+        bl FIRST_STRIKE_SUBR
+                
+    .org MOLE_FIX_HOOK
+        bl MOLE_FIX_SUBR
+        
+    .org MOLE_FLAG_FIX_HOOK
+        bl MOLE_FLAG_FIX_SUBR
+
+    .org MOLE_FIX_PANTS_HOOK
+        bl MOLE_FIX_PANTS_SUBR
+        
+    .org MOLE_FLAG_FIX_PANTS_HOOK
+        bl MOLE_FLAG_FIX_PANTS_SUBR
+
+    .org YOSHI_DISPLAY_HOOK
+        bl YOSHI_DISPLAY_SUBR
 
 
-    .org FLAG_FIX 
-        mov r0, r0
+
+
+    .org YOSHI_DISPLAY_SUBR
+    push { r0-r2, lr }
+    ldr r0, =YOSHI_DISPLAY_RAM
+    ldrb r2, [r0]
+    cmp r2, #0x0
+    bne .yd_ram
+    strb r1, [r0]
+    bl .yd_skip
+    .yd_ram:
+    cmp r2, r1
+    beq .yd_end
+    strb r1, [r0]
+    .yd_skip:
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    ldr r2, =0x1CD
+    cmp r0, r2
+    bne .yd_next
+    bl .yd_search
+    .yd_next:
+    ldr r2, =0x1CE
+    cmp r0, r2
+    bne .yd_end
+    .yd_search:
+    cmp r1, #0x3
+    ble .yd_end
+    cmp r1, #0xB
+    bge .yd_end
+    sub r1, #0x4
+    lsl r1, #0x2
+    ldr r2, =YOSHI_ARRAY
+    ldr r2, [r2, r1]
+    ldrb r3, [r2, #0x1]
+    lsr r3, #0x4
+    ldrb r1, [r2]
+    lsl r1, #0x1C
+    lsr r1, #0x18
+    add r2, r3, r1
+    cmp r2, #0x30
+    bge .yd_key
+    cmp r2, #0x2B
+    bge .yd_bean
+    cmp r2, #0x1C
+    bge .yd_espresso
+    sub r2, #0xA
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_NORM_ARRAY
+    ldr r3, [r3, r2]
+    bl .yd_display
+    .yd_bean:
+    sub r2, #0x2B
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_BEAN_ARRAY
+    ldr r3, [r3, r2]
+    bl .yd_display
+    .yd_espresso:
+    sub r2, #0x1C
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_ESPRESSO_ARRAY
+    ldr r3, [r3, r2]
+    bl .yd_display
+    .yd_key:
+    cmp r2, #0x9E
+    bge .yd_badge
+    sub r2, #0x30
+    mov r0, r2
+    lsr r0, #0x4
+    lsl r2, #0x1C
+    lsr r2, #0x1C
+    cmp r2, #0x8
+    bge .yd_bros
+    lsl r0, #0x3
+    add r2, r0
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_TEXT_ARRAY
+    ldr r3, [r3, r2]
+    add r3, #0x1
+    bl .yd_display
+    .yd_bros:
+    sub r2, #0x8
+    cmp r2, #0x0
+    bgt .yd_hand
+    ldr r3, =HAMMER_TEXT
+    bl .yd_display
+    .yd_hand:
+    cmp r2, #0x1
+    bgt .yd_thunder
+    ldr r3, =FIRE_TEXT
+    bl .yd_display
+    .yd_thunder:
+    ldr r3, =THUNDER_TEXT
+    bl .yd_display
+    .yd_badge:
+    sub r2, #0x9E
+    lsl r2, #0x2
+    ldr r3, =BADGE_BOX_ARRAY
+    ldr r3, [r3, r2]
+    add r3, #0x1
+    .yd_display:
+    bl DISPLAY_TEXTBOX
+
+    .yd_end:
+    mov r3, #0xD4
+    lsl r3, #0x2
+    pop { r0-r2, lr }
+    .pool
+
+
+
+
+
+    .org MOLE_FIX_SUBR
+    push lr
+    add r0, r4
+    cmp r4, #0x23
+    beq .mole_fix
+    strb r6, [r0]
+    .mole_fix:
+    pop pc
+    .pool
+
+
+    .org MOLE_FLAG_FIX_SUBR
+    push lr
+    cmp r4, #0x23
+    beq .flag_end
+    strb r4, [r0]
+    .flag_end:
+    mov r1, r8
+    pop pc
+    .pool
+
+
+
+    .org MOLE_FIX_PANTS_SUBR
+    push lr
+    add r0, r4
+    cmp r4, #0x2D
+    beq .pmole_fix
+    strb r6, [r0]
+    .pmole_fix:
+    pop pc
+    .pool
+
+
+
+
+    .org MOLE_FLAG_FIX_PANTS_SUBR
+    push lr
+    cmp r4, #0x2D
+    beq .pflag_end
+    strb r4, [r0]
+    .pflag_end:
+    mov r1, r8
+    pop pc
+    .pool
+
+
+
+
+    .org FIRST_STRIKE_SUBR
+    push { r1, r2, lr }
+    ldr r1, =0x030024B6
+    ldrb r1, [r1]
+    mov r2, #0x20
+    mul r1, r2
+    ldr r2, =0x0850300C
+    add r2, r1
+    ldrb r2, [r2]
+    cmp r2, #0xE4
+    bne .strike_end
+    ldr r1, =0x030024B5
+    mov r2, #0x0
+    strb r2, [r1]
+    .strike_end:
+    pop { r1, r2 }
+    lsl r0, #0x1B
+    lsr r0, #0x1D
+    pop pc
+    .pool
 
 
 
@@ -838,6 +1038,61 @@
 
 
 
+
+
+    .org DISPLAY_TEXTBOX
+    push { r0-r2, r4, lr }
+    mov r2, #0x0
+    ldr r0, =TEXT_WRITING
+    .display_loop:
+    mov r1, #0x0
+    strb r1, [r0, r2]
+    add r2, #0x1
+    cmp r2, #0x31
+    beq .display_cont
+    bl .display_loop
+    .display_cont:
+    ldr r1, =0xFF010BFF
+    str r1, [r0]
+    ldr r1, =0xFF41FF35
+    str r1, [r0, #0x4]
+    mov r1, #0x25
+    strb r1, [r0, #0x8]
+    mov r2, #0x9
+    mov r4, #0x0
+    .display_write_loop:
+    ldrb r1, [r3, r4]
+    cmp r1, #0x0
+    beq .display_end
+    strb r1, [r0, r2]
+    add r4, #0x1
+    add r2, #0x1
+    bl .display_write_loop
+    .display_end:
+    mov r1, #0xFF
+    strb r1, [r0, r2]
+    mov r1, #0xC
+    add r2, #0x1
+    strb r1, [r0, r2]
+    mov r1, #0x1E
+    add r2, #0x1
+    strb r1, [r0, r2]
+    mov r1, #0xFF
+    add r2, #0x1
+    strb r1, [r0, r2]
+    mov r1, #0x0A
+    add r2, #0x1
+    strb r1, [r0, r2]
+    ldr r0, =TEXTBOX_STARTUP
+    mov r1, #0x84
+    strb r1, [r0]
+    pop { r0-r2, r4, lr }
+    .pool
+
+
+
+
+
         
     .org INTRO_FIX_SUBR
     push { r1, r2, lr }
@@ -1105,6 +1360,30 @@
 
 
 
+
+    .org MINECART_SKIP
+    push { r0, r1, r2, lr }
+    ldr r0, =ROOM
+    ldrh r1, [r0]
+    ldr r2, =0x6D
+    cmp r1, r2
+    bne .minecart_return
+    ldr r2, =0x59
+    strh r2, [r0]
+    bl .minecart_end
+    .minecart_return:
+    ldr r2, =0x6E
+    cmp r1, r2
+    bne .minecart_end
+    ldr r2, =0x4E
+    strh r2, [r0]
+    .minecart_end:
+    pop { r0, r1, r2, pc }
+    .pool
+
+
+
+
     .org INTRO_SKIP_SUBR
     push { r1, r2, r3, lr }
     ldr r1, =INTRO_DISABLE
@@ -1146,6 +1425,12 @@
     bne .skip_norm2
     bl CASTLE_SKIP
     .skip_norm2:
+    ldr r1, =MINECART_DISABLE
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    bne .skip_norm3
+    bl MINECART_SKIP
+    .skip_norm3:
     pop r1
     mov r1, r9
     ldrb r0, [r1]
@@ -1160,6 +1445,7 @@
     .org TEXT_MASH_SUBR
     push { r1, r2, lr }
     bl MOVES_CHECK
+    bl SAVE_BLOCK
     ldr r1, =0x03000375
     ldrb r1, [r1]
     mov r2, #0x3
@@ -1283,11 +1569,6 @@
 
 
 
-    .org BOX_FIX
-        mov r0, r0
-
-
-
 
 
     .org TEXT_ITEM_BLOCK_SUBR
@@ -1374,26 +1655,45 @@
     cmp r1, #0x7
     bgt .rose_bros
     ldr r2, =KEY_ITEM
-    add r2, r0
-    mov r0, #0x1
-    lsl r0, r1
-    ldrb r1, [r2]
-    orr r1, r0
-    strb r1, [r2]
+    mov r3, #0x1
+    lsl r3, r1
+    ldrb r4, [r2, r0]
+    orr r4, r3
+    strb r4, [r2, r0]
+    lsl r0, #0x3
+    add r0, r1
+    lsl r0, #0x2
+    ldr r1, =KEY_ITEM_TEXT_ARRAY
+    ldr r3, [r1, r0]
+    add r3, #0x1
     bl .rose_end
     .rose_badge:
     sub r0, #0x9E
     cmp r0, #0x2C
     bgt .rose_pants
     bl BADGE_ADD
+    lsl r0, #0x2
+    ldr r1, =BADGE_BOX_ARRAY
+    ldr r3, [r1, r0]
+    add r3, #0x1
     bl .rose_end
     .rose_pants:
     cmp r0, #0x5A
     bge .rose_special
+    mov r1, r0
     bl PANTS_ADD
+    lsl r1, #0x2
+    ldr r2, =BADGE_BOX_ARRAY
+    ldr r3, [r2, r1]
+    add r3, #0x1
     bl .rose_end
     .rose_special:
+    mov r1, r0
     bl SPECIAL_ADD
+    lsl r1, #0x2
+    ldr r2, =BADGE_BOX_ARRAY
+    ldr r3, [r2, r1]
+    add r3, #0x1
     bl .rose_end
     .rose_bros:
     cmp r1, #0x8
@@ -1406,6 +1706,7 @@
     mov r1, #0x8
     orr r2, r1
     strb r2, [r0]
+    ldr r3, =HAMMER_TEXT
     bl .rose_end
     .rose_super:
     mov r1, #0x10
@@ -1415,11 +1716,13 @@
     mov r1, #0x10
     orr r2, r1
     strb r2, [r0]
+    ldr r3, =SUPER_HAMMER_TEXT
     bl .rose_end
     .rose_ultra:
     mov r1, #0x20
     orr r2, r1
     strb r2, [r0]
+    ldr r3, =ULTRA_HAMMER_TEXT
     bl .rose_end
     .rose_hand:
     sub r1, #0x8
@@ -1427,36 +1730,58 @@
     ldrb r2, [r0, #0x1]
     orr r2, r1
     strb r2, [r0, #0x1]
+    cmp r1, #0x1
+    bne .rose_thunder
+    ldr r3, =FIRE_TEXT
+    bl .rose_end
+    .rose_thunder:
+    ldr r3, =THUNDER_TEXT
     bl .rose_end
     .rose_norm:
-    cmp r0, #0x20
+    cmp r0, #0x1C
     bge .rose_espresso
     sub r0, #0xa
     ldr r1, =MUSHROOM
-    add r1, r0
-    ldrb r0, [r1]
-    cmp r0, #0xFF
+    ldrb r2, [r1, r0]
+    cmp r2, #0xFF
     beq .rose_clause
-    add r0, #0x1
-    strb r0, [r1]
-    bl .rose_end
+    add r2, #0x1
+    strb r2, [r1, r0]
+    bl .rose_norm_text
     .rose_clause:
-    mov r0, #0x1
-    strb r0, [r1]
+    mov r2, #0x1
+    strb r2, [r1, r0]
+    .rose_norm_text:
+    ldr r1, =KEY_ITEM_NORM_ARRAY
+    lsl r0, #0x2
+    ldr r3, [r1, r0]
     bl .rose_end
     .rose_espresso:
-    sub r0, #0x20
+    sub r0, #0x1C
     ldr r1, =ESPRESSO
     ldrb r2, [r1, r0]
     cmp r2, #0xFF
     beq .rose_clause2
     add r2, #0x1
     strb r2, [r1, r0]
-    bl .rose_end
+    bl .rose_espresso_text
     .rose_clause2:
     mov r2, #0x1
     strb r2, [r1, r0]
+    .rose_espresso_text:
+    cmp r0, #0xF
+    bge .rose_bean_text
+    lsl r0, #0x2
+    ldr r1, =KEY_ITEM_ESPRESSO_ARRAY
+    ldr r3, [r1, r0]
+    bl .rose_end
+    .rose_bean_text:
+    sub r0, #0xF
+    lsl r0, #0x2
+    ldr r1, =KEY_ITEM_BEAN_ARRAY
+    ldr r3, [r1, r0]
     .rose_end:
+    bl DISPLAY_TEXTBOX
     pop { r0, r1, r2, r3, pc }
     .pool
 
@@ -1526,7 +1851,6 @@
     bl .end3
  
     .end2:
-
     ldrb r3, [r1]
     .end3:
     add r4, r3, #0x0
@@ -1551,7 +1875,7 @@
 
     .org EVENT_BLOCKER_SUBR
 
-    push lr
+    push { r1, lr }
     ldr r1, =ROOM
     ldrb r1, [r1]
     cmp r1, #0x36
@@ -1605,15 +1929,18 @@
     bl .end
 
     .castle_block:
-    ldrb r1, [r2]
-    cmp r1, #0xB
-    bne .unblock
-    ldr r1, =KEY_ITEM
-    ldrb r1, [r1]
-    mov r0, #0x2
-    and r1, r0
-    cmp r1, #0x2
+    ldr r1, =ROOM
+    ldrb r1, [r1, #0x1]
+    cmp r1, #0x1
     beq .unblock
+    ldr r1, =0x082FC170
+    cmp r2, r1
+    beq .cblock
+    ldr r1, =0x082FC191
+    cmp r2, r1
+    beq .cblock
+    bl .unblock
+    .cblock:
     mov r0, #0xFF
     bl .end
 
@@ -1629,7 +1956,7 @@
     ldrb r0, [r2]
     .end:
     lsl r4, r0, #0x4
-    pop pc
+    pop { r1, pc }
     .pool
 
 
@@ -1639,14 +1966,19 @@
 
     .org ABILITY_BLOCK_SUBR
     push { r0, r1, r2, r3, r4, lr }
-    ldr r0, =HAMMER
-    cmp r0, r5
-    bne .hand_check
-    bl .cont_check
-    .hand_check:
-    add r0, #0x1
-    cmp r0, r5
+    ldr r2, =HAMMER
+    cmp r2, r5
     bne .scroll_check
+    ldr r1, =0x300
+    cmp r0, r1
+    bgt .ability_norm
+    mov r1, #0x38
+    and r1, r0
+    cmp r1, #0x0
+    beq .cont_check
+    ldr r1, =AB_RAM
+    mov r2, #0x1
+    strb r2, [r1]
     bl .cont_check
     .scroll_check:
     ldr r0, =0x0200434C
@@ -1765,6 +2097,12 @@
     str r2, [r1]
     .ability_norm:
     pop { r0, r1 }
+    ldr r2, =AB_RAM
+    ldrb r3, [r2]
+    mov r4, #0x0
+    strb r4, [r2]
+    cmp r3, #0x1
+    beq .ability_end2
     orr r1, r0
     str r1, [r5]
     bl .ability_end2
@@ -2167,6 +2505,19 @@
     mov r2, #0x1
     strb r2, [r1]
     .inject_cont:
+    ldr r1, =0x084F361C
+    cmp r1, r7
+    bne .spangle_skip
+    ldr r1, =0x081E9437
+    ldrb r2, [r1]
+    ldr r1, =TEXT_VAR
+    add r2, r1
+    ldr r1, =TEXT_ITEM
+    str r2, [r1]
+    ldr r1, =FRUIT_REMOVE_RAM
+    mov r2, #0x1
+    strb r2, [r1]
+    .spangle_skip:
     ldr r1, =0x084EB020
     cmp r1, r7
     bne .chalice_skip
@@ -2898,38 +3249,72 @@
     ldrb r0, [r0]
     cmp r0, #0x92
     beq .brooch_block
-    bl .chuckola_norm
+    bl .chuckola_ram
 
     .brooch_block:
     ldr r0, =ROOM
     ldrb r0, [r0, #0x1]
     cmp r0, #0x1
-    bne .chuckola_norm
+    bne .chuckola_end
+
     ldr r0, =KEY_ITEM
     ldrb r0, [r0]
     mov r1, #0x4
     and r1, r0
-    cmp r1, #0x0
+    cmp r1, #0x4
     beq .brooch_norm
-    mov r1, #0x40
-    orr r0, r1
-    ldr r1, =BROOCH
-    strb r0, [r1]
-    bl .chuckola_norm
+    ldr r0, =BROOCH
+    ldrb r1, [r0]
+    mov r3, #0x40
+    and r3, r1
+    cmp r3, #0x0
+    beq .chuckola_end
+    bic r1, r3
+    strb r1, [r0]
+    ldr r0, =BROOCH_RAM
+    mov r1, #0x1
+    strb r1, [r0]
+    bl .chuckola_end
     .brooch_norm:
     ldr r0, =BROOCH
-    ldrb r0, [r0]
-    mov r1, #0x40
-    and r1, r0
-    cmp r1, #0x0
-    beq .chuckola_norm
-    mov r1, #0x40
-    sub r0, r1
-    ldr r1, =BROOCH
-    strb r0, [r1]
-    bl .chuckola_norm
+    ldrb r1, [r0]
+    mov r3, #0x40
+    and r3, r1
+    cmp r3, #0x40
+    beq .chuckola_end
+    mov r3, #0x40
+    orr r1, r3
+    strb r1, [r0]
+    ldr r0, =BROOCH_RAM
+    mov r1, #0x2
+    strb r1, [r0]
+    bl .chuckola_end
 
-    .chuckola_norm:
+    .chuckola_ram:
+    ldr r0, =BROOCH_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    beq .chuckola_restore
+    cmp r1, #0x2
+    bne .chuckola_end
+    mov r1, #0x0
+    strb r1, [r0]
+    ldr r0, =BROOCH
+    ldrb r1, [r0]
+    mov r3, #0x40
+    bic r1, r3
+    strb r1, [r0]
+    bl .chuckola_end
+    .chuckola_restore:
+    mov r1, #0x0
+    strb r1, [r0]
+    ldr r0, =BROOCH
+    ldrb r1, [r0]
+    mov r3, #0x40
+    orr r1, r3
+    strb r1, [r0]
+
+    .chuckola_end:
     pop { r0, r1 }
     add r0, r4, r1
     ldrb r1, [r0]
@@ -2939,233 +3324,147 @@
 
 
     .org ABILITY_CHECK
-    push { r0, r1, r2, lr }
+    push { r0, r1, r2, r3, lr }
     ldr r0, =ROOM
-    ldrb r0, [r0]
-    ldr r1, =HAMMER_OPTIONS
-    ldrb r2, [r1]
-    cmp r2, #0x1
-    beq .hand_options
-    cmp r0, #0x27
-    beq .hammer_check
-    cmp r0, #0xD0
-    beq .shammer_check
+    ldrh r0, [r0]
     cmp r0, #0xB3
-    .hand_options:
-    ldrb r2, [r1, #0x1]
-    cmp r2, #0x1
-    beq .check_end4
-    cmp r0, #0xB3
-    beq .fire_check2
+    beq .fire_check
     cmp r0, #0xB7
-    beq .thunder_check2
+    beq .thunder_check
     ldr r0, =REMOVE_RAM
     ldrb r1, [r0]
     cmp r1, #0x1
-    beq .hammer_remove
+    beq .fire_remove
     cmp r1, #0x2
-    beq .shammer_remove
-    cmp r1, #0x3
-    beq .uhammer_remove
-    ldrb r1, [r0, #0x1]
-    cmp r1, #0x1
-    beq .fire_remove2
-    ldrb r1, [r0, #0x2]
-    cmp r1, #0x1
-    beq .thunder_remove2
+    beq .thunder_remove
+    mov r2, #0x30
+    and r2, r1
+    cmp r2, #0x0
+    bne .block_fix
     bl .check_end
-    .hammer_check:
-    ldr r0, =HAMMER
-    ldrb r0, [r0]
-    mov r1, #0x8
-    and r1, r0
-    cmp r1, #0x0
-    beq .hammer_remove_ram
-    bl .check_end
-    .shammer_check:
+
+    .block_fix:
     ldr r0, =ROOM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x1
-    bne .check_end3
-    ldr r0, =0x02004359
-    ldrb r0, [r0]
-    mov r1, #0x20
-    and r1, r0
-    cmp r1, #0x20
-    beq .uhammer_check
-    ldr r0, =HAMMER
-    ldrb r0, [r0]
-    mov r1, #0x10
-    and r1, r0
-    cmp r1, #0x0
-    beq .shammer_remove_ram
-    bl .check_end
-    .uhammer_check:
-    ldr r0, =0x0200430B
-    ldrb r0, [r0]
-    mov r1, #0x8
-    and r1, r0
-    cmp r1, #0x8
-    bne .check_end3
-    ldr r0, =HAMMER
-    ldrb r0, [r0]
-    mov r1, #0x20
-    and r1, r0
-    cmp r1, #0x0
-    beq .uhammer_remove_ram
-    bl .check_end
-
-    .check_end4:
-    bl .check_end3
-
-    .thunder_check2:
-    bl .thunder_check
-
-    .fire_check2:
-    bl .fire_check
-
-    .hammer_remove_ram:
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x1
-    strb r1, [r0]
-    bl .check_end
-    .shammer_remove_ram:
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x2
-    strb r1, [r0]
-    bl .check_end
-    .uhammer_remove_ram:
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x3
-    strb r1, [r0]
-    bl .check_end
-    .hammer_remove:
-    ldr r0, =HAMMER
-    ldrb r1, [r0]
-    mov r2, #0x8
-    bic r1, r2
-    strb r1, [r0]
+    ldrh r0, [r0]
+    cmp r0, #0xB0
+    beq .unblock_hand
+    cmp r0, 0xB4
+    bne .check_end
+    .unblock_hand:
     ldr r0, =REMOVE_RAM
     mov r1, #0x0
     strb r1, [r0]
-    bl .check_end
-    .thunder_remove2:
-    bl .thunder_remove
-    .fire_remove2:
-    bl .fire_remove
-    .shammer_remove:
-    ldr r0, =HAMMER
-    ldrb r1, [r0]
-    mov r2, #0x10
-    bic r1, r2
-    strb r1, [r0]
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x0
-    strb r1, [r0]
-    bl .check_end
-    .uhammer_remove:
-    ldr r0, =HAMMER
-    ldrb r1, [r0]
-    mov r2, #0x20
-    bic r1, r2
-    strb r1, [r0]
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x0
-    strb r1, [r0]
-    bl .check_end
-
-    .check_end3:
     bl .check_end
 
     .fire_check:
-    ldr r0, =HAND_FIX_RAM
+    ldr r0, =REMOVE_RAM
     ldrb r0, [r0]
     cmp r0, #0x0
-    bgt .check_end
-    ldr r0, =HAMMER
-    ldrb r0, [r0, #0x1]
-    mov r1, #0x1
+    bne .check_end
+    ldr r0, =0x082F6CDE
+    cmp r0, r7    
+    bne .check_end
+    ldr r0, =0x02004337
+    ldrb r0, [r0]
+    mov r1, #0x2
     and r1, r0
     cmp r1, #0x0
-    beq .fire_remove_ram
-    bl .check_end
-    .fire_remove_ram:
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x1
+    bne .check_end
+    ldr r0, =0x081E9408
+    ldrb r0, [r0]
+    cmp r0, #0x39
+    beq .check_end
+    ldr r0, =HAMMER
+    ldrb r1, [r0, #0x1]
+    mov r2, #0x1
+    and r2, r1
+    cmp r2, #0x1
+    beq .fire_skipping
+    mov r2, #0x1
+    ldr r3, =REMOVE_RAM
+    strb r2, [r3]
+    bic r1, r2
     strb r1, [r0, #0x1]
     bl .check_end
+    .fire_skipping:
+    bic r1, r2
+    strb r1, [r0, #0x1]
+    ldr r1, =REMOVE_RAM
+    mov r0, #0x10
+    strb r0, [r1]
+    bl .check_end
+
     .fire_remove:
     ldr r0, =ROOM
-    ldrb r0, [r0]
-    cmp r0, #0xB2
-    beq .check_end
-    cmp r0, #0xB1
-    beq .check_end
+    ldrh r0, [r0]
+    cmp r0, #0xB0
+    bne .check_end
+    ldr r0, =REMOVE_RAM
+    mov r1, #0x0
+    strb r1, [r0]
     ldr r0, =HAMMER
     ldrb r1, [r0, #0x1]
     mov r2, #0x1
     bic r1, r2
     strb r1, [r0, #0x1]
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x0
-    strb r1, [r0, #0x1]
     bl .check_end
 
     .thunder_check:
-    ldr r0, =HAND_FIX_RAM
+    ldr r0, =REMOVE_RAM
     ldrb r0, [r0]
     cmp r0, #0x0
-    bgt .check_end
-    ldr r0, =HAMMER
-    ldrb r0, [r0, #0x1]
-    mov r1, #0x2
+    bne .check_end
+    ldr r0, =0x082F6F84
+    cmp r0, r7    
+    bne .check_end
+    ldr r0, =0x02004336
+    ldrb r0, [r0]
+    mov r1, #0x80
     and r1, r0
     cmp r1, #0x0
-    beq .thunder_remove_ram
+    bne .check_end
+    ldr r0, =0x081E9409
+    ldrb r0, [r0]
+    cmp r0, #0x3A
+    beq .check_end
+    ldr r0, =HAMMER
+    ldrb r1, [r0, #0x1]
+    mov r2, #0x2
+    and r2, r1
+    cmp r2, #0x2
+    beq .thunder_skip
+    mov r2, #0x2
+    ldr r3, =REMOVE_RAM
+    strb r2, [r3]
+    bic r1, r2
+    strb r1, [r0, #0x1]
     bl .check_end
-    .thunder_remove_ram:
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x1
-    strb r1, [r0, #0x2]
+    .thunder_skip:
+    bic r1, r2
+    strb r1, [r0, #0x1]
+    ldr r1, =REMOVE_RAM
+    mov r0, #0x20
+    strb r0, [r1]
     bl .check_end
+
     .thunder_remove:
     ldr r0, =ROOM
-    ldrb r0, [r0]
-    cmp r0, #0xB6
-    beq .check_end
-    cmp r0, #0xB5
-    beq .check_end
+    ldrh r0, [r0]
+    cmp r0, #0xB4
+    bne .check_end
+    ldr r0, =REMOVE_RAM
+    mov r1, #0x0
+    strb r1, [r0]
     ldr r0, =HAMMER
     ldrb r1, [r0, #0x1]
     mov r2, #0x2
     bic r1, r2
     strb r1, [r0, #0x1]
-    ldr r0, =REMOVE_RAM
-    mov r1, #0x0
-    strb r1, [r0, #0x2]
+    bl .check_end
+
+
     .check_end:
-    ldr r0, =HAMMER
-    ldrb r0, [r0]
-    mov r2, #0x0
-    mov r1, #0x8
-    and r1, r0
-    cmp r1, #0x0
-    beq .check_end2
-    mov r2, #0x1
-    mov r1, #0x10
-    and r1, r0
-    cmp r1, #0x0
-    beq .check_end2
-    add r2, #0x1
-    mov r1, #0x20
-    and r1, r0
-    cmp r1, #0x0
-    beq .check_end2
-    add r2, #0x1
-    .check_end2:
-    ldr r0, =HAMMER_RAM
-    strb r2, [r0]
-    pop { r0, r1, r2, pc }
+    pop { r0, r1, r2, r3, pc }
     .pool
 
 
@@ -3372,47 +3671,6 @@
 
 
 
-    .org LAKITOO_BLOCK_SUBR
-    push { r0, lr }
-    bl SPRING_BLOCK
-    ldr r0, =LAKITOO_RAM
-    ldrb r0, [r0]
-    cmp r0, #0x1
-    beq .lakitoo
-    cmp r0, #0x2
-    beq .lakitoo2
-    bl .lakitoo_norm
-    .lakitoo:
-    ldr r0, =0x02008168
-    cmp r0, r8
-    bne .lakitoo_norm
-    ldr r0, =0x400
-    cmp r0, r1
-    bne .lakitoo_norm
-    mov r1, #0x0
-    ldr r0, =LAKITOO_RAM
-    strb r1, [r0]
-    bl .lakitoo_norm
-    .lakitoo2:
-    ldr r0, =0x02007784
-    cmp r0, r8
-    bne .lakitoo_norm
-    ldr r0, =0x400
-    cmp r0, r1
-    bne .lakitoo_norm
-    mov r1, #0x0
-    ldr r0, =LAKITOO_RAM
-    strb r1, [r0]
-    .lakitoo_norm:
-    mov r2, r8
-    strh r1, [r2]
-    pop { r0, pc }
-    .pool
-
-
-
-
-
     .org SCROLL_CHECK
     push { r2, lr }
     ldr r0, =KEY_ITEM
@@ -3467,28 +3725,30 @@
 
 
     .org SPRING_BLOCK
-    push { r0, r1, lr }
+    push { r0, r3, lr }
     ldr r0, =0x02006C2C
     ldrb r0, [r0]
     cmp r0, #0x4
     beq .spring_end
     ldr r0, =ROOM
-    ldrb r1, [r0]
-    cmp r1, #0x23
+    ldrb r3, [r0]
+    cmp r3, #0x23
     bne .spring_end
-    ldrb r1, [r0, #0x1]
-    cmp r1, #0x1
+    ldrb r3, [r0, #0x1]
+    cmp r3, #0x1
     bne .spring_end
     ldr r0, =0x0200733C
-    mov r1, #0x0
-    str r1, [r0, #0x10]
-    str r1, [r0, #0x14]
+    mov r3, #0x0
+    str r3, [r0, #0x10]
+    str r3, [r0, #0x14]
     ldr r0, =0x02007688
-    mov r1, #0x0
-    str r1, [r0, #0x10]
-    str r1, [r0, #0x14]
+    mov r3, #0x0
+    str r3, [r0, #0x10]
+    str r3, [r0, #0x14]
     .spring_end:
-    pop { r0, r1, pc }
+    mov r2, r8
+    strh r1, [r2]
+    pop { r0, r3, pc }
     .pool
 
 
@@ -3497,6 +3757,7 @@
 
     .org ROCK_BLOCK
     push { r0, r1, r2, lr }
+    bl COLA_ROCKS
     ldr r0, =ROOM
     ldrb r0, [r0]
     cmp r0, #0xAD
@@ -3507,6 +3768,25 @@
     orr r1, r2
     strb r1, [r0]
     .gate_skip:
+    ldr r0, =0x02004300
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    bne .shop_skip
+    ldr r0, =0x0200436D
+    ldrb r1, [r0]
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    bl .shop_skip
+    .shop_clear:
+    ldr r0, =0x0200436D
+    ldrb r1, [r0]
+    mov r2, #0x80
+    bic r1, r2
+    strb r1, [r0]
+    .shop_skip:
     ldr r0, =0x02004359 ;ruins
     ldrb r1, [r0]
     mov r2, #0x6
@@ -3603,6 +3883,29 @@
 
 
 
+    .org COLA_ROCKS
+    push lr
+    ldr r0, =0x02004526
+    ldrb r1, [r0]
+    mov r2, #0x88
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x0200433D ; Advanced bros moves flag
+    ldrb r1, [r0]
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004347 ; Yoshi theater cutscene flag
+    ldrb r1, [r0]
+    mov r2, #0x8
+    orr r1, r2
+    strb r1, [r0]
+    pop pc
+    .pool
+
+
+
+
 
     .org FAWFUL_BLOCK
     push { r0, lr }
@@ -3677,6 +3980,60 @@
 
 
 
+
+    .org JUMP_TUT
+    push { r0-r2, lr }
+    ldr r0, =ROOM
+    ldrb r0, [r0]
+    cmp r0, #0x66
+    bne .jump_tut_end
+    ldr r0, =0x020042F8
+    mov r1, #0xFC
+    strb r1, [r0]
+    ldr r0, =0x020042FA
+    ldrb r1, [r0]
+    mov r2, #0x4
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x0200433E
+    ldrb r1, [r0]
+    mov r2, #0x1D
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004338
+    ldrb r1, [r0]
+    mov r2, #0x6
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x020042FB
+    ldrb r1, [r0]
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    .jump_tut_end:
+    pop { r0-r2, pc }
+    .pool
+
+
+
+
+
+    .org SAVE_BLOCK
+    push lr
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x95
+    bne .save_end
+    mov r1, #0x0
+    ldr r0, =0x0200948C
+    strb r1, [r0]
+    .save_end:
+    pop pc
+    .pool
+
+
+
+
     .org KOOPA_BLOCK_SUBR
     push { r0, r1, r2, lr }
     ldr r0, =CORAL_RAM
@@ -3691,6 +4048,7 @@
     bic r1, r2
     strb r1, [r0, #0x1]
     .coral_skip:
+    bl JUMP_TUT
     bl EGG_CHECK
     bl STAR_QUEST
     bl ABILITY_CHECK
@@ -3739,21 +4097,53 @@
     beq .barrel_block2
     cmp r0, #0xC3
     beq .coral_fix2
-    cmp r0, #0xB7
-    beq .thunder_fix
-    cmp r0, #0xB3
-    beq .fire_fix
-    ldr r0, =HAND_FIX_RAM
-    ldrb r0, [r0]
-    cmp r0, #0x0
-    bgt .hand_restore
-    ldr r0, =HAND_FIX_RAM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x0
-    bgt .ram_clear
+    cmp r0, #0xBF
+    beq .queen_fix
+    ldr r0, =QUEEN_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    beq .queen_restore
     bl .koopa_norm
 
-    
+    .queen_fix:
+    ldr r0, =ROOM
+    ldrb r0, [r0, #0x1]
+    cmp r0, #0x0
+    bne .koopa_norm2
+    ldr r0, =0x02004300
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    beq .koopa_norm2
+    ldr r0, =0x02004303
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    bne .koopa_norm2
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =QUEEN_RAM
+    mov r1, #0x1
+    strb r1, [r0]
+    bl .koopa_norm2
+
+    .queen_restore:
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x3D
+    bne .koopa_norm2
+    mov r1, #0x0
+    ldr r0, =QUEEN_RAM
+    strb r1, [r0]
+    ldr r0, =0x02004303
+    ldrb r1, [r0]
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    bl .koopa_norm2
+
     .membership_restore:
     ldr r1, =CARD_RAM
     ldrb r0, [r1]
@@ -3767,70 +4157,6 @@
     orr r2, r0
     strb r2, [r1]
     bl .koopa_norm2
-
-    .ram_clear:
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x0
-    strb r1, [r0, #0x1]
-    bl .koopa_norm2
-
-    .hand_restore:
-    cmp r0, #0x1
-    beq .fire_restore
-    ldr r0, =HAMMER
-    ldrb r1, [r0, #0x1]
-    mov r2, #0x2
-    orr r1, r2
-    strb r1, [r0, #0x1]
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x0
-    strb r1, [r0]
-    bl .koopa_norm
-    .fire_restore:
-    ldr r0, =HAMMER
-    ldrb r1, [r0, #0x1]
-    mov r2, #0x1
-    orr r1, r2
-    strb r1, [r0, #0x1]
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x0
-    strb r1, [r0]
-    bl .koopa_norm
-
-    .thunder_fix:
-    ldr r0, =REMOVE_RAM
-    ldrb r0, [r0, #0x2]
-    cmp r0, #0x1
-    beq .koopa_norm2
-    ldr r0, =ROOM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x0
-    bne .koopa_norm2
-    ldr r0, =HAND_FIX_RAM
-    ldrb r0, [r0]
-    cmp r0, #0x2
-    beq .koopa_norm2
-    ldr r0, =HAND_FIX_RAM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x1
-    beq .koopa_norm2
-    ldr r0, =HAMMER
-    ldrb r1, [r0, #0x1]
-    mov r2, #0x2
-    and r2, r1
-    cmp r2, #0x2
-    bne .thunder_stop
-    bic r1, r2
-    strb r1, [r0, #0x1]
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x2
-    strb r1, [r0]
-    bl .koopa_norm
-    .thunder_stop:
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x1
-    strb r1, [r0, #0x1]
-    bl .koopa_norm
 
     .koopa_norm2:
     bl .koopa_norm
@@ -3846,42 +4172,6 @@
 
     .winkle_block2:
     bl .winkle_block
-
-
-    .fire_fix:
-    ldr r0, =REMOVE_RAM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x1
-    beq .koopa_norm2
-    ldr r0, =ROOM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x0
-    bne .koopa_norm2
-    ldr r0, =HAND_FIX_RAM
-    ldrb r0, [r0]
-    cmp r0, #0x1
-    beq .koopa_norm
-    ldr r0, =HAND_FIX_RAM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x1
-    beq .koopa_norm
-    ldr r0, =HAMMER
-    ldrb r1, [r0, #0x1]
-    mov r2, #0x1
-    and r2, r1
-    cmp r2, #0x1
-    bne .fire_stop
-    bic r1, r2
-    strb r1, [r0, #0x1]
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x1
-    strb r1, [r0]
-    bl .koopa_norm
-    .fire_stop:
-    ldr r0, =HAND_FIX_RAM
-    mov r1, #0x1
-    strb r1, [r0, #0x1]
-    bl .koopa_norm
 
     .coral_fix:
     ldr r0, =ROOM
