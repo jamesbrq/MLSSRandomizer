@@ -5,9 +5,6 @@
     .include "Variables.asm"
     .include "Badges.asm"
 
-    .org 0x083BBDD8
-        db 0x25
-
     .org 0x082754C8
         db 0x22, 0xB0
 
