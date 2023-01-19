@@ -36,7 +36,7 @@
         db 0x21, 0x60
 
     .org OVERRIDE
-       ; db 0x0, 0x0, 0x0, 0x0
+        db 0x0, 0x0, 0x0, 0x0
 
     .org HIGH_JUMP
         db 0xAA
@@ -531,6 +531,51 @@
 
     .org YOSHI_DISPLAY_HOOK
         bl YOSHI_DISPLAY_SUBR
+
+    .org HP_SCALE_HOOK
+        bl HP_SCALE_SUBR
+        mov r0, r0
+
+
+
+
+
+    .org HP_SCALE_SUBR
+    push { r1, lr }
+    ldr r1, =ERANDOM
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    bne .scale_end
+    bl CALC_HEALTH
+    .scale_end:
+    strh r0, [r6]
+    mov r6, r9
+    pop { r1, pc }
+    .pool
+
+
+
+
+
+
+
+
+    .org CALC_HEALTH
+    push { r1, lr }
+    ldr r0, =0x030024B6
+    ldrb r0, [r0]
+    sub r0, #0x7
+    mov r1, #0xA
+    .addition_loop:
+    cmp r0, #0x0
+    beq .calc_end
+    add r1, #0x2
+    sub r0, #0x1
+    bl .addition_loop
+    .calc_end:
+    mov r0, r1
+    pop { r1, pc }
+    .pool
 
 
 

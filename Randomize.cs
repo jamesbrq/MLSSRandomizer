@@ -1009,11 +1009,13 @@ namespace MLSSRandomizerForm
 
             if (!Form1.enemy)
                 return;
+            //Write byte for stat scale execution
+            stream.Seek(0x1E9418, SeekOrigin.Begin);
+            stream.WriteByte(0x1);
             PopulateEnemyArray();
             GenerateGroups();
             GenerateBossGroups();
             InsertGroups();
-            StatScale();
         }
 
         public void InsertGroups()
