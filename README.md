@@ -5,4 +5,4 @@ You can find the latest release in [Releases](https://github.com/jamesbrq/MLSSRa
 
 # Discord
 
-[Discord](https://discord.gg/MVZ3hDyAuY)
+[Discord](https://discord.gg/MVZ3hDyAuY) if you have any questions, concerns, and the like. We also hold races sometimes.
