@@ -534,7 +534,38 @@
 
     .org HP_SCALE_HOOK
         bl HP_SCALE_SUBR
-        mov r0, r0
+
+    .org HP_SCALE_FIX_HOOK
+        bl HP_SCALE_FIX_SUBR
+
+
+
+
+    .org HP_SCALE_FIX_SUBR
+    push { r2, lr }
+    ldr r2, =ERANDOM
+    ldrb r2, [r2]
+    cmp r2, #0x1
+    bne .scale_norm
+    ldr r2, =0x030024B8
+    ldrb r2, [r2]
+    cmp r2, #0x32
+    beq .scale_norm
+    cmp r2, #0x1F
+    beq .scale_norm
+    cmp r2, #0x9A
+    beq .scale_norm
+    cmp r2, #0xB1
+    beq .scale_norm
+    bl CALC_HEALTH
+    strh r0, [r1]
+    bl .scale_end2
+    .scale_norm:
+    ldrh r0, [r6, #0x6]
+    strh r0, [r1]
+    .scale_end2:
+    pop { r2, pc }
+    .pool
 
 
 
@@ -546,6 +577,16 @@
     ldrb r1, [r1]
     cmp r1, #0x1
     bne .scale_end
+    ldr r1, =0x030024B8
+    ldrb r1, [r1]
+    cmp r1, #0x32
+    beq .scale_end
+    cmp r1, #0x1F
+    beq .scale_end
+    cmp r1, #0x9A
+    beq .scale_end
+    cmp r1, #0xB1
+    beq .scale_end
     bl CALC_HEALTH
     .scale_end:
     strh r0, [r6]
@@ -561,20 +602,15 @@
 
 
     .org CALC_HEALTH
-    push { r1, lr }
-    ldr r0, =0x030024B6
-    ldrb r0, [r0]
-    sub r0, #0x7
-    mov r1, #0xA
-    .addition_loop:
-    cmp r0, #0x0
-    beq .calc_end
-    add r1, #0x2
-    sub r0, #0x1
-    bl .addition_loop
-    .calc_end:
+    push { r1, r2, lr }
+    ldr r1, =0x030024B8
+    ldrb r1, [r1]
+    sub r1, #0x7
+    mov r2, #0x2
+    mul r2, r1
+    add r2, #0xA
     mov r0, r1
-    pop { r1, pc }
+    pop { r1, r2, pc }
     .pool
 
 

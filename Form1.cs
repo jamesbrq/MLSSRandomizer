@@ -46,6 +46,7 @@ namespace MLSSRandomizerForm
         public static bool coffeeValue = false;
         public static bool music = false;
         public static bool background = false;
+        public static bool scale = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -374,6 +375,11 @@ namespace MLSSRandomizerForm
         private void checkBox25_CheckedChanged(object sender, EventArgs e)
         {
             enemy = checkBox25.Checked;
+            if (enemy)
+                checkBox31.Enabled = true;
+            else
+                checkBox31.Enabled = false;
+
         }
 
         private void checkBox26_CheckedChanged(object sender, EventArgs e)
@@ -434,6 +440,11 @@ namespace MLSSRandomizerForm
         private void radioButton5_CheckedChanged(object sender, EventArgs e)
         {
             seedType = 2;
+        }
+
+        private void checkBox31_CheckedChanged(object sender, EventArgs e)
+        {
+            scale = checkBox31.Checked;
         }
     }
 }

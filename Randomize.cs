@@ -453,6 +453,7 @@ namespace MLSSRandomizerForm
             list.Add("Espresso Stats: " + Form1.coffeeValue);
             list.Add("Music: " + Form1.music);
             list.Add("Enemies: " + Form1.enemy);
+            list.Add("Enemy Stats: " + Form1.scale);
             list.Add("Battle Backgrounds: " + Form1.background);
             list.Add("Disable Mush: " + Form1.mush);
             list.Add("Disable Surf: " + Form1.surf);
@@ -916,7 +917,10 @@ namespace MLSSRandomizerForm
 
         public Color GenColor(string color)
         {
-            switch(color)
+            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
+            string temp = color;
+            random:
+            switch(temp)
             {
                 case "Red":
                     return new Color(0x3B, 0x4, 0x13, 0x0);
@@ -947,6 +951,10 @@ namespace MLSSRandomizerForm
 
                 case "White":
                     return new Color(0xFF, 0xFF, 0x79, 0x67);
+
+                case "Random":
+                    temp = colors[random.Next(0, colors.Length - 1)];
+                    goto random;
 
                 default:
                     break;
@@ -1010,8 +1018,11 @@ namespace MLSSRandomizerForm
             if (!Form1.enemy)
                 return;
             //Write byte for stat scale execution
-            stream.Seek(0x1E9418, SeekOrigin.Begin);
-            stream.WriteByte(0x1);
+            if (Form1.scale)
+            {
+                stream.Seek(0x1E9418, SeekOrigin.Begin);
+                stream.WriteByte(0x1);
+            }
             PopulateEnemyArray();
             GenerateGroups();
             GenerateBossGroups();
@@ -1115,35 +1126,6 @@ namespace MLSSRandomizerForm
                     type.Add(0x3);
                 }
                 groups.Add(new EnemyGroup(id, type, size, script, special));
-            }
-        }
-
-        public void StatScale()
-        {
-            string[] locations = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\Stats.txt");
-            for(int i = 0; i < enemyCount.Count; i++)
-            {
-                StatCount temp = enemyCount[i];
-                temp.total /= temp.count;
-                enemyCount[i] = temp;
-            }
-
-            foreach(StatCount sc in enemyCount)
-            {
-                for(int i = 0; i < locations.Length; i += 2)
-                {
-                    if(sc.id == Convert.ToInt32(locations[i + 1], 16))
-                    {
-                        float temp = sc.total / fightCeil;
-                        stream.Seek(Convert.ToUInt32(locations[i], 16) + 6, SeekOrigin.Begin);
-                        stream.WriteByte((byte)Math.Round(healthMax * temp));
-                       // stream.Seek(17, SeekOrigin.Current);
-                       // stream.WriteByte((byte)Math.Round(defenceMax * temp));
-                       // stream.Seek(1, SeekOrigin.Current);
-                       // stream.WriteByte((byte)Math.Round(speedMax * temp));
-                        break;
-                    }
-                }
             }
         }
 
