@@ -46,7 +46,7 @@ namespace MLSSRandomizerForm
             rom.ColorSwap();
             rom.stream.Close();
             rom.Inject();
-            return new string[2] { Environment.CurrentDirectory + "\\asm\\mlss_loop.gba", Convert.ToString(rom.hash) };
+            return new string[2] { Environment.CurrentDirectory + "/asm/mlss_loop.gba", Convert.ToString(rom.hash) };
         }
     }
 
@@ -79,13 +79,13 @@ namespace MLSSRandomizerForm
 
         public Rom(string path, string seed)
         {
-            if (!File.Exists(Environment.CurrentDirectory + "\\asm\\mlss.gba"))
-                File.Copy(path, Environment.CurrentDirectory + "\\asm\\mlss.gba");
-            stream = new FileStream(Environment.CurrentDirectory + "\\asm\\mlss.gba", FileMode.Open);
+            if (!File.Exists(Environment.CurrentDirectory + "/asm/mlss.gba"))
+                File.Copy(path, Environment.CurrentDirectory + "/asm/mlss.gba");
+            stream = new FileStream(Environment.CurrentDirectory + "/asm/mlss.gba", FileMode.Open);
             FreshArrayPopulate();
             SeedInitialize(seed);
             CheckOptions();
-            ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "\\items\\AllAddresses.txt"));
+            ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
         }
 
 
@@ -368,13 +368,13 @@ namespace MLSSRandomizerForm
 
         public void FreshArrayPopulate()
         {
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\AllAddresses.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\BrosItems.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\KeyItems.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\Shops.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\Espresso.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\Pants.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "\\items\\Badges.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
         }
 
         public void UpdateList()
@@ -396,8 +396,8 @@ namespace MLSSRandomizerForm
 
         public void SpoilerFill()
         {
-            SpoilerArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "\\items\\SpoilerNames.txt"));
-            SpoilerArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\LocationNames.txt"));
+            SpoilerArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/items/SpoilerNames.txt"));
+            SpoilerArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/LocationNames.txt"));
             foreach (LocationData data in freshLocationArray.ToList())
             {
                 int temp = 0;
@@ -420,7 +420,7 @@ namespace MLSSRandomizerForm
             {
                 fileString.Add(spoiler.itemName + " - " + spoiler.locationName + " - " + spoiler.locationHex);
             }
-            File.WriteAllLines(Environment.CurrentDirectory + "\\spoilers\\" + hash + " Spoiler.txt", fileString);
+            File.WriteAllLines(Environment.CurrentDirectory + "/spoilers/" + hash + " Spoiler.txt", fileString);
         }
 
         public List<string> SeedInfo()
@@ -521,7 +521,7 @@ namespace MLSSRandomizerForm
 
         public void CheckOptions()
         {
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\KeyItems.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if ((byte)data.item == 0x31)
@@ -675,7 +675,7 @@ namespace MLSSRandomizerForm
 
                 optionsArray.Remove(data);
             }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\BrosItems.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if (data.item == 0x38)
@@ -705,7 +705,7 @@ namespace MLSSRandomizerForm
                 }
                 optionsArray.Remove(data);
             }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\Espresso.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if (Form1.Espresso())
@@ -718,7 +718,7 @@ namespace MLSSRandomizerForm
                 }
                 optionsArray.Remove(data);
             }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\Shops.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if (Form1.Shops())
@@ -731,7 +731,7 @@ namespace MLSSRandomizerForm
                 }
                 optionsArray.Remove(data);
             }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\Pants.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if (Form1.surf && data.item == 0xEB)
@@ -752,7 +752,7 @@ namespace MLSSRandomizerForm
                 optionsArray.Remove(data);
             }
 
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\Badges.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if (Form1.Mush() && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
@@ -779,7 +779,7 @@ namespace MLSSRandomizerForm
                 optionsArray.Remove(data);
             }
 
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "\\items\\AllAddresses.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
                 if(data.item == 0x1E)
@@ -1005,8 +1005,8 @@ namespace MLSSRandomizerForm
         {
             if(Form1.background)
             {
-                string[] location = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\Encounters.txt");
-                string[] boss = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\BossEncounters.txt");
+                string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
+                string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
                 location = location.Concat(boss).ToArray();
                 foreach(string str in location)
                 {
@@ -1032,11 +1032,8 @@ namespace MLSSRandomizerForm
         public void InsertGroups()
         {
             groups.Shuffle(random);
-            groups.Shuffle(random);
-            groups.Shuffle(random);
-            groups.Shuffle(random);
-            string[] location = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\Encounters.txt");
-            string[] boss = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\BossEncounters.txt");
+            string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
+            string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
             location = location.Concat(boss).ToArray();
             Array.Sort(location);
             int count = 0;
@@ -1061,8 +1058,6 @@ namespace MLSSRandomizerForm
                                 break;
                             }
                         }
-                        if (tempgroup.id[i] == 0x60)
-                            Console.WriteLine("a");
                         stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
                         stream.WriteByte(tempgroup.id[i]);
                         stream.Seek(1, SeekOrigin.Current);
@@ -1093,37 +1088,96 @@ namespace MLSSRandomizerForm
         public void GenerateGroups()
         {
             enemies.Shuffle(random);
-            enemies.Shuffle(random);
-            enemies.Shuffle(random);
-            enemies.Shuffle(random);
             foreach (int size in groupSizes)
             {
+                int tempsize;
+                if (size > 4)
+                    tempsize = 4;
+                else
+                    tempsize = size;
                 List<byte> id = new List<byte>();
                 List<byte> type = new List<byte>();
+                List<Enemy> pestnuts = new List<Enemy>();
+                List<Enemy> tempEnemies = new List<Enemy>();
                 byte[] script = { 0xEE, 0x2C, 0x28, 0x8 };
                 int nut = 0;
                 int special = 0;
-                for (int i = 0; i < size; i++)
+                for (int i = 0; i < tempsize; i++)
                 {
                     if (enemies[0].id == 0x20 || enemies[0].id == 0x34)
+                    {
                         nut++;
+                        pestnuts.Add(enemies[0]);
+                    }
+                    else
+                    {
+                        tempEnemies.Add(enemies[0]);
+                    }
                     if (enemies[0].id == 0x52 || enemies[0].id == 0x2C || enemies[0].id == 0x4A)
                         special = 1;
                     if(enemies[0].id == 0x52)
                         script = new byte[] { 0x67, 0xAB, 0x28, 0x8 };
-                    id.Add(enemies[0].id);
-                    type.Add(enemies[0].type);
                     enemies.RemoveAt(0);
                 }
-                for(int i = 0; i < nut; i++)
+
+                if (pestnuts.Count == 3 && size == 4)
                 {
-                    for(int j = id.Count; j < (6 - nut); j++)
+                    foreach(Enemy enemy in pestnuts)
                     {
-                        id.Add(0x0);
-                        type.Add(0x7);
+                        id.Add(enemy.id);
+                        type.Add(enemy.type);
                     }
-                    id.Add(0xF);
-                    type.Add(0x3);
+                    for(int i = 0; i < 3; i++)
+                    {
+                        id.Add(0xF);
+                        type.Add(0x3);
+                    }
+                }
+                else
+                {
+                    if(size == 1 && pestnuts.Count > 0)
+                    {
+                        id.Add(pestnuts[0].id);
+                        type.Add(pestnuts[0].type);
+                    }
+                    for (int i = 0; i < tempEnemies.Count; i++)
+                    {
+                        if (i == 1 )
+                        {
+                            foreach (Enemy enemy in pestnuts)
+                            {
+                                id.Add(enemy.id);
+                                type.Add(enemy.type);
+                            }
+                        }
+                        id.Add(tempEnemies[i].id);
+                        type.Add(tempEnemies[i].type);
+                    }
+
+                    if(size == 4)
+                    {
+                        for(int i = 0; i < nut; i++)
+                        {
+                            id.Add(0xF);
+                            type.Add(0x3);
+                        }
+                    }
+                    else
+                    {
+                        if (pestnuts.Count > 0)
+                        {
+                            for (int i = 0; i < (4 - (pestnuts.Count + tempEnemies.Count)); i++)
+                            {
+                                id.Add(0x0);
+                                type.Add(0x7);
+                            }
+                            for (int i = 0; i < nut; i++)
+                            {
+                                id.Add(0xF);
+                                type.Add(0x3);
+                            }
+                        }
+                    }
                 }
                 groups.Add(new EnemyGroup(id, type, size, script, special));
             }
@@ -1131,7 +1185,7 @@ namespace MLSSRandomizerForm
 
         public void GenerateBossGroups()
         {
-            string[] groupStr = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\BossEncounters.txt");
+            string[] groupStr = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
 
             foreach (string str in groupStr)
             {
@@ -1162,7 +1216,7 @@ namespace MLSSRandomizerForm
 
         public void PopulateEnemyArray()
         {
-            string[] tempString = StreamInitialize(Environment.CurrentDirectory + "\\items\\Enemies\\Encounters.txt");
+            string[] tempString = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
             foreach(string str in tempString)
             {
                 bool iterate = true;
@@ -1217,7 +1271,7 @@ namespace MLSSRandomizerForm
         {
             if(Form1.brosBp)
             {
-                string[] str = StreamInitialize(Environment.CurrentDirectory + "\\items\\Stats\\BrosBP.txt");
+                string[] str = StreamInitialize(Environment.CurrentDirectory + "/items/Stats/BrosBP.txt");
                 int i = 0;
                 foreach(string location in str)
                 {
@@ -1238,12 +1292,12 @@ namespace MLSSRandomizerForm
 
             if(Form1.itemHeal)
             {
-                ItemValueInject(StreamInitialize(Environment.CurrentDirectory + "\\items\\Stats\\HealValues.txt"));
+                ItemValueInject(StreamInitialize(Environment.CurrentDirectory + "/items/Stats/HealValues.txt"));
             }
 
             if (Form1.coffeeValue)
             {
-                ItemValueInject(StreamInitialize(Environment.CurrentDirectory + "\\items\\Stats\\EspressoValues.txt"));
+                ItemValueInject(StreamInitialize(Environment.CurrentDirectory + "/items/Stats/EspressoValues.txt"));
             }
         }
 
@@ -1461,14 +1515,14 @@ namespace MLSSRandomizerForm
             System.Diagnostics.Process process = new System.Diagnostics.Process();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-            string domain = @Environment.CurrentDirectory + @"\\asm\\";
+            string domain = @Environment.CurrentDirectory + @"/asm/";
             startInfo.WorkingDirectory = domain;
             startInfo.FileName = "cmd.exe";
             startInfo.Arguments = "/C armips.exe Logic.asm";
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
-            File.Delete(Environment.CurrentDirectory + "\\asm\\mlss.gba");
+            File.Delete(Environment.CurrentDirectory + "/asm/mlss.gba");
         }
 
         public byte[] ASCIIToHex(string strValue)
