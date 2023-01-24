@@ -77,7 +77,6 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
@@ -92,10 +91,10 @@ namespace MLSSRandomizerForm
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -269,7 +268,6 @@ namespace MLSSRandomizerForm
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.checkBox32);
             this.tabPage2.Controls.Add(this.checkBox4);
             this.tabPage2.Controls.Add(this.checkBox2);
             this.tabPage2.Controls.Add(this.checkBox3);
@@ -672,19 +670,6 @@ namespace MLSSRandomizerForm
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // checkBox31
-            // 
-            this.checkBox31.AutoSize = true;
-            this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox31.Enabled = false;
-            this.checkBox31.Location = new System.Drawing.Point(233, 96);
-            this.checkBox31.Name = "checkBox31";
-            this.checkBox31.Size = new System.Drawing.Size(118, 17);
-            this.checkBox31.TabIndex = 38;
-            this.checkBox31.Text = "Scale enemy stats?";
-            this.checkBox31.UseVisualStyleBackColor = true;
-            this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -856,19 +841,34 @@ namespace MLSSRandomizerForm
             this.checkBox20.UseVisualStyleBackColor = true;
             this.checkBox20.CheckedChanged += new System.EventHandler(this.checkBox20_CheckedChanged);
             // 
-            // checkBox32
+            // statCountBindingSource
             // 
-            this.checkBox32.AutoSize = true;
-            this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Checked = true;
-            this.checkBox32.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox32.Location = new System.Drawing.Point(39, 144);
-            this.checkBox32.Name = "checkBox32";
-            this.checkBox32.Size = new System.Drawing.Size(71, 17);
-            this.checkBox32.TabIndex = 22;
-            this.checkBox32.Text = "Spangle?";
-            this.checkBox32.UseVisualStyleBackColor = true;
-            this.checkBox32.CheckedChanged += new System.EventHandler(this.checkBox32_CheckedChanged);
+            this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
+            // 
+            // checkBox31
+            // 
+            this.checkBox31.AutoSize = true;
+            this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox31.Enabled = false;
+            this.checkBox31.Location = new System.Drawing.Point(233, 96);
+            this.checkBox31.Name = "checkBox31";
+            this.checkBox31.Size = new System.Drawing.Size(118, 17);
+            this.checkBox31.TabIndex = 38;
+            this.checkBox31.Text = "Scale enemy stats?";
+            this.checkBox31.UseVisualStyleBackColor = true;
+            this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
+            // 
+            // form1BindingSource
+            // 
+            this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
+            // 
+            // form1BindingSource1
+            // 
+            this.form1BindingSource1.DataSource = typeof(MLSSRandomizerForm.Form1);
+            // 
+            // romBindingSource
+            // 
+            this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
             // Form1
             // 
@@ -971,7 +971,6 @@ namespace MLSSRandomizerForm
         private RadioButton radioButton4;
         private Label label6;
         private CheckBox checkBox31;
-        private CheckBox checkBox32;
     }
 }
 
