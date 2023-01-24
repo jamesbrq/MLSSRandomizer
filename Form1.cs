@@ -27,6 +27,7 @@ namespace MLSSRandomizerForm
         public static bool scrolls = true;
         public static bool beanstone = true;
         public static bool beanlet = true;
+        public static bool spangle = true;
         public static bool hammers = true;
         public static bool goblets = true;
         public static bool hands = true;
@@ -352,6 +353,11 @@ namespace MLSSRandomizerForm
         private void checkBox31_CheckedChanged(object sender, EventArgs e)
         {
             scale = checkBox31.Checked;
+        }
+
+        private void checkBox32_CheckedChanged(object sender, EventArgs e)
+        {
+            spangle = checkBox32.Checked;
         }
     }
 }

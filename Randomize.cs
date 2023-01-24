@@ -438,6 +438,7 @@ namespace MLSSRandomizerForm
             list.Add("Neon Eggs: " + Form1.eggs);
             list.Add("Beanstones: " + Form1.beanstone);
             list.Add("Beanlets: " + Form1.beanlet);
+            list.Add("Spangle: " + Form1.spangle);
             list.Add("Hammers: " + Form1.hammers);
             list.Add("Hammer Moves: " + Form1.goblets);
             list.Add("Hands: " + Form1.hands);
@@ -667,7 +668,12 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x72)
                 {
+                    if (Form1.spangle)
                     ValidArrayAdd(data);
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
                 }
 
                 optionsArray.Remove(data);
