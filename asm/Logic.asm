@@ -36,7 +36,7 @@
         db 0x21, 0x60
 
     .org OVERRIDE
-        db 0x0, 0x0, 0x0, 0x0
+       ; db 0x0, 0x0, 0x0, 0x0
 
     .org HIGH_JUMP
         db 0xAA
@@ -4101,7 +4101,14 @@
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x95
+    beq .chuckola_save
+    cmp r0, #0xFD
     bne .save_end
+    mov r1, #0x0
+    ldr r0, =0x020097D8
+    strb r1, [r0]
+    bl .save_end
+    .chuckola_save:
     mov r1, #0x0
     ldr r0, =0x0200948C
     strb r1, [r0]
