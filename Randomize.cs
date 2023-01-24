@@ -1,33 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.CodeDom.Compiler;
-using System.Threading;
 
 
-    public static class ListExtensions
+public static class ListExtensions
+{
+
+    public static void Shuffle<T>(this IList<T> list, Random random)
     {
-
-        public static void Shuffle<T>(this IList<T> list, Random random)
+        int n = list.Count;
+        while (n > 1)
         {
-            int n = list.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = random.Next(n + 1);
-                T value = list[k];
-                list[k] = list[n];
-                list[n] = value;
-            }
+            n--;
+            int k = random.Next(n + 1);
+            T value = list[k];
+            list[k] = list[n];
+            list[n] = value;
         }
     }
+}
 
 namespace MLSSRandomizerForm
 {
@@ -276,7 +269,7 @@ namespace MLSSRandomizerForm
 
         public void UpdateState(byte item)
         {
-            if(item == 0x56 || item == 0x57 || (item >= 0x60 && item <= 0x64))
+            if (item == 0x56 || item == 0x57 || (item >= 0x60 && item <= 0x64))
             {
                 gameState.neon += 1;
                 return;
@@ -325,15 +318,15 @@ namespace MLSSRandomizerForm
                     break;
 
                 case 0x35:
-                     gameState.fruitState += 1;
+                    gameState.fruitState += 1;
                     break;
 
                 case 0x36:
-                     gameState.fruitState += 1;
+                    gameState.fruitState += 1;
                     break;
 
                 case 0x37:
-                     gameState.fruitState += 1;
+                    gameState.fruitState += 1;
                     break;
 
                 case 0x38:
@@ -391,7 +384,7 @@ namespace MLSSRandomizerForm
                 }
                 i--;
             }
-            
+
         }
 
         public void SpoilerFill()
@@ -488,10 +481,10 @@ namespace MLSSRandomizerForm
             int i = validLocations.Count - 1;
             if (validLocations.Count > 0)
             {
-                foreach(LocationData data in validLocations.Reverse<LocationData>())
+                foreach (LocationData data in validLocations.Reverse<LocationData>())
                 {
                     stream.Seek(Convert.ToUInt32(data.location), SeekOrigin.Begin);
-                    if(data.itemType != 1)
+                    if (data.itemType != 1)
                         temp = (byte)stream.ReadByte();
                     else
                         temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
@@ -672,7 +665,7 @@ namespace MLSSRandomizerForm
                     }
                 }
 
-                if(data.item == 0x72)
+                if (data.item == 0x72)
                 {
                     ValidArrayAdd(data);
                 }
@@ -765,7 +758,7 @@ namespace MLSSRandomizerForm
                     goto mushSkip;
                 }
 
-                if(data.item == 0x9E)
+                if (data.item == 0x9E)
                 {
                     ItemInject(data.location, data.itemType, 0x9E);
                     goto mushSkip;
@@ -786,7 +779,7 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
-                if(data.item == 0x1E)
+                if (data.item == 0x1E)
                 {
                     if (Form1.chuckle == 3)
                     {
@@ -835,16 +828,17 @@ namespace MLSSRandomizerForm
 
         public void ColorSwap(string color, int bro)
         {
-            string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + color + ".txt");
+            string tempcolor = GenColor(color);
+            string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + tempcolor + ".txt");
             List<Color> colors = new List<Color>();
-            for(int i = 0; i < temp.Length; i += 4)
+            for (int i = 0; i < temp.Length; i += 4)
             {
                 colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)Convert.ToInt32(temp[i + 1], 16), (byte)Convert.ToInt32(temp[i + 2], 16), Convert.ToInt32(temp[i + 3], 16)));
             }
 
             colors.RemoveAll(s => s.bro != bro);
 
-            foreach(Color c in colors)
+            foreach (Color c in colors)
             {
                 stream.Seek(c.location, SeekOrigin.Begin);
                 stream.Write(new byte[] { c.byte1, c.byte2 }, 0, 2);
@@ -856,7 +850,7 @@ namespace MLSSRandomizerForm
             string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
             string temp = color;
             random:
-            switch(temp)
+            switch (temp)
             {
 
                 case "Random":
@@ -871,7 +865,7 @@ namespace MLSSRandomizerForm
 
         public void MusicRandomize()
         {
-            if(!Form1.music)
+            if (!Form1.music)
                 return;
 
             List<int> changed = new List<int>();
@@ -891,7 +885,7 @@ namespace MLSSRandomizerForm
                         stream.Seek(-1, SeekOrigin.Current);
                     else
                         goto skip;
-                    foreach(int k in changed)
+                    foreach (int k in changed)
                     {
                         if (k == j)
                             goto skip;
@@ -909,12 +903,12 @@ namespace MLSSRandomizerForm
 
         public void EnemyRandomize()
         {
-            if(Form1.background)
+            if (Form1.background)
             {
                 string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
                 string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
                 location = location.Concat(boss).ToArray();
-                foreach(string str in location)
+                foreach (string str in location)
                 {
                     stream.Seek(Convert.ToUInt32(str, 16) + 3, SeekOrigin.Begin);
                     stream.WriteByte((byte)random.Next(0, 0x27));
@@ -943,14 +937,14 @@ namespace MLSSRandomizerForm
             location = location.Concat(boss).ToArray();
             Array.Sort(location);
             int count = 0;
-            foreach(string str in location)
+            foreach (string str in location)
             {
                 count++;
                 EnemyGroup tempgroup = groups[0];
                 groups.RemoveAt(0);
                 stream.Seek(Convert.ToUInt32(str, 16), SeekOrigin.Begin);
                 stream.WriteByte(tempgroup.groupType);
-                for(int i = 0; i < 6; i++)
+                for (int i = 0; i < 6; i++)
                 {
                     if (i < tempgroup.id.Count)
                     {
@@ -980,8 +974,8 @@ namespace MLSSRandomizerForm
                     }
                 }
 
-             stream.Seek(Convert.ToUInt32(str, 16) + 2, SeekOrigin.Begin);
-             stream.WriteByte((byte)tempgroup.boss);
+                stream.Seek(Convert.ToUInt32(str, 16) + 2, SeekOrigin.Begin);
+                stream.WriteByte((byte)tempgroup.boss);
 
                 if (tempgroup.data.Length > 0)
                 {
@@ -1021,19 +1015,19 @@ namespace MLSSRandomizerForm
                     }
                     if (enemies[0].id == 0x52 || enemies[0].id == 0x2C || enemies[0].id == 0x4A)
                         special = 1;
-                    if(enemies[0].id == 0x52)
+                    if (enemies[0].id == 0x52)
                         script = new byte[] { 0x67, 0xAB, 0x28, 0x8 };
                     enemies.RemoveAt(0);
                 }
 
                 if (pestnuts.Count == 3 && size == 4)
                 {
-                    foreach(Enemy enemy in pestnuts)
+                    foreach (Enemy enemy in pestnuts)
                     {
                         id.Add(enemy.id);
                         type.Add(enemy.type);
                     }
-                    for(int i = 0; i < 3; i++)
+                    for (int i = 0; i < 3; i++)
                     {
                         id.Add(0xF);
                         type.Add(0x3);
@@ -1041,14 +1035,14 @@ namespace MLSSRandomizerForm
                 }
                 else
                 {
-                    if(size == 1 && pestnuts.Count > 0)
+                    if (size == 1 && pestnuts.Count > 0)
                     {
                         id.Add(pestnuts[0].id);
                         type.Add(pestnuts[0].type);
                     }
                     for (int i = 0; i < tempEnemies.Count; i++)
                     {
-                        if (i == 1 )
+                        if (i == 1)
                         {
                             foreach (Enemy enemy in pestnuts)
                             {
@@ -1060,9 +1054,9 @@ namespace MLSSRandomizerForm
                         type.Add(tempEnemies[i].type);
                     }
 
-                    if(size == 4)
+                    if (size == 4)
                     {
-                        for(int i = 0; i < nut; i++)
+                        for (int i = 0; i < nut; i++)
                         {
                             id.Add(0xF);
                             type.Add(0x3);
@@ -1123,19 +1117,19 @@ namespace MLSSRandomizerForm
         public void PopulateEnemyArray()
         {
             string[] tempString = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
-            foreach(string str in tempString)
+            foreach (string str in tempString)
             {
                 bool iterate = true;
                 int i = 0;
                 int count = 0;
-                while(iterate)
+                while (iterate)
                 {
                     stream.Seek(Convert.ToUInt32(str, 16) + 10 + (i * 4), SeekOrigin.Begin);
                     byte type = (byte)stream.ReadByte();
                     if (type == 0x0)
                         type = 0x4;
                     int id = 0;
-                    if(type == 0x7)
+                    if (type == 0x7)
                         break;
                     stream.Seek(-3, SeekOrigin.Current);
                     id = stream.ReadByte();
@@ -1145,7 +1139,7 @@ namespace MLSSRandomizerForm
                         enemyCount.Add(new StatCount(id));
                     else
                     {
-                        for(int j = 0; j < enemyCount.Count; j++)
+                        for (int j = 0; j < enemyCount.Count; j++)
                         {
                             if (id == enemyCount[j].id)
                             {
@@ -1154,7 +1148,7 @@ namespace MLSSRandomizerForm
                                 enemyCount[j] = temp;
                                 break;
                             }
-                            else if(j == enemyCount.Count - 1)
+                            else if (j == enemyCount.Count - 1)
                             {
                                 enemyCount.Add(new StatCount(id));
                             }
@@ -1175,11 +1169,11 @@ namespace MLSSRandomizerForm
 
         public void RandomizeStats()
         {
-            if(Form1.brosBp)
+            if (Form1.brosBp)
             {
                 string[] str = StreamInitialize(Environment.CurrentDirectory + "/items/Stats/BrosBP.txt");
                 int i = 0;
-                foreach(string location in str)
+                foreach (string location in str)
                 {
                     stream.Seek(Convert.ToUInt32(location, 16), SeekOrigin.Begin);
                     if (i == 0 || i == 4)
@@ -1196,7 +1190,7 @@ namespace MLSSRandomizerForm
                 }
             }
 
-            if(Form1.itemHeal)
+            if (Form1.itemHeal)
             {
                 ItemValueInject(StreamInitialize(Environment.CurrentDirectory + "/items/Stats/HealValues.txt"));
             }
@@ -1209,7 +1203,7 @@ namespace MLSSRandomizerForm
 
         public void ItemValueInject(string[] str)
         {
-            for(int i = 0; i < str.Length; i += 4)
+            for (int i = 0; i < str.Length; i += 4)
             {
                 int value = random.Next(0, Convert.ToInt32(str[i + 1], 16));
                 int length = Convert.ToInt32(str[i + 2], 16);
@@ -1217,7 +1211,7 @@ namespace MLSSRandomizerForm
                 if (arr.Length < length)
                 {
                     length -= arr.Length;
-                    for(int j = 0; j < length; j++)
+                    for (int j = 0; j < length; j++)
                     {
                         arr = arr.Concat(new byte[] { 0x20 }).ToArray();
                     }
@@ -1336,7 +1330,7 @@ namespace MLSSRandomizerForm
                 stream.WriteByte(0x0);
                 stream.WriteByte(0x0);
             }
-            if(Form1.castle)
+            if (Form1.castle)
             {
                 stream.Seek(0x1E943F, SeekOrigin.Begin);
                 stream.WriteByte(0x1);

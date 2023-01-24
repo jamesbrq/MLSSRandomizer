@@ -1509,6 +1509,11 @@
     bne .skip_norm3
     bl MINECART_SKIP
     .skip_norm3:
+    ldr r1, =0x02004338
+    mov r2, #0x6
+    ldrb r3, [r1]
+    orr r3, r2
+    strb r3, [r1]
     pop r1
     mov r1, r9
     ldrb r0, [r1]
