@@ -34,7 +34,7 @@ namespace MLSSRandomizerForm
     class Randomize
     {
         static Rom rom;
-        public static string[] Random(string path, string seed)
+        public static (string newFile, int hash) Random(string path, string seed)
         {
             rom = new Rom(path, seed);
             rom.Randomize();
@@ -43,10 +43,11 @@ namespace MLSSRandomizerForm
             rom.EnemyRandomize();
             rom.RandomizeStats();
             rom.MusicRandomize();
-            rom.ColorSwap();
+            rom.ColorSwap(Rom.GenColor(Form1.mColor), 0);
+            rom.ColorSwap(Rom.GenColor(Form1.lColor), 1);
             rom.stream.Close();
             rom.Inject();
-            return new string[2] { Environment.CurrentDirectory + "/asm/mlss_loop.gba", Convert.ToString(rom.hash) };
+            return (Environment.CurrentDirectory + "/asm/mlss_loop.gba", rom.hash);
         }
     }
 
@@ -88,21 +89,20 @@ namespace MLSSRandomizerForm
             ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
         }
 
-
         public struct Color
         {
-            public Color(byte brown, byte blue, byte dBrown, byte dBlue)
+            public Color(uint location, byte byte1, byte byte2, int bro)
             {
-                this.brown = brown;
-                this.blue = blue;
-                this.dBrown = dBrown;
-                this.dBlue = dBlue;
+                this.location = location;
+                this.byte1 = byte1;
+                this.byte2 = byte2;
+                this.bro = bro;
             }
 
-            public byte brown;
-            public byte blue;
-            public byte dBrown;
-            public byte dBlue;
+            public uint location;
+            public byte byte1;
+            public byte byte2;
+            public int bro;
         }
 
 
@@ -427,6 +427,11 @@ namespace MLSSRandomizerForm
         {
             List<string> list = new List<string>();
             list.Add("Seed: " + hash);
+            ConfigInfo(list);
+            return list;
+        }
+        public static void ConfigInfo(List<string> list)
+        {
             list.Add("Chuckle: " + Form1.chuckle);
             list.Add("Rose: " + Form1.rose);
             list.Add("Brooch: " + Form1.brooch);
@@ -462,7 +467,6 @@ namespace MLSSRandomizerForm
             list.Add("Mario Color: " + Form1.mColor);
             list.Add("Luigi Color: " + Form1.lColor);
             list.Add(" ");
-            return list;
         }
 
         public bool CheckValidity()
@@ -472,7 +476,7 @@ namespace MLSSRandomizerForm
             vBegin:
             if (validLocations.Count >= 1)
                 Console.WriteLine(validLocations.Count);
-            if (!Form1.Goblets())
+            if (!Form1.goblets)
             {
                 if (gameState.hammerState >= 1 && gameState.brooch)
                 {
@@ -526,7 +530,7 @@ namespace MLSSRandomizerForm
             {
                 if ((byte)data.item == 0x31)
                 {
-                    if (Form1.Rose())
+                    if (Form1.rose)
                         ValidArrayAdd(data);
                     else
                     {
@@ -536,7 +540,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x32)
                 {
-                    if (Form1.Brooch())
+                    if (Form1.brooch)
                         ValidArrayAdd(data);
                     else
                     {
@@ -546,7 +550,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x33 || data.item == 0x34)
                 {
-                    if (Form1.Goblets())
+                    if (Form1.goblets)
                         ValidArrayAdd(data);
                     else
                     {
@@ -558,7 +562,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item >= 0x35 && data.item <= 0x37)
                 {
-                    if (Form1.Chuckola())
+                    if (Form1.chuckola)
                         ValidArrayAdd(data);
                     else
                     {
@@ -568,7 +572,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x40)
                 {
-                    if (Form1.Membership())
+                    if (Form1.membership)
                         ValidArrayAdd(data);
                     else
                     {
@@ -578,7 +582,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x41)
                 {
-                    if (Form1.Winkle())
+                    if (Form1.winkle)
                         ValidArrayAdd(data);
                     else
                     {
@@ -588,7 +592,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x43)
                 {
-                    if (Form1.Beanstar())
+                    if (Form1.beanstar)
                         ValidArrayAdd(data);
                     else
                     {
@@ -598,7 +602,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x42)
                 {
-                    if (Form1.Dress())
+                    if (Form1.dress)
                         ValidArrayAdd(data);
                     else
                     {
@@ -608,7 +612,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x45 || data.item == 0x46)
                 {
-                    if (Form1.Pearls())
+                    if (Form1.pearls)
                         ValidArrayAdd(data);
                     else
                     {
@@ -620,7 +624,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item >= 0x47 && data.item <= 0x55)
                 {
-                    if (Form1.Fruit())
+                    if (Form1.fruit)
                         ValidArrayAdd(data);
                     else
                     {
@@ -630,7 +634,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item >= 0x56 && data.item <= 0x64)
                 {
-                    if (Form1.Eggs())
+                    if (Form1.eggs)
                         ValidArrayAdd(data);
                     else
                     {
@@ -640,7 +644,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item >= 0x92 && data.item <= 0x93)
                 {
-                    if (Form1.Scrolls())
+                    if (Form1.scrolls)
                         ValidArrayAdd(data);
                     else
                     {
@@ -650,7 +654,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item >= 0x80 && data.item <= 0x91)
                 {
-                    if (Form1.Beanstone())
+                    if (Form1.beanstone)
                         ValidArrayAdd(data);
                     else
                     {
@@ -660,7 +664,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item >= 0x73 && data.item <= 0x77)
                 {
-                    if (Form1.Beanlet())
+                    if (Form1.beanlet)
                         ValidArrayAdd(data);
                     else
                     {
@@ -680,7 +684,7 @@ namespace MLSSRandomizerForm
             {
                 if (data.item == 0x38)
                 {
-                    if (Form1.Hammers())
+                    if (Form1.hammers)
                     {
                         ValidArrayAdd(data);
                     }
@@ -692,7 +696,7 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x39 || data.item == 0x3A)
                 {
-                    if (Form1.Hands())
+                    if (Form1.hands)
                     {
                         ValidArrayAdd(data);
                     }
@@ -708,7 +712,7 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
-                if (Form1.Espresso())
+                if (Form1.espresso)
                 {
                     ValidArrayAdd(data);
                 }
@@ -721,7 +725,7 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
-                if (Form1.Shops())
+                if (Form1.shops)
                 {
                     ValidArrayAdd(data);
                 }
@@ -740,7 +744,7 @@ namespace MLSSRandomizerForm
                     goto surfSkip;
                 }
 
-                if (Form1.Pants())
+                if (Form1.pants)
                 {
                     ValidArrayAdd(data);
                 }
@@ -755,7 +759,7 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
-                if (Form1.Mush() && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
+                if (Form1.mush && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
                 {
                     ItemInject(data.location, data.itemType, 0xA);
                     goto mushSkip;
@@ -767,7 +771,7 @@ namespace MLSSRandomizerForm
                     goto mushSkip;
                 }
 
-                if (Form1.Badges())
+                if (Form1.badges)
                 {
                     ValidArrayAdd(data);
                 }
@@ -829,137 +833,39 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public void ColorSwap()
+        public void ColorSwap(string color, int bro)
         {
-            Color mColor = GenColor(Form1.mColor);
-            byte[] mBytes = { mColor.brown, mColor.blue, mColor.dBrown, mColor.dBlue };
-            Color lColor = GenColor(Form1.lColor);
-            byte[] lBytes = { lColor.brown, lColor.blue, lColor.dBrown, lColor.dBlue };
+            string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + color + ".txt");
+            List<Color> colors = new List<Color>();
+            for(int i = 0; i < temp.Length; i += 4)
+            {
+                colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)Convert.ToInt32(temp[i + 1], 16), (byte)Convert.ToInt32(temp[i + 2], 16), Convert.ToInt32(temp[i + 3], 16)));
+            }
 
-            //Mario Palette Colors
-            stream.Seek(0x3CC884, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x4F4CDC, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x5193E8, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x51A98C, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x51AD2C, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x51A4AC, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x3CC984, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x3D0E16, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.brown, mColor.blue, mColor.brown, mColor.blue, mColor.dBrown, mColor.dBlue }, 0, 6);
-            stream.Seek(0x519018, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue, mColor.brown, mColor.blue }, 0, 6);
-            stream.Seek(0x4FB684, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue, mColor.brown, mColor.blue }, 0, 6);
-            stream.Seek(0x4FB786, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.brown, mColor.blue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
-            stream.Seek(0x9F9A28, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
-            stream.Seek(0x9F9A34, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
-            stream.Seek(0x9F9A48, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 6);
-            stream.Seek(0x9F9A56, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 4);
-            stream.Seek(0xA5DD3E, SeekOrigin.Begin);
-            stream.Write(new byte[] { mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.dBrown, mColor.dBlue, mColor.brown, mColor.blue }, 0, 14);
+            colors.RemoveAll(s => s.bro != bro);
 
-            //Luigi Palette Colors
-            stream.Seek(0x4F4D1C, SeekOrigin.Begin);
-            stream.Write(lBytes, 0, 4);
-            stream.Seek(0x3CC8C4, SeekOrigin.Begin);
-            stream.Write(lBytes, 0, 4);
-            stream.Seek(0x519408, SeekOrigin.Begin);
-            stream.Write(lBytes, 0, 4);
-            stream.Seek(0x51A96C, SeekOrigin.Begin);
-            stream.Write(lBytes, 0, 4);
-            stream.Seek(0x51AD4C, SeekOrigin.Begin);
-            stream.Write(lBytes, 0, 4);
-            stream.Seek(0x51A4CC, SeekOrigin.Begin);
-            stream.Write(lBytes, 0, 4);
-            stream.Seek(0x3D0E08, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.brown, lColor.blue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x519038, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x4FB6A4, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x4FB7A6, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.brown, lColor.blue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x9F9A2E, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x9F9A3A, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x9F9A4E, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 6);
-            stream.Seek(0x9F9A5C, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 4);
-            stream.Seek(0xA5DD5E, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.dBrown, lColor.dBlue, lColor.brown, lColor.blue }, 0, 14);
-
-            //Fungitown Mirror Colors
-            stream.Seek(0x3D4B50, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-            stream.Seek(0x3D4B54, SeekOrigin.Begin);
-            stream.Write(mBytes, 0, 4);
-
-            //Battle Colors
-            stream.Seek(0x4F51D8, SeekOrigin.Begin);
-            stream.Write(new byte[] { lColor.brown, lColor.blue, lColor.brown, lColor.blue, mColor.brown, mColor.blue, mColor.brown, mColor.blue }, 0, 8);
-            stream.Seek(0x4F51E8, SeekOrigin.Begin);
-            stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+            foreach(Color c in colors)
+            {
+                stream.Seek(c.location, SeekOrigin.Begin);
+                stream.Write(new byte[] { c.byte1, c.byte2 }, 0, 2);
+            }
         }
 
-        public Color GenColor(string color)
+        public static string GenColor(string color)
         {
             string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
             string temp = color;
             random:
             switch(temp)
             {
-                case "Red":
-                    return new Color(0x3B, 0x4, 0x13, 0x0);
-
-                case "Green":
-                    return new Color(0x41, 0x3, 0x80, 0x2);
-
-                case "Purple":
-                    return new Color(0x10, 0x7C, 0xE, 0x74);
-
-                case "Yellow":
-                    return new Color(0xFF, 0x1F, 0xBC, 0xB);
-
-                case "Black":
-                    return new Color(0x84, 0x10, 0x63, 0xC);
-
-                case "Pink":
-                    return new Color(0xDF, 0x6E, 0xFF, 0x5D);
-
-                case "Cyan":
-                    return new Color(0xED, 0x7F, 0xA5, 0x77);
-
-                case "Blue":
-                    return new Color(0x0, 0xF1, 0x0, 0xF0);
-
-                case "Orange":
-                    return new Color(0x7F, 0x2, 0x3C, 0x2);
-
-                case "White":
-                    return new Color(0xFF, 0xFF, 0x79, 0x67);
 
                 case "Random":
                     temp = colors[random.Next(0, colors.Length - 1)];
                     goto random;
 
                 default:
-                    break;
+                    return color;
             }
-            return new Color(0x0, 0x0, 0x0, 0x0);
         }
 
 
@@ -1422,7 +1328,7 @@ namespace MLSSRandomizerForm
                 Console.WriteLine(++iterationCount);
                 goto rBegin;
             }
-            if (Form1.Intro())
+            if (Form1.intro)
             {
                 stream.Seek(0x244F64, SeekOrigin.Begin);
                 stream.WriteByte(0x0);

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -13,6 +15,7 @@ namespace MLSSRandomizerForm
 {
     public partial class Form1 : Form
     {
+        readonly string progVersion; // ProductVersion on AssemblyInfo.cs, [AssemblyInformationalVersion(...)]
         string filePath;
         string seed;
         public static int chuckle = 3;
@@ -54,116 +57,8 @@ namespace MLSSRandomizerForm
         public Form1()
         {
             InitializeComponent();
-        }
-
-        public static bool Intro()
-        {
-            return intro;
-        }
-
-        public static bool Mush()
-        {
-            return mush;
-        }
-
-        public static bool Rose()
-        {
-            return rose;
-        }
-
-        public static bool Brooch()
-        {
-            return brooch;
-        }
-
-        public static bool Chuckola()
-        {
-            return chuckola;
-        }
-
-        public static bool Membership()
-        {
-            return membership;
-        }
-
-        public static bool Winkle()
-        {
-            return winkle;
-        }
-
-        public static bool Beanstar()
-        {
-            return beanstar;
-        }
-
-        public static bool Dress()
-        {
-            return dress;
-        }
-
-        public static bool Fruit()
-        {
-            return fruit;
-        }
-
-        public static bool Eggs()
-        {
-            return eggs;
-        }
-
-        public static bool Scrolls()
-        {
-            return scrolls;
-        }
-
-        public static bool Beanstone()
-        {
-            return beanstone;
-        }
-
-        public static bool Beanlet()
-        {
-            return beanlet;
-        }
-
-        public static bool Hammers()
-        {
-            return hammers;
-        }
-
-        public static bool Goblets()
-        {
-            return goblets;
-        }
-
-        public static bool Hands()
-        {
-            return hands;
-        }
-
-        public static bool Pearls()
-        {
-            return pearls;
-        }
-
-        public static bool Shops()
-        {
-            return shops;
-        }
-
-        public static bool Pants()
-        {
-            return pants;
-        }
-
-        public static bool Espresso()
-        {
-            return espresso;
-        }
-
-        public static bool Badges()
-        {
-            return badges;
+            progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            Text += " " + progVersion; // show version in title
         }
 
         private void SelectRomButton_Click(object sender, EventArgs e)
@@ -179,17 +74,35 @@ namespace MLSSRandomizerForm
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string[] newFile = Randomize.Random(filePath, seed);
-            saveFileDialog1.ShowDialog();
-            if(File.Exists(saveFileDialog1.FileName))
-                File.Delete(saveFileDialog1.FileName);
-            if (saveFileDialog1.FileName == "")
-                goto skipFile;
-            File.Copy(newFile[0], saveFileDialog1.FileName);
-            File.Delete(newFile[0]);
-            if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-                Clipboard.SetText(newFile[1], TextDataFormat.Text);
-            skipFile:;
+            try
+            {
+                (string newFile, int hash) = Randomize.Random(filePath, seed);
+                // Hexadecimal ConfigHash is constant regardless of seed, and helps to identify equal settings.
+                var list = new List<string>();
+                Rom.ConfigInfo(list);
+                uint configHash = (uint)string.Join("\n", list).GetHashCode();
+                // Identical ROMs generated on same progVersion will have the same (seed, configHash) tuple
+                // Default file name when saving contains this info for convenience
+                saveFileDialog1.FileName = $"MLSSRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.gba";
+                saveFileDialog1.ShowDialog();
+                if (File.Exists(saveFileDialog1.FileName))
+                    File.Delete(saveFileDialog1.FileName);
+                if (saveFileDialog1.FileName != "")
+                {
+                    File.Copy(newFile, saveFileDialog1.FileName);
+                    File.Delete(newFile);
+                    Console.WriteLine("Seed: " + hash);
+                    if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        Clipboard.SetText(Convert.ToString(hash), TextDataFormat.Text);
+                }
+            }
+            catch (Exception err)
+            {
+                // Log and display any errors instead of crashing; e.g. when filename is empty.
+                Console.Error.WriteLine(err);
+                MessageBox.Show(err.Message, err.GetType().FullName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
