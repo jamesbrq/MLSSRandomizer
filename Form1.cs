@@ -46,6 +46,7 @@ namespace MLSSRandomizerForm
         public static bool scale = false;
         public static bool minecart = false;
         public static bool trueChaos = false;
+        public static bool spangle = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -377,6 +378,11 @@ namespace MLSSRandomizerForm
         private void checkBox33_CheckedChanged(object sender, EventArgs e)
         {
             trueChaos = checkBox33.Checked;
+        }
+
+        private void checkBox34_CheckedChanged(object sender, EventArgs e)
+        {
+            spangle = checkBox34.Checked;
         }
     }
 }

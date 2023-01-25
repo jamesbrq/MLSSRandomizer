@@ -671,7 +671,12 @@ namespace MLSSRandomizerForm
 
                 if (data.item == 0x72)
                 {
-                    ValidArrayAdd(data);
+                    if (Form1.spangle)
+                        ValidArrayAdd(data);
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
                 }
 
                 optionsArray.Remove(data);
