@@ -44,6 +44,7 @@ namespace MLSSRandomizerForm
         public static bool music = false;
         public static bool background = false;
         public static bool scale = false;
+        public static bool minecart = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -94,7 +95,12 @@ namespace MLSSRandomizerForm
             {
                 // Log and display any errors instead of crashing; e.g. when filename is empty.
                 Console.Error.WriteLine(err);
-                MessageBox.Show(err.Message, err.GetType().FullName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                StackTrace trace = new StackTrace(err, true);
+                var frames = trace.GetFrames();
+                var frame = frames[frames.Length - 1];
+                var linenumber = frame.GetFileLineNumber();
+                var filename = frame.GetFileName();
+                MessageBox.Show(err.Message + " " + filename + " " + linenumber, err.GetType().FullName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
@@ -352,6 +358,11 @@ namespace MLSSRandomizerForm
         private void checkBox31_CheckedChanged(object sender, EventArgs e)
         {
             scale = checkBox31.Checked;
+        }
+
+        private void checkBox32_CheckedChanged(object sender, EventArgs e)
+        {
+            minecart = checkBox32.Checked;
         }
     }
 }

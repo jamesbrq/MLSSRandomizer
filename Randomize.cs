@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 
@@ -455,6 +456,7 @@ namespace MLSSRandomizerForm
             list.Add("Battle Backgrounds: " + Form1.background);
             list.Add("Disable Mush: " + Form1.mush);
             list.Add("Disable Surf: " + Form1.surf);
+            list.Add("Skip Minecart: " + Form1.minecart);
             list.Add("Skip Bowsers: " + Form1.castle);
             list.Add("Skip intro: " + Form1.intro);
             list.Add("Mario Color: " + Form1.mColor);
@@ -779,6 +781,17 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
+                if(Form1.minecart)
+                {
+                    if(data.location == 0x39DB0F)
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                    else
+                    {
+                        ValidArrayAdd(data);
+                    }
+                }
                 if (data.item == 0x1E)
                 {
                     if (Form1.chuckle == 3)
@@ -849,16 +862,15 @@ namespace MLSSRandomizerForm
         {
             string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
             string temp = color;
-            random:
             switch (temp)
             {
 
                 case "Random":
                     temp = colors[random.Next(0, colors.Length - 1)];
-                    goto random;
+                    return temp;
 
                 default:
-                    return color;
+                    return temp;
             }
         }
 
@@ -1332,8 +1344,18 @@ namespace MLSSRandomizerForm
             }
             if (Form1.castle)
             {
-                stream.Seek(0x1E943F, SeekOrigin.Begin);
-                stream.WriteByte(0x1);
+                stream.Seek(0x3AEAB0, SeekOrigin.Begin);
+                stream.Write(new byte[] { 0xC1, 0x67, 0x0, 0x6, 0x1C, 0x08, 0x3 }, 0, 7);
+                stream.Seek(0x3AEC18, SeekOrigin.Begin);
+                stream.Write(new byte[] { 0x89, 0x65, 0x0, 0xE, 0xA, 0x08, 0x1 }, 0, 7);
+
+            }
+            if (Form1.minecart)
+            {
+                stream.Seek(0x3AC728, SeekOrigin.Begin);
+                stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x3 }, 0, 7);
+                stream.Seek(0x3AC56C, SeekOrigin.Begin);
+                stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x3 }, 0, 7);
             }
         }
 
@@ -1417,8 +1439,16 @@ namespace MLSSRandomizerForm
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             string domain = @Environment.CurrentDirectory + @"/asm/";
             startInfo.WorkingDirectory = domain;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C armips.exe Logic.asm";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/C armips.exe Logic.asm";
+            }
+            else
+            { // Linux
+                startInfo.FileName = "sh";
+                startInfo.Arguments = "-c './armips Logic.asm'";
+            }
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();
