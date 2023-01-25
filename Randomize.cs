@@ -456,6 +456,7 @@ namespace MLSSRandomizerForm
             list.Add("Battle Backgrounds: " + Form1.background);
             list.Add("Disable Mush: " + Form1.mush);
             list.Add("Disable Surf: " + Form1.surf);
+            list.Add("Skip Minecart: " + Form1.minecart);
             list.Add("Skip Bowsers: " + Form1.castle);
             list.Add("Skip intro: " + Form1.intro);
             list.Add("Mario Color: " + Form1.mColor);
@@ -780,6 +781,17 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
+                if(Form1.minecart)
+                {
+                    if(data.location == 0x39DB0F)
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                    else
+                    {
+                        ValidArrayAdd(data);
+                    }
+                }
                 if (data.item == 0x1E)
                 {
                     if (Form1.chuckle == 3)
