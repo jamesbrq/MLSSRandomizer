@@ -1416,50 +1416,6 @@
 
 
 
-    .org CASTLE_SKIP
-    push { r0, r1, r2, lr }
-    ldr r0, =ROOM
-    ldrh r1, [r0]
-    ldr r2, =0x197
-    cmp r1, r2
-    bne .castle_return
-    ldr r2, =0x19F
-    strh r2, [r0]
-    .castle_return:
-    ldr r2, =0x1BD
-    cmp r1, r2
-    bne .castle_end
-    ldr r2, =0x196
-    strh r2, [r0]
-    .castle_end:
-    pop { r0, r1, r2, pc }
-    .pool
-
-
-
-
-
-    .org MINECART_SKIP
-    push { r0, r1, r2, lr }
-    ldr r0, =ROOM
-    ldrh r1, [r0]
-    ldr r2, =0x6D
-    cmp r1, r2
-    bne .minecart_return
-    ldr r2, =0x59
-    strh r2, [r0]
-    bl .minecart_end
-    .minecart_return:
-    ldr r2, =0x6E
-    cmp r1, r2
-    bne .minecart_end
-    ldr r2, =0x4E
-    strh r2, [r0]
-    .minecart_end:
-    pop { r0, r1, r2, pc }
-    .pool
-
-
 
 
     .org INTRO_SKIP_SUBR
@@ -1497,18 +1453,6 @@
     mov r2, #0x1
     strb r2, [r1]
     .skip_norm:
-    ldr r1, =CASTLE_DISABLE
-    ldrb r1, [r1]
-    cmp r1, #0x1
-    bne .skip_norm2
-    bl CASTLE_SKIP
-    .skip_norm2:
-    ldr r1, =MINECART_DISABLE
-    ldrb r1, [r1]
-    cmp r1, #0x1
-    bne .skip_norm3
-    bl MINECART_SKIP
-    .skip_norm3:
     ldr r1, =0x02004338
     mov r2, #0x6
     ldrb r3, [r1]
