@@ -1915,20 +1915,7 @@
     beq .hammer_tut_block
     cmp r1, #0x2
     beq .chuckle_block
-    cmp r1, #0xBD
-    beq .fawful_castle
     b .unblock
-
-    .fawful_castle:
-    ldr r1, =0x082FCCBD
-    cmp r1, r2
-    bne .unblock
-    ldr r1, =CASTLE_DISABLE
-    ldrb r1, [r1]
-    cmp r1, #0x1
-    bne .unblock
-    mov r0, #0x0
-    bl .end
 
     .chuckle_block:
     ldr r0, =0x082FBEC2
