@@ -844,7 +844,13 @@ namespace MLSSRandomizerForm
             string tempcolor = GenColor(color);
             string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + tempcolor + ".txt");
             List<Color> colors = new List<Color>();
-            for (int i = 0; i < temp.Length; i += 4)
+            if (tempcolor == "Chaotic Random")
+                for (int i = 0; i < temp.Length; i += 4)
+                {
+                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0, 0xFF), (byte)random.Next(0, 0x7F), Convert.ToInt32(temp[i + 3], 16)));
+                }
+            else
+                for (int i = 0; i < temp.Length; i += 4)
             {
                 colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)Convert.ToInt32(temp[i + 1], 16), (byte)Convert.ToInt32(temp[i + 2], 16), Convert.ToInt32(temp[i + 3], 16)));
             }
@@ -860,7 +866,7 @@ namespace MLSSRandomizerForm
 
         public static string GenColor(string color)
         {
-            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
+            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaotic Random" };
             string temp = color;
             switch (temp)
             {

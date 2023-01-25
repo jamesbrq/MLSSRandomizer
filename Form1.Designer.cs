@@ -77,6 +77,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
@@ -92,7 +93,6 @@ namespace MLSSRandomizerForm
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -672,6 +672,18 @@ namespace MLSSRandomizerForm
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // checkBox32
+            // 
+            this.checkBox32.AutoSize = true;
+            this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox32.Location = new System.Drawing.Point(3, 59);
+            this.checkBox32.Name = "checkBox32";
+            this.checkBox32.Size = new System.Drawing.Size(159, 17);
+            this.checkBox32.TabIndex = 39;
+            this.checkBox32.Text = "Disable Minecart Minigame?";
+            this.checkBox32.UseVisualStyleBackColor = true;
+            this.checkBox32.CheckedChanged += new System.EventHandler(this.checkBox32_CheckedChanged);
+            // 
             // checkBox31
             // 
             this.checkBox31.AutoSize = true;
@@ -755,7 +767,8 @@ namespace MLSSRandomizerForm
             "Orange",
             "Black",
             "White",
-            "Random"});
+            "Random",
+            "Chaotic Random"});
             this.comboBox1.Location = new System.Drawing.Point(89, 190);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
@@ -777,7 +790,8 @@ namespace MLSSRandomizerForm
             "Orange",
             "Black",
             "White",
-            "Random"});
+            "Random",
+            "Chaotic Random"});
             this.comboBox2.Location = new System.Drawing.Point(89, 217);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
@@ -859,18 +873,6 @@ namespace MLSSRandomizerForm
             // statCountBindingSource
             // 
             this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
-            // 
-            // checkBox32
-            // 
-            this.checkBox32.AutoSize = true;
-            this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Location = new System.Drawing.Point(3, 59);
-            this.checkBox32.Name = "checkBox32";
-            this.checkBox32.Size = new System.Drawing.Size(159, 17);
-            this.checkBox32.TabIndex = 39;
-            this.checkBox32.Text = "Disable Minecart Minigame?";
-            this.checkBox32.UseVisualStyleBackColor = true;
-            this.checkBox32.CheckedChanged += new System.EventHandler(this.checkBox32_CheckedChanged);
             // 
             // form1BindingSource
             // 
