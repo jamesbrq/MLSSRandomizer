@@ -788,9 +788,9 @@ namespace MLSSRandomizerForm
             ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
             foreach (LocationData data in optionsArray.ToList())
             {
-                if(Form1.minecart)
+                if(data.location == 0x39DB0F)
                 {
-                    if(data.location == 0x39DB0F)
+                    if(Form1.minecart)
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }

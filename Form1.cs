@@ -46,7 +46,7 @@ namespace MLSSRandomizerForm
         public static bool scale = false;
         public static bool minecart = false;
         public static bool trueChaos = false;
-        public static bool spangle = false;
+        public static bool spangle = true;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
