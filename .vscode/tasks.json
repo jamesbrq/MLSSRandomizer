@@ -1,0 +1,79 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "inputs": [
+    {
+      "id": "Configuration",
+      "type": "pickString",
+      "description": "Select msbuild configuration:",
+      "default": "Debug",
+      "options": [
+        "Debug",
+        "Release",
+      ],
+    },
+  ],
+  "tasks": [
+    {
+      "label": "build",
+      "group": "build",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "msbuild",
+        "mkbundle",
+      ],
+    },
+    {
+      "label": "clean",
+      "type": "shell",
+      "command": "msbuild",
+      "args": [
+        // Ask msbuild to generate full paths for file names.
+        "-p:GenerateFullPaths=true",
+        // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+        "-clp:NoSummary",
+        // Target: clean
+        "-t:clean",
+        // Debug or Release
+        "-p:Configuration=${input:Configuration}",
+      ],
+      "group": "build",
+      // Use the standard MS compiler pattern to detect errors, warnings and infos
+      "problemMatcher": "$msCompile",
+    },
+    {
+      "label": "msbuild",
+      "type": "shell",
+      "command": "msbuild",
+      "args": [
+        // Ask msbuild to generate full paths for file names.
+        "-p:GenerateFullPaths=true",
+        // Do not generate summary otherwise it leads to duplicate errors in Problems panel
+        "-clp:NoSummary",
+        // Target: build
+        "-t:build",
+        // Debug or Release
+        "-p:Configuration=${input:Configuration}",
+      ],
+      "group": "build",
+      // Use the standard MS compiler pattern to detect errors, warnings and infos
+      "problemMatcher": "$msCompile",
+    },
+    {
+      "label": "mkbundle",
+      "type": "shell",
+      "options": {
+        "cwd": "${workspaceFolder}/bin/${input:Configuration}",
+      },
+      "command": "mkbundle",
+      "args": [
+        "--machine-config", "/etc/mono/4.5/machine.config",
+        "--config", "/etc/mono/config",
+        "-o", "MLSSRandomizer",
+        "--simple", "MLSSRandomizer.exe",
+      ],
+      "group": "build",
+    },
+  ]
+}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 
@@ -849,16 +850,15 @@ namespace MLSSRandomizerForm
         {
             string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
             string temp = color;
-            random:
             switch (temp)
             {
 
                 case "Random":
                     temp = colors[random.Next(0, colors.Length - 1)];
-                    goto random;
+                    return temp;
 
                 default:
-                    return color;
+                    return temp;
             }
         }
 
@@ -1417,8 +1417,16 @@ namespace MLSSRandomizerForm
             startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
             string domain = @Environment.CurrentDirectory + @"/asm/";
             startInfo.WorkingDirectory = domain;
-            startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C armips.exe Logic.asm";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                startInfo.FileName = "cmd.exe";
+                startInfo.Arguments = "/C armips.exe Logic.asm";
+            }
+            else
+            { // Linux
+                startInfo.FileName = "sh";
+                startInfo.Arguments = "-c './armips Logic.asm'";
+            }
             process.StartInfo = startInfo;
             process.Start();
             process.WaitForExit();

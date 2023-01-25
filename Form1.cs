@@ -94,7 +94,12 @@ namespace MLSSRandomizerForm
             {
                 // Log and display any errors instead of crashing; e.g. when filename is empty.
                 Console.Error.WriteLine(err);
-                MessageBox.Show(err.Message, err.GetType().FullName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                StackTrace trace = new StackTrace(err, true);
+                var frames = trace.GetFrames();
+                var frame = frames[frames.Length - 1];
+                var linenumber = frame.GetFileLineNumber();
+                var filename = frame.GetFileName();
+                MessageBox.Show(err.Message + " " + filename + " " + linenumber, err.GetType().FullName, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
         }
