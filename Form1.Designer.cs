@@ -77,6 +77,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
@@ -92,7 +93,7 @@ namespace MLSSRandomizerForm
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox32 = new System.Windows.Forms.CheckBox();
+            this.checkBox33 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -648,6 +649,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBox33);
             this.tabPage5.Controls.Add(this.checkBox32);
             this.tabPage5.Controls.Add(this.checkBox31);
             this.tabPage5.Controls.Add(this.label6);
@@ -671,6 +673,18 @@ namespace MLSSRandomizerForm
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBox32
+            // 
+            this.checkBox32.AutoSize = true;
+            this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox32.Location = new System.Drawing.Point(3, 59);
+            this.checkBox32.Name = "checkBox32";
+            this.checkBox32.Size = new System.Drawing.Size(159, 17);
+            this.checkBox32.TabIndex = 39;
+            this.checkBox32.Text = "Disable Minecart Minigame?";
+            this.checkBox32.UseVisualStyleBackColor = true;
+            this.checkBox32.CheckedChanged += new System.EventHandler(this.checkBox32_CheckedChanged);
             // 
             // checkBox31
             // 
@@ -722,7 +736,7 @@ namespace MLSSRandomizerForm
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 220);
+            this.label5.Location = new System.Drawing.Point(19, 197);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(64, 13);
             this.label5.TabIndex = 34;
@@ -732,7 +746,7 @@ namespace MLSSRandomizerForm
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 193);
+            this.label4.Location = new System.Drawing.Point(15, 170);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(68, 13);
             this.label4.TabIndex = 33;
@@ -755,8 +769,9 @@ namespace MLSSRandomizerForm
             "Orange",
             "Black",
             "White",
-            "Random"});
-            this.comboBox1.Location = new System.Drawing.Point(89, 190);
+            "Random",
+            "Chaos"});
+            this.comboBox1.Location = new System.Drawing.Point(85, 167);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 10;
@@ -777,8 +792,9 @@ namespace MLSSRandomizerForm
             "Orange",
             "Black",
             "White",
-            "Random"});
-            this.comboBox2.Location = new System.Drawing.Point(89, 217);
+            "Random",
+            "Chaos"});
+            this.comboBox2.Location = new System.Drawing.Point(85, 194);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(121, 21);
             this.comboBox2.TabIndex = 32;
@@ -860,17 +876,18 @@ namespace MLSSRandomizerForm
             // 
             this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
             // 
-            // checkBox32
+            // checkBox33
             // 
-            this.checkBox32.AutoSize = true;
-            this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Location = new System.Drawing.Point(3, 59);
-            this.checkBox32.Name = "checkBox32";
-            this.checkBox32.Size = new System.Drawing.Size(159, 17);
-            this.checkBox32.TabIndex = 39;
-            this.checkBox32.Text = "Disable Minecart Minigame?";
-            this.checkBox32.UseVisualStyleBackColor = true;
-            this.checkBox32.CheckedChanged += new System.EventHandler(this.checkBox32_CheckedChanged);
+            this.checkBox33.AutoSize = true;
+            this.checkBox33.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox33.Enabled = false;
+            this.checkBox33.Location = new System.Drawing.Point(119, 221);
+            this.checkBox33.Name = "checkBox33";
+            this.checkBox33.Size = new System.Drawing.Size(87, 17);
+            this.checkBox33.TabIndex = 40;
+            this.checkBox33.Text = "True Chaos?";
+            this.checkBox33.UseVisualStyleBackColor = true;
+            this.checkBox33.CheckedChanged += new System.EventHandler(this.checkBox33_CheckedChanged);
             // 
             // form1BindingSource
             // 
@@ -986,6 +1003,7 @@ namespace MLSSRandomizerForm
         private Label label6;
         private CheckBox checkBox31;
         private CheckBox checkBox32;
+        private CheckBox checkBox33;
     }
 }
 

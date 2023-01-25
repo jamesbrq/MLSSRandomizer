@@ -55,4 +55,11 @@
 0x93,Secret Scroll 2,
 0xA7,Mush Badge,
 0xAB,Mush Badge A,
-0xAD,Mush Badge AA
+0xAD,Mush Badge AA,
+0xF8,Greed Wallet,
+0xF9,Bonus Ring,
+0xFA,Excite Spring,
+0xFB,Great Force,
+0xFC,Power Grip,
+0xFD,Cobalt Necktie,
+0xFE,Gameboy Horrer SP

@@ -400,7 +400,7 @@ namespace MLSSRandomizerForm
                     temp = ItemConvert(stream.ReadByte(), stream.ReadByte());
                 else
                     temp = stream.ReadByte();
-                if (temp >= 0x30 && temp <= 0x93 || (temp == 0xA7 || temp == 0xAB || temp == 0xAD))
+                if (temp >= 0x30 && temp <= 0x93 || (temp == 0xA7 || temp == 0xAB || temp == 0xAD) || (temp >= 0xF8 && temp <= 0xFE))
                 {
                     spoilerArray.Add(new Spoiler(spoilerLocationArray.Find(x => x.location == data.location).name, spoilerItemArray.Find(x => x.item == temp).name, data.location.ToString("X")));
                 }
@@ -504,6 +504,8 @@ namespace MLSSRandomizerForm
             }
             else
             {
+                if (locationArray.Count < 100)
+                    Console.WriteLine("a");
                 if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash)
                     return true;
                 if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.winkle)
@@ -844,9 +846,19 @@ namespace MLSSRandomizerForm
             string tempcolor = GenColor(color);
             string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + tempcolor + ".txt");
             List<Color> colors = new List<Color>();
-            for (int i = 0; i < temp.Length; i += 4)
+            if (tempcolor == "Chaos" || tempcolor == "TrueChaos")
             {
-                colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)Convert.ToInt32(temp[i + 1], 16), (byte)Convert.ToInt32(temp[i + 2], 16), Convert.ToInt32(temp[i + 3], 16)));
+                for (int i = 0; i < temp.Length; i += 2)
+                {
+                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0x0, 0x7F), (byte)random.Next(0x0, 0xFF), Convert.ToInt32(temp[i + 1], 16)));
+                }
+            }
+            else
+            {
+                for (int i = 0; i < temp.Length; i += 4)
+                {
+                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)Convert.ToInt32(temp[i + 1], 16), (byte)Convert.ToInt32(temp[i + 2], 16), Convert.ToInt32(temp[i + 3], 16)));
+                }
             }
 
             colors.RemoveAll(s => s.bro != bro);
@@ -867,6 +879,11 @@ namespace MLSSRandomizerForm
 
                 case "Random":
                     temp = colors[random.Next(0, colors.Length - 1)];
+                    return temp;
+
+                case "Chaos":
+                    if (Form1.trueChaos)
+                        return "TrueChaos";
                     return temp;
 
                 default:
@@ -1322,8 +1339,12 @@ namespace MLSSRandomizerForm
             int beanCount = 0;
             for (int i = 0; i < itemArray.Count; i++)
             {
-                if (itemArray[i] == 0x1E)
-                    beanCount++;
+                reInsert:
+                if (CheckValidSpot(locationArray[i], itemArray[i]))
+                {
+                    itemArray.Shuffle(random);
+                    goto reInsert;
+                }
                 ItemInject(locationArray[i].location, locationArray[i].itemType, itemArray[i]);
             }
             Console.WriteLine(beanCount);
@@ -1356,6 +1377,98 @@ namespace MLSSRandomizerForm
                 stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x3 }, 0, 7);
                 stream.Seek(0x3AC56C, SeekOrigin.Begin);
                 stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x3 }, 0, 7);
+            }
+        }
+
+        public bool CheckValidSpot(LocationData data, byte item)
+        {
+            switch (item)
+            {
+
+                case 0x31:
+                    if (data.rose == true)
+                        return true;
+                    return false;
+
+                case 0x32:
+                    if (data.brooch == true)
+                        return true;
+                    return false;
+
+                case 0x39:
+                    if (data.fire == true)
+                        return true;
+                    return false;
+
+                case 0x3A:
+                    if (data.thunder == true)
+                        return true;
+                    return false;
+
+                case 0x40:
+                    if (data.membership == true)
+                        return true;
+                    return false;
+
+                case 0x41:
+                    if (data.winkle == true)
+                        return true;
+                    return false;
+
+
+                case 0x42:
+                    if (data.beanstar == true)
+                        return true;
+                    return false;
+
+                case 0x43:
+                    if (data.dress == true)
+                        return true;
+                    return false;
+
+                case 0x35:
+                    if (data.fruitState == 3)
+                        return true;
+                    return false;
+
+                case 0x36:
+                    if (data.fruitState == 3)
+                        return true;
+                    return false;
+
+                case 0x37:
+                    if (data.fruitState == 3)
+                        return true;
+                    return false;
+
+                case 0x33:
+                    if (data.mini == true)
+                        return true;
+                    return false;
+
+                case 0x34:
+                    if (data.under == true)
+                        return true;
+                    return false;
+
+                case 0x45:
+                    if (data.dash == true)
+                        return true;
+                    return false;
+
+                case 0x46:
+                    if (data.crash == true)
+                        return true;
+                    return false;
+
+                case 0x72:
+                    if (data.spangle == true)
+                        return true;
+                    return false;
+
+                default:
+                    return false;
+
             }
         }
 

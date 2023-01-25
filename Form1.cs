@@ -45,6 +45,7 @@ namespace MLSSRandomizerForm
         public static bool background = false;
         public static bool scale = false;
         public static bool minecart = false;
+        public static bool trueChaos = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -323,11 +324,19 @@ namespace MLSSRandomizerForm
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             mColor = comboBox1.Text;
+            if (mColor == "Chaos" || lColor == "Chaos")
+                checkBox33.Enabled = true;
+            else
+                checkBox33.Enabled = false;
         }
 
         private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
         {
             lColor = comboBox2.Text;
+            if (mColor == "Chaos" || lColor == "Chaos")
+                checkBox33.Enabled = true;
+            else
+                checkBox33.Enabled = false;
         }
 
         private void label4_Click(object sender, EventArgs e)
@@ -363,6 +372,11 @@ namespace MLSSRandomizerForm
         private void checkBox32_CheckedChanged(object sender, EventArgs e)
         {
             minecart = checkBox32.Checked;
+        }
+
+        private void checkBox33_CheckedChanged(object sender, EventArgs e)
+        {
+            trueChaos = checkBox33.Checked;
         }
     }
 }
