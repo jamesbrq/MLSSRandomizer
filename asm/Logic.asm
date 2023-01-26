@@ -2134,6 +2134,9 @@
     .ability_end:
     pop { r0, r1 }
     .ability_end2:
+    ldr r2, =BEAN_RAM
+    mov r3, #0x0
+    strb r3, [r2]
     pop { r2, r3, r4, pc }
     .pool
 
