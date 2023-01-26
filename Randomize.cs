@@ -1379,9 +1379,9 @@ namespace MLSSRandomizerForm
             if (Form1.minecart)
             {
                 stream.Seek(0x3AC728, SeekOrigin.Begin);
-                stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x3 }, 0, 7);
+                stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x1 }, 0, 7);
                 stream.Seek(0x3AC56C, SeekOrigin.Begin);
-                stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x3 }, 0, 7);
+                stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x1 }, 0, 7);
             }
         }
 

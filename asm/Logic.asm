@@ -367,6 +367,15 @@
     .org FLAG_FIX 
         mov r0, r0
 
+    .org FSHOP_FIX
+        mov r0, r0
+
+    .org FBSHOP_FIX
+        mov r0, r0
+
+    .org FPSHOP_FIX
+        mov r0, r0
+
     .org ULTRA_MUSHROOM_TEXT
         db 0x13, 0x2, 0xFF, 0xB, 0x1, 0xFF, 0x41, 0xFF, 0x25
         db 0x59, 0x6F, 0x75, 0x20, 0x67, 0x6F, 0x74, 0x20, 0x61, 0x6E, 0x20, 0x55, 0x6C, 0x74, 0x72, 0x61, 0x20, 0x4D, 0x75, 0x73, 0x68, 0x72, 0x6F, 0x6F, 0x6D, 0x21
@@ -811,17 +820,19 @@
 
 
     .org PRICE_CALC
-    push { r2, lr }
+    push { r2, r3, lr }
     cmp r1, #0x30
     bge .price_key
     ldr r2, =PRICE_RAM
-    ldrb r2, [r2]
-    cmp r2, #0x1
+    ldrb r3, [r2]
+    cmp r3, #0x1
     bne .price_skip
     cmp r1, #0x2B
     bge .price_skip
     sub r1, #0xA
     .price_skip:
+    mov r3, #0x0
+    strb r3, [r2]
     cmp r1, #0x2b
     bge .price_bean
     ldr r2, =PRICE_ARRAY
@@ -842,7 +853,7 @@
     ldr r2, =BADGE_PRICE_ARRAY
     ldrh r1, [r2, r1]
     .price_end:
-    pop { r2, pc }
+    pop { r2, r3, pc }
     .pool
 
 
