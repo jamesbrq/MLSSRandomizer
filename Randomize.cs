@@ -37,8 +37,10 @@ namespace MLSSRandomizerForm
             rom.EnemyRandomize();
             rom.RandomizeStats();
             rom.MusicRandomize();
-            rom.ColorSwap(Rom.GenColor(Form1.mColor), 0);
-            rom.ColorSwap(Rom.GenColor(Form1.lColor), 1);
+            rom.ColorSwap(Rom.GenColor(Form1.mColor), 0, "");
+            rom.ColorSwap(Rom.GenColor(Form1.lColor), 1, "");
+            rom.ColorSwap(Rom.GenColor(Form1.mPants), 0, "pants/");
+            rom.ColorSwap(Rom.GenColor(Form1.lPants), 1, "pants/");
             rom.stream.Close();
             rom.Inject();
             return (Environment.CurrentDirectory + "/asm/mlss_loop.gba", rom.hash);
@@ -846,10 +848,12 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public void ColorSwap(string color, int bro)
+        public void ColorSwap(string color, int bro, string pants)
         {
+            if (pants != "" && color == "Vanilla")
+                return;
             string tempcolor = GenColor(color);
-            string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + tempcolor + ".txt");
+            string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + pants + tempcolor + ".txt");
             List<Color> colors = new List<Color>();
             if (tempcolor == "Chaos" || tempcolor == "TrueChaos")
             {

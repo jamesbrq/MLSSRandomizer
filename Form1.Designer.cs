@@ -50,6 +50,7 @@ namespace MLSSRandomizerForm
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBox34 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -77,6 +78,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox33 = new System.Windows.Forms.CheckBox();
             this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -93,11 +95,13 @@ namespace MLSSRandomizerForm
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox33 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox34 = new System.Windows.Forms.CheckBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.comboBox3 = new System.Windows.Forms.ComboBox();
+            this.comboBox4 = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -291,6 +295,20 @@ namespace MLSSRandomizerForm
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Key Items";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox34
+            // 
+            this.checkBox34.AutoSize = true;
+            this.checkBox34.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox34.Checked = true;
+            this.checkBox34.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox34.Location = new System.Drawing.Point(108, 167);
+            this.checkBox34.Name = "checkBox34";
+            this.checkBox34.Size = new System.Drawing.Size(71, 17);
+            this.checkBox34.TabIndex = 22;
+            this.checkBox34.Text = "Spangle?";
+            this.checkBox34.UseVisualStyleBackColor = true;
+            this.checkBox34.CheckedChanged += new System.EventHandler(this.checkBox34_CheckedChanged);
             // 
             // checkBox4
             // 
@@ -651,6 +669,10 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.label8);
+            this.tabPage5.Controls.Add(this.comboBox4);
+            this.tabPage5.Controls.Add(this.comboBox3);
+            this.tabPage5.Controls.Add(this.label7);
             this.tabPage5.Controls.Add(this.checkBox33);
             this.tabPage5.Controls.Add(this.checkBox32);
             this.tabPage5.Controls.Add(this.checkBox31);
@@ -675,6 +697,19 @@ namespace MLSSRandomizerForm
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBox33
+            // 
+            this.checkBox33.AutoSize = true;
+            this.checkBox33.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox33.Enabled = false;
+            this.checkBox33.Location = new System.Drawing.Point(75, 223);
+            this.checkBox33.Name = "checkBox33";
+            this.checkBox33.Size = new System.Drawing.Size(87, 17);
+            this.checkBox33.TabIndex = 40;
+            this.checkBox33.Text = "True Chaos?";
+            this.checkBox33.UseVisualStyleBackColor = true;
+            this.checkBox33.CheckedChanged += new System.EventHandler(this.checkBox33_CheckedChanged);
             // 
             // checkBox32
             // 
@@ -738,7 +773,7 @@ namespace MLSSRandomizerForm
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 197);
+            this.label5.Location = new System.Drawing.Point(10, 197);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(64, 13);
             this.label5.TabIndex = 34;
@@ -748,7 +783,7 @@ namespace MLSSRandomizerForm
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(15, 170);
+            this.label4.Location = new System.Drawing.Point(6, 170);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(68, 13);
             this.label4.TabIndex = 33;
@@ -773,9 +808,9 @@ namespace MLSSRandomizerForm
             "White",
             "Random",
             "Chaos"});
-            this.comboBox1.Location = new System.Drawing.Point(85, 167);
+            this.comboBox1.Location = new System.Drawing.Point(77, 167);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.Size = new System.Drawing.Size(93, 21);
             this.comboBox1.TabIndex = 10;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
@@ -784,7 +819,7 @@ namespace MLSSRandomizerForm
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
-            "Green",
+            "Vanilla",
             "Red",
             "Purple",
             "Yellow",
@@ -796,9 +831,9 @@ namespace MLSSRandomizerForm
             "White",
             "Random",
             "Chaos"});
-            this.comboBox2.Location = new System.Drawing.Point(85, 194);
+            this.comboBox2.Location = new System.Drawing.Point(77, 194);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(121, 21);
+            this.comboBox2.Size = new System.Drawing.Size(93, 21);
             this.comboBox2.TabIndex = 32;
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.comboBox2_SelectedIndexChanged);
             // 
@@ -878,19 +913,6 @@ namespace MLSSRandomizerForm
             // 
             this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
             // 
-            // checkBox33
-            // 
-            this.checkBox33.AutoSize = true;
-            this.checkBox33.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox33.Enabled = false;
-            this.checkBox33.Location = new System.Drawing.Point(119, 221);
-            this.checkBox33.Name = "checkBox33";
-            this.checkBox33.Size = new System.Drawing.Size(87, 17);
-            this.checkBox33.TabIndex = 40;
-            this.checkBox33.Text = "True Chaos?";
-            this.checkBox33.UseVisualStyleBackColor = true;
-            this.checkBox33.CheckedChanged += new System.EventHandler(this.checkBox33_CheckedChanged);
-            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -903,19 +925,70 @@ namespace MLSSRandomizerForm
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
-            // checkBox34
+            // label7
             // 
-            this.checkBox34.AutoSize = true;
-            this.checkBox34.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox34.Checked = true;
-            this.checkBox34.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox34.Location = new System.Drawing.Point(108, 167);
-            this.checkBox34.Name = "checkBox34";
-            this.checkBox34.Size = new System.Drawing.Size(71, 17);
-            this.checkBox34.TabIndex = 22;
-            this.checkBox34.Text = "Spangle?";
-            this.checkBox34.UseVisualStyleBackColor = true;
-            this.checkBox34.CheckedChanged += new System.EventHandler(this.checkBox34_CheckedChanged);
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(173, 170);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(80, 13);
+            this.label7.TabIndex = 41;
+            this.label7.Text = "Mario Trousers:";
+            // 
+            // comboBox3
+            // 
+            this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.ImeMode = System.Windows.Forms.ImeMode.NoControl;
+            this.comboBox3.Items.AddRange(new object[] {
+            "Vanilla",
+            "Green",
+            "Purple",
+            "Yellow",
+            "Cyan",
+            "Blue",
+            "Pink",
+            "Orange",
+            "Black",
+            "White",
+            "Random",
+            "Chaos"});
+            this.comboBox3.Location = new System.Drawing.Point(258, 167);
+            this.comboBox3.Name = "comboBox3";
+            this.comboBox3.Size = new System.Drawing.Size(93, 21);
+            this.comboBox3.TabIndex = 42;
+            this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.comboBox3_SelectedIndexChanged);
+            // 
+            // comboBox4
+            // 
+            this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Items.AddRange(new object[] {
+            "Green",
+            "Red",
+            "Purple",
+            "Yellow",
+            "Cyan",
+            "Blue",
+            "Pink",
+            "Orange",
+            "Black",
+            "White",
+            "Random",
+            "Chaos"});
+            this.comboBox4.Location = new System.Drawing.Point(258, 194);
+            this.comboBox4.Name = "comboBox4";
+            this.comboBox4.Size = new System.Drawing.Size(93, 21);
+            this.comboBox4.TabIndex = 43;
+            this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.comboBox4_SelectedIndexChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(177, 197);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(76, 13);
+            this.label8.TabIndex = 44;
+            this.label8.Text = "Luigi Trousers:";
             // 
             // Form1
             // 
@@ -1021,6 +1094,10 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox32;
         private CheckBox checkBox33;
         private CheckBox checkBox34;
+        private ComboBox comboBox3;
+        private Label label7;
+        private Label label8;
+        private ComboBox comboBox4;
     }
 }
 

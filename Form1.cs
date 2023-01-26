@@ -50,6 +50,8 @@ namespace MLSSRandomizerForm
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
+        public static string mPants = "Vanilla";
+        public static string lPants = "Vanilla";
 
         public Form1()
         {
@@ -383,6 +385,16 @@ namespace MLSSRandomizerForm
         private void checkBox34_CheckedChanged(object sender, EventArgs e)
         {
             spangle = checkBox34.Checked;
+        }
+
+        private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            mPants = comboBox3.Text;
+        }
+
+        private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            lPants = comboBox4.Text;
         }
     }
 }
