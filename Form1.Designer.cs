@@ -95,13 +95,13 @@ namespace MLSSRandomizerForm
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.label7 = new System.Windows.Forms.Label();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
+            this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -913,18 +913,6 @@ namespace MLSSRandomizerForm
             // 
             this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
             // 
-            // form1BindingSource
-            // 
-            this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
-            // 
-            // form1BindingSource1
-            // 
-            this.form1BindingSource1.DataSource = typeof(MLSSRandomizerForm.Form1);
-            // 
-            // romBindingSource
-            // 
-            this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
-            // 
             // label7
             // 
             this.label7.AutoSize = true;
@@ -941,6 +929,7 @@ namespace MLSSRandomizerForm
             this.comboBox3.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.comboBox3.Items.AddRange(new object[] {
             "Vanilla",
+            "Red",
             "Green",
             "Purple",
             "Yellow",
@@ -963,6 +952,7 @@ namespace MLSSRandomizerForm
             this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox4.FormattingEnabled = true;
             this.comboBox4.Items.AddRange(new object[] {
+            "Vanilla",
             "Green",
             "Red",
             "Purple",
@@ -989,6 +979,18 @@ namespace MLSSRandomizerForm
             this.label8.Size = new System.Drawing.Size(76, 13);
             this.label8.TabIndex = 44;
             this.label8.Text = "Luigi Trousers:";
+            // 
+            // form1BindingSource
+            // 
+            this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
+            // 
+            // form1BindingSource1
+            // 
+            this.form1BindingSource1.DataSource = typeof(MLSSRandomizerForm.Form1);
+            // 
+            // romBindingSource
+            // 
+            this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
             // Form1
             // 

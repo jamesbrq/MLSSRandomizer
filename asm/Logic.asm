@@ -358,6 +358,12 @@
     .org SCROLL_FIX1
         db 0x16
 
+    .org MEMBERSHIP_FIX
+        db 0x16
+
+    .org BROS_ROCK_FIX
+        db 0x16
+
     .org SCROLL_FIX2
         db 0x16
 

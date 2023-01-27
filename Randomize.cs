@@ -881,7 +881,7 @@ namespace MLSSRandomizerForm
 
         public static string GenColor(string color)
         {
-            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
+            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaos" };
             string temp = color;
             switch (temp)
             {
