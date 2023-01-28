@@ -158,7 +158,6 @@ namespace MLSSRandomizerForm
             else if(filePath.Contains(".gba"))
             {
                 gameId = 1;
-                tabControl1.Enabled = true;
                 tabControl1.Visible = true;
                 tabControl2.Visible = false;
             }

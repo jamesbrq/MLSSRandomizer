@@ -1036,16 +1036,15 @@ namespace MLSSRandomizerForm
             // 
             // saveFileDialog2
             // 
-            this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             this.saveFileDialog2.DefaultExt = "nds";
             this.saveFileDialog2.Filter = "Nintendo DS Rom (*.nds)|*.nds|All files (*.*)|*.*";
+            this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(432, 371);
-            this.Controls.Add(this.tabControl2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.SeedTextbox);
             this.Controls.Add(this.button2);
@@ -1053,6 +1052,7 @@ namespace MLSSRandomizerForm
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.SelectRomButton);
             this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tabControl2);
             this.Name = "Form1";
             this.Text = "MLSS Randomizer";
             this.Load += new System.EventHandler(this.Form1_Load);
