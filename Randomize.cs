@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Security.Cryptography;
 
 
 public static class ListExtensions
@@ -28,22 +29,33 @@ namespace MLSSRandomizerForm
     class Randomize
     {
         static Rom rom;
-        public static (string newFile, int hash) Random(string path, string seed)
+        public static (string newFile, int hash) Random(string path, string seed, int gameId)
         {
-            rom = new Rom(path, seed);
-            rom.Randomize();
-            rom.SpoilerFill();
-            rom.SpoilerGen();
-            rom.EnemyRandomize();
-            rom.RandomizeStats();
-            rom.MusicRandomize();
-            rom.ColorSwap(Rom.GenColor(Form1.mColor), 0, "");
-            rom.ColorSwap(Rom.GenColor(Form1.lColor), 1, "");
-            rom.ColorSwap(Rom.GenColor(Form1.mPants), 0, "pants/");
-            rom.ColorSwap(Rom.GenColor(Form1.lPants), 1, "pants/");
-            rom.stream.Close();
-            rom.Inject();
-            return (Environment.CurrentDirectory + "/asm/mlss_loop.gba", rom.hash);
+            if (gameId == 1)
+            {
+                rom = new Rom(path, seed, gameId);
+                rom.Randomize();
+                rom.SpoilerFill();
+                rom.SpoilerGen();
+                rom.EnemyRandomize();
+                rom.RandomizeStats();
+                rom.MusicRandomize();
+                rom.ColorSwap(Rom.GenColor(Form1.mColor), 0, "");
+                rom.ColorSwap(Rom.GenColor(Form1.lColor), 1, "");
+                rom.ColorSwap(Rom.GenColor(Form1.mPants), 0, "pants/");
+                rom.ColorSwap(Rom.GenColor(Form1.lPants), 1, "pants/");
+                rom.stream.Close();
+                rom.Inject();
+                return (Environment.CurrentDirectory + "/asm/mlss_loop.gba", rom.hash);
+            }
+            if (gameId == 3)
+            {
+                rom = new Rom(path, seed, gameId);
+                rom.Randomize();
+                rom.stream.Close();
+                return (Environment.CurrentDirectory + "/bis/bis.nds", rom.hash);
+            }
+            return ("", 0);
         }
     }
 
@@ -52,15 +64,18 @@ namespace MLSSRandomizerForm
         public FileStream stream;
         static Random random;
         public int hash;
-        List<LocationData> freshLocationArray = new List<LocationData>();
-        List<LocationData> validLocationArray = new List<LocationData>();
-        List<LocationData> optionsArray = new List<LocationData>();
-        List<LocationData> locationArray = new List<LocationData>();
-        List<LocationData> validLocations = new List<LocationData>();
+        public static int gameId;
+
+        //mlss var
+        List<dynamic> freshLocationArray = new List<dynamic>();
+        List<dynamic> validLocationArray = new List<dynamic>();
+        List<dynamic> optionsArray = new List<dynamic>();
+        List<dynamic> locationArray = new List<dynamic>();
+        List<dynamic> validLocations = new List<dynamic>();
         List<Spoiler> spoilerArray = new List<Spoiler>();
         List<SpoilerItem> spoilerItemArray = new List<SpoilerItem>();
         List<SpoilerLocation> spoilerLocationArray = new List<SpoilerLocation>();
-        List<byte> itemArray = new List<byte>();
+        List<dynamic> itemArray = new List<dynamic>();
         public LocationData gameState = new LocationData(0);
         public int iterationCount = 0;
         public List<Enemy> enemies = new List<Enemy>();
@@ -68,21 +83,28 @@ namespace MLSSRandomizerForm
         public List<EnemyGroup> groups = new List<EnemyGroup>();
         public List<StatCount> enemyCount = new List<StatCount>();
 
-        public int healthMax = 160;
-        public int defenceMax = 130;
-        public int speedMax = 100;
-        public float fightCeil = 200.0f;
 
-
-        public Rom(string path, string seed)
+        public Rom(string path, string seed, int id)
         {
-            if (!File.Exists(Environment.CurrentDirectory + "/asm/mlss.gba"))
-                File.Copy(path, Environment.CurrentDirectory + "/asm/mlss.gba");
-            stream = new FileStream(Environment.CurrentDirectory + "/asm/mlss.gba", FileMode.Open);
-            FreshArrayPopulate();
-            SeedInitialize(seed);
-            CheckOptions();
-            ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
+            gameId = id;
+            if (gameId == 1)
+            {
+                if (!File.Exists(Environment.CurrentDirectory + "/asm/mlss.gba"))
+                    File.Copy(path, Environment.CurrentDirectory + "/asm/mlss.gba");
+                stream = new FileStream(Environment.CurrentDirectory + "/asm/mlss.gba", FileMode.Open);
+                FreshArrayPopulate();
+                SeedInitialize(seed);
+                CheckOptions();
+            }
+            if(gameId == 3)
+            {
+                if (!File.Exists(Environment.CurrentDirectory + "/bis/bis.nds"))
+                    File.Copy(path, Environment.CurrentDirectory + "/bis/bis.nds");
+                stream = new FileStream(Environment.CurrentDirectory + "/bis/bis.nds", FileMode.Open);
+                FreshArrayPopulate();
+                SeedInitialize(seed);
+                CheckOptions();
+            }
         }
 
         public struct Color
@@ -270,6 +292,33 @@ namespace MLSSRandomizerForm
             public bool spangle;
         }
 
+        public struct BiSLocationData
+        {
+            public BiSLocationData(uint location, bisitem item)
+            {
+                this.location = location;
+                this.item = item;
+                   
+            }
+
+            public uint location;
+            public bisitem item;
+        }
+
+        public struct bisitem
+        {
+            public bisitem(byte byte1, byte byte2, byte quantity)
+            {
+                this.byte1 = byte1;
+                this.byte2 = byte2;
+                this.quantity = quantity;
+            }
+
+            public byte byte1;
+            public byte byte2;
+            public byte quantity;
+        }
+
         public void UpdateState(byte item)
         {
             if (item == 0x56 || item == 0x57 || (item >= 0x60 && item <= 0x64))
@@ -364,30 +413,51 @@ namespace MLSSRandomizerForm
 
         public void FreshArrayPopulate()
         {
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
+            if (gameId == 1)
+            {
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
+            }
+
+            if(gameId == 3)
+            {
+                ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/bis/items/AllAddresses.txt"));
+            }
         }
 
         public void UpdateList()
         {
-            int i = locationArray.Count - 1;
-            foreach (LocationData data in locationArray.Reverse<LocationData>())
+            if (gameId == 1)
             {
-                if (gameState.hammerState >= data.hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(data.rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(data.brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(data.fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(data.thunder) && gameState.fruitState >= data.fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(data.membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(data.winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(data.beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(data.dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(data.mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(data.under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(data.dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(data.crash) && gameState.neon >= data.neon && gameState.currentBeanfruit >= data.totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(data.spangle))
+                int i = locationArray.Count - 1;
+                foreach (LocationData data in locationArray.Reverse<dynamic>())
                 {
-                    if (data.totalBeanfruit >= 1)
-                        gameState.currentBeanfruit -= 1;
-                    validLocations.Add(data);
-                    locationArray.RemoveAt(i);
+                    if (gameState.hammerState >= data.hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(data.rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(data.brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(data.fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(data.thunder) && gameState.fruitState >= data.fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(data.membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(data.winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(data.beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(data.dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(data.mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(data.under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(data.dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(data.crash) && gameState.neon >= data.neon && gameState.currentBeanfruit >= data.totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(data.spangle))
+                    {
+                        if (data.totalBeanfruit >= 1)
+                            gameState.currentBeanfruit -= 1;
+                        validLocations.Add(data);
+                        locationArray.RemoveAt(i);
+                    }
+                    i--;
                 }
-                i--;
             }
 
+            if(gameId == 3)
+            {
+                int i = locationArray.Count - 1;
+                foreach (LocationData data in locationArray.Reverse<dynamic>())
+                {
+                    validLocations.Add(data);
+                    locationArray.RemoveAt(i);
+                    i--;
+                }
+            }
         }
 
         public void SpoilerFill()
@@ -428,267 +498,330 @@ namespace MLSSRandomizerForm
         }
         public static void ConfigInfo(List<string> list)
         {
-            list.Add("Chuckle: " + Form1.chuckle);
-            list.Add("Rose: " + Form1.rose);
-            list.Add("Brooch: " + Form1.brooch);
-            list.Add("Chuckola Fruit: " + Form1.chuckola);
-            list.Add("Membership Card: " + Form1.membership);
-            list.Add("Winkle Card: " + Form1.winkle);
-            list.Add("Extra Dress: " + Form1.dress);
-            list.Add("Fake Beanstar: " + Form1.beanstar);
-            list.Add("Secret Scrolls: " + Form1.scrolls);
-            list.Add("Beanfruit: " + Form1.fruit);
-            list.Add("Neon Eggs: " + Form1.eggs);
-            list.Add("Beanstones: " + Form1.beanstone);
-            list.Add("Beanlets: " + Form1.beanlet);
-            list.Add("Hammers: " + Form1.hammers);
-            list.Add("Hammer Moves: " + Form1.goblets);
-            list.Add("Hands: " + Form1.hands);
-            list.Add("Hand Moves: " + Form1.pearls);
-            list.Add("Item Shops: " + Form1.shops);
-            list.Add("Badges: " + Form1.badges);
-            list.Add("Pants: " + Form1.pants);
-            list.Add("Espresso: " + Form1.espresso);
-            list.Add("BP Costs: " + Form1.brosBp);
-            list.Add("Item Heal: " + Form1.itemHeal);
-            list.Add("Espresso Stats: " + Form1.coffeeValue);
-            list.Add("Music: " + Form1.music);
-            list.Add("Enemies: " + Form1.enemy);
-            list.Add("Enemy Stats: " + Form1.scale);
-            list.Add("Battle Backgrounds: " + Form1.background);
-            list.Add("Disable Mush: " + Form1.mush);
-            list.Add("Disable Surf: " + Form1.surf);
-            list.Add("Skip Minecart: " + Form1.minecart);
-            list.Add("Skip Bowsers: " + Form1.castle);
-            list.Add("Skip intro: " + Form1.intro);
-            list.Add("Mario Color: " + Form1.mColor);
-            list.Add("Luigi Color: " + Form1.lColor);
-            list.Add(" ");
+            if (gameId == 1)
+            {
+                list.Add("Chuckle: " + Form1.chuckle);
+                list.Add("Rose: " + Form1.rose);
+                list.Add("Brooch: " + Form1.brooch);
+                list.Add("Chuckola Fruit: " + Form1.chuckola);
+                list.Add("Membership Card: " + Form1.membership);
+                list.Add("Winkle Card: " + Form1.winkle);
+                list.Add("Extra Dress: " + Form1.dress);
+                list.Add("Fake Beanstar: " + Form1.beanstar);
+                list.Add("Secret Scrolls: " + Form1.scrolls);
+                list.Add("Beanfruit: " + Form1.fruit);
+                list.Add("Neon Eggs: " + Form1.eggs);
+                list.Add("Beanstones: " + Form1.beanstone);
+                list.Add("Beanlets: " + Form1.beanlet);
+                list.Add("Hammers: " + Form1.hammers);
+                list.Add("Hammer Moves: " + Form1.goblets);
+                list.Add("Hands: " + Form1.hands);
+                list.Add("Hand Moves: " + Form1.pearls);
+                list.Add("Item Shops: " + Form1.shops);
+                list.Add("Badges: " + Form1.badges);
+                list.Add("Pants: " + Form1.pants);
+                list.Add("Espresso: " + Form1.espresso);
+                list.Add("BP Costs: " + Form1.brosBp);
+                list.Add("Item Heal: " + Form1.itemHeal);
+                list.Add("Espresso Stats: " + Form1.coffeeValue);
+                list.Add("Music: " + Form1.music);
+                list.Add("Enemies: " + Form1.enemy);
+                list.Add("Enemy Stats: " + Form1.scale);
+                list.Add("Battle Backgrounds: " + Form1.background);
+                list.Add("Disable Mush: " + Form1.mush);
+                list.Add("Disable Surf: " + Form1.surf);
+                list.Add("Skip Minecart: " + Form1.minecart);
+                list.Add("Skip Bowsers: " + Form1.castle);
+                list.Add("Skip intro: " + Form1.intro);
+                list.Add("Mario Color: " + Form1.mColor);
+                list.Add("Luigi Color: " + Form1.lColor);
+                list.Add(" ");
+            }
         }
 
         public bool CheckValidity()
         {
-            byte temp;
-            locationArray = new List<LocationData>(freshLocationArray);
-            vBegin:
-            if (validLocations.Count >= 1)
-                Console.WriteLine(validLocations.Count);
-            if (!Form1.goblets)
+            if (gameId == 1)
             {
-                if (gameState.hammerState >= 1 && gameState.brooch)
+                byte temp;
+                locationArray = new List<dynamic>(freshLocationArray);
+                vBegin:
+                if (validLocations.Count >= 1)
+                    Console.WriteLine(validLocations.Count);
+                if (!Form1.goblets)
                 {
-                    gameState.mini = true;
-                    gameState.under = true;
-                }
-            }
-            UpdateList();
-            int i = validLocations.Count - 1;
-            if (validLocations.Count > 0)
-            {
-                foreach (LocationData data in validLocations.Reverse<LocationData>())
-                {
-                    stream.Seek(Convert.ToUInt32(data.location), SeekOrigin.Begin);
-                    if (data.itemType != 1)
-                        temp = (byte)stream.ReadByte();
-                    else
-                        temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
-                    if (temp == 0x34)
+                    if (gameState.hammerState >= 1 && gameState.brooch)
                     {
-                        Console.WriteLine(data.location);
+                        gameState.mini = true;
+                        gameState.under = true;
                     }
-                    if (data.location > 0x3C0000 && temp == 0x38)
-                        return false;
-                    UpdateState(temp);
-                    validLocations.RemoveAt(i);
-                    i--;
                 }
-                goto vBegin;
+                UpdateList();
+                int i = validLocations.Count - 1;
+                if (validLocations.Count > 0)
+                {
+                    foreach (LocationData data in validLocations.Reverse<dynamic>())
+                    {
+                        stream.Seek(Convert.ToUInt32(data.location), SeekOrigin.Begin);
+                        if (data.itemType != 1)
+                            temp = (byte)stream.ReadByte();
+                        else
+                            temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
+                        if (temp == 0x34)
+                        {
+                            Console.WriteLine(data.location);
+                        }
+                        if (data.location > 0x3C0000 && temp == 0x38)
+                            return false;
+                        UpdateState(temp);
+                        validLocations.RemoveAt(i);
+                        i--;
+                    }
+                    goto vBegin;
+                }
+                else
+                {
+                    if (locationArray.Count < 100)
+                        Console.WriteLine("a");
+                    if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash)
+                        return true;
+                    if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.winkle)
+                        return true;
+                }
             }
-            else
+
+            if(gameId == 3)
             {
-                if (locationArray.Count < 100)
-                    Console.WriteLine("a");
-                if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash)
-                    return true;
-                if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.winkle)
-                    return true;
+                return true;
             }
             return false;
         }
 
-        public void ValidArrayAdd(LocationData data)
+        public void ValidArrayAdd(dynamic data)
         {
-            validLocationArray.Add(data);
-            itemArray.Add((byte)data.item);
+            if (gameId == 1)
+            {
+                validLocationArray.Add(data);
+                itemArray.Add((byte)data.item);
+            }
+
+            if (gameId == 3)
+            {
+                validLocationArray.Add(data);
+                itemArray.Add(data.item);
+            }
         }
 
         public void CheckOptions()
         {
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
-            foreach (LocationData data in optionsArray.ToList())
+            if (gameId == 1)
             {
-                if ((byte)data.item == 0x31)
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
+                foreach (LocationData data in optionsArray.ToList())
                 {
-                    if (Form1.rose)
+                    if ((byte)data.item == 0x31)
+                    {
+                        if (Form1.rose)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x32)
+                    {
+                        if (Form1.brooch)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x33 || data.item == 0x34)
+                    {
+                        if (Form1.goblets)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                            stream.Seek(0x1e9412, SeekOrigin.Begin);
+                            stream.WriteByte(0x1);
+                        }
+                    }
+
+                    if (data.item >= 0x35 && data.item <= 0x37)
+                    {
+                        if (Form1.chuckola)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x40)
+                    {
+                        if (Form1.membership)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x41)
+                    {
+                        if (Form1.winkle)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x43)
+                    {
+                        if (Form1.beanstar)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x42)
+                    {
+                        if (Form1.dress)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x45 || data.item == 0x46)
+                    {
+                        if (Form1.pearls)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                            stream.Seek(0x1e9413, SeekOrigin.Begin);
+                            stream.WriteByte(0x1);
+                        }
+                    }
+
+                    if (data.item >= 0x47 && data.item <= 0x55)
+                    {
+                        if (Form1.fruit)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item >= 0x56 && data.item <= 0x64)
+                    {
+                        if (Form1.eggs)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item >= 0x92 && data.item <= 0x93)
+                    {
+                        if (Form1.scrolls)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item >= 0x80 && data.item <= 0x91)
+                    {
+                        if (Form1.beanstone)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item >= 0x73 && data.item <= 0x77)
+                    {
+                        if (Form1.beanlet)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x72)
+                    {
+                        if (Form1.spangle)
+                            ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    optionsArray.Remove(data);
+                }
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
+                foreach (LocationData data in optionsArray.ToList())
+                {
+                    if (data.item == 0x38)
+                    {
+                        if (Form1.hammers)
+                        {
+                            ValidArrayAdd(data);
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x39 || data.item == 0x3A)
+                    {
+                        if (Form1.hands)
+                        {
+                            ValidArrayAdd(data);
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                            stream.Seek(0x1e9411, SeekOrigin.Begin);
+                            stream.WriteByte(0x1);
+                        }
+                    }
+                    optionsArray.Remove(data);
+                }
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
+                foreach (LocationData data in optionsArray.ToList())
+                {
+                    if (Form1.espresso)
+                    {
                         ValidArrayAdd(data);
+                    }
                     else
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
+                    optionsArray.Remove(data);
                 }
-
-                if (data.item == 0x32)
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
+                foreach (LocationData data in optionsArray.ToList())
                 {
-                    if (Form1.brooch)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x33 || data.item == 0x34)
-                {
-                    if (Form1.goblets)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                        stream.Seek(0x1e9412, SeekOrigin.Begin);
-                        stream.WriteByte(0x1);
-                    }
-                }
-
-                if (data.item >= 0x35 && data.item <= 0x37)
-                {
-                    if (Form1.chuckola)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x40)
-                {
-                    if (Form1.membership)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x41)
-                {
-                    if (Form1.winkle)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x43)
-                {
-                    if (Form1.beanstar)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x42)
-                {
-                    if (Form1.dress)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x45 || data.item == 0x46)
-                {
-                    if (Form1.pearls)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                        stream.Seek(0x1e9413, SeekOrigin.Begin);
-                        stream.WriteByte(0x1);
-                    }
-                }
-
-                if (data.item >= 0x47 && data.item <= 0x55)
-                {
-                    if (Form1.fruit)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item >= 0x56 && data.item <= 0x64)
-                {
-                    if (Form1.eggs)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item >= 0x92 && data.item <= 0x93)
-                {
-                    if (Form1.scrolls)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item >= 0x80 && data.item <= 0x91)
-                {
-                    if (Form1.beanstone)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item >= 0x73 && data.item <= 0x77)
-                {
-                    if (Form1.beanlet)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                if (data.item == 0x72)
-                {
-                    if (Form1.spangle)
-                        ValidArrayAdd(data);
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-
-                optionsArray.Remove(data);
-            }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
-            foreach (LocationData data in optionsArray.ToList())
-            {
-                if (data.item == 0x38)
-                {
-                    if (Form1.hammers)
+                    if (Form1.shops)
                     {
                         ValidArrayAdd(data);
                     }
@@ -696,121 +829,62 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
+                    optionsArray.Remove(data);
                 }
-
-                if (data.item == 0x39 || data.item == 0x3A)
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
+                foreach (LocationData data in optionsArray.ToList())
                 {
-                    if (Form1.hands)
+                    if (Form1.surf && data.item == 0xEB)
+                    {
+                        ItemInject(data.location, data.itemType, 0xEB);
+                        goto surfSkip;
+                    }
+
+                    if (Form1.pants)
                     {
                         ValidArrayAdd(data);
                     }
                     else
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
-                        stream.Seek(0x1e9411, SeekOrigin.Begin);
-                        stream.WriteByte(0x1);
                     }
-                }
-                optionsArray.Remove(data);
-            }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
-            foreach (LocationData data in optionsArray.ToList())
-            {
-                if (Form1.espresso)
-                {
-                    ValidArrayAdd(data);
-                }
-                else
-                {
-                    ItemInject(data.location, data.itemType, (byte)data.item);
-                }
-                optionsArray.Remove(data);
-            }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
-            foreach (LocationData data in optionsArray.ToList())
-            {
-                if (Form1.shops)
-                {
-                    ValidArrayAdd(data);
-                }
-                else
-                {
-                    ItemInject(data.location, data.itemType, (byte)data.item);
-                }
-                optionsArray.Remove(data);
-            }
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
-            foreach (LocationData data in optionsArray.ToList())
-            {
-                if (Form1.surf && data.item == 0xEB)
-                {
-                    ItemInject(data.location, data.itemType, 0xEB);
-                    goto surfSkip;
+                    surfSkip:
+                    optionsArray.Remove(data);
                 }
 
-                if (Form1.pants)
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
+                foreach (LocationData data in optionsArray.ToList())
                 {
-                    ValidArrayAdd(data);
-                }
-                else
-                {
-                    ItemInject(data.location, data.itemType, (byte)data.item);
-                }
-                surfSkip:
-                optionsArray.Remove(data);
-            }
-
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
-            foreach (LocationData data in optionsArray.ToList())
-            {
-                if (Form1.mush && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
-                {
-                    ItemInject(data.location, data.itemType, 0xA);
-                    goto mushSkip;
-                }
-
-                if (data.item == 0x9E)
-                {
-                    ItemInject(data.location, data.itemType, 0x9E);
-                    goto mushSkip;
-                }
-
-                if (Form1.badges)
-                {
-                    ValidArrayAdd(data);
-                }
-                else
-                {
-                    ItemInject(data.location, data.itemType, (byte)data.item);
-                }
-                mushSkip:
-                optionsArray.Remove(data);
-            }
-
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
-            foreach (LocationData data in optionsArray.ToList())
-            {
-                if(data.location == 0x39DB0F)
-                {
-                    if(Form1.minecart)
+                    if (Form1.mush && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
                     {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
+                        ItemInject(data.location, data.itemType, 0xA);
+                        goto mushSkip;
+                    }
+
+                    if (data.item == 0x9E)
+                    {
+                        ItemInject(data.location, data.itemType, 0x9E);
+                        goto mushSkip;
+                    }
+
+                    if (Form1.badges)
+                    {
+                        ValidArrayAdd(data);
                     }
                     else
                     {
-                        ValidArrayAdd(data);
+                        ItemInject(data.location, data.itemType, (byte)data.item);
                     }
+                    mushSkip:
+                    optionsArray.Remove(data);
                 }
-                if (data.item == 0x1E)
+
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
+                foreach (LocationData data in optionsArray.ToList())
                 {
-                    if (Form1.chuckle == 3)
+                    if (data.location == 0x39DB0F)
                     {
-                        ValidArrayAdd(data);
-                    }
-                    else if (Form1.chuckle == 2)
-                    {
-                        stream.Seek(data.location - 6, SeekOrigin.Begin);
-                        if (stream.ReadByte() == 0xC0)
+                        if (Form1.minecart)
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
                         }
@@ -819,16 +893,43 @@ namespace MLSSRandomizerForm
                             ValidArrayAdd(data);
                         }
                     }
+                    if (data.item == 0x1E)
+                    {
+                        if (Form1.chuckle == 3)
+                        {
+                            ValidArrayAdd(data);
+                        }
+                        else if (Form1.chuckle == 2)
+                        {
+                            stream.Seek(data.location - 6, SeekOrigin.Begin);
+                            if (stream.ReadByte() == 0xC0)
+                            {
+                                ItemInject(data.location, data.itemType, (byte)data.item);
+                            }
+                            else
+                            {
+                                ValidArrayAdd(data);
+                            }
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
                     else
                     {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
+                        ValidArrayAdd(data);
                     }
+                    optionsArray.Remove(data);
                 }
-                else
+            }
+            if(gameId == 3)
+            {
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/bis/items/AllAddresses.txt"));
+                foreach(BiSLocationData data in optionsArray)
                 {
                     ValidArrayAdd(data);
                 }
-                optionsArray.Remove(data);
             }
         }
 
@@ -1263,55 +1364,70 @@ namespace MLSSRandomizerForm
 
         public void ArrayInitialize(int array, string[] data)
         {
-            for (int i = 0; i < data.Length; i += 20)
+            if (gameId == 1)
             {
-                if (array == 1)
+                for (int i = 0; i < data.Length; i += 20)
                 {
-                    optionsArray.Add(new LocationData(Convert.ToUInt32(data[i], 16),
-                                                       Convert.ToUInt32(data[i + 1], 16),
-                                                       Convert.ToInt32(data[i + 2], 16),
-                                                       Convert.ToInt32(data[i + 3], 16),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 4], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 5], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 6], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 7], 16)),
-                                                       Convert.ToInt32(data[i + 8], 16),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 9], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 10], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 11], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 12], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 13], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 14], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 15], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
-                                                       Convert.ToInt32(data[i + 17], 16),
-                                                       Convert.ToInt32(data[i + 18], 16),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
+                    if (array == 1)
+                    {
+                        optionsArray.Add(new LocationData(Convert.ToUInt32(data[i], 16),
+                                                           Convert.ToUInt32(data[i + 1], 16),
+                                                           Convert.ToInt32(data[i + 2], 16),
+                                                           Convert.ToInt32(data[i + 3], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 4], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 5], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 6], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 7], 16)),
+                                                           Convert.ToInt32(data[i + 8], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 9], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 10], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 11], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 12], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 13], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 14], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 15], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
+                                                           Convert.ToInt32(data[i + 17], 16),
+                                                           Convert.ToInt32(data[i + 18], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
+                    }
+
+                    if (array == 2)
+                    {
+                        freshLocationArray.Add(new LocationData(Convert.ToUInt32(data[i], 16),
+                                                           Convert.ToUInt32(data[i + 1], 16),
+                                                           Convert.ToInt32(data[i + 2], 16),
+                                                           Convert.ToInt32(data[i + 3], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 4], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 5], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 6], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 7], 16)),
+                                                           Convert.ToInt32(data[i + 8], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 9], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 10], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 11], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 12], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 13], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 14], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 15], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
+                                                           Convert.ToInt32(data[i + 17], 16),
+                                                           Convert.ToInt32(data[i + 18], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
+                    }
+                }
+            }
+
+            if(gameId == 3)
+            {
+                for(int i = 0; i < data.Length; i += 4)
+                {
+                    if(array == 2)
+                        freshLocationArray.Add(new BiSLocationData(Convert.ToUInt32(data[i], 16), new bisitem((byte)Convert.ToUInt32(data[i + 1], 16), (byte)Convert.ToUInt32(data[i + 2], 16), (byte)Convert.ToUInt32(data[i + 3], 16))));
+                    if(array == 1)
+                        optionsArray.Add(new BiSLocationData(Convert.ToUInt32(data[i], 16), new bisitem((byte)Convert.ToUInt32(data[i + 1], 16), (byte)Convert.ToUInt32(data[i + 2], 16), (byte)Convert.ToUInt32(data[i + 3], 16))));
                 }
 
-                if (array == 2)
-                {
-                    freshLocationArray.Add(new LocationData(Convert.ToUInt32(data[i], 16),
-                                                       Convert.ToUInt32(data[i + 1], 16),
-                                                       Convert.ToInt32(data[i + 2], 16),
-                                                       Convert.ToInt32(data[i + 3], 16),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 4], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 5], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 6], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 7], 16)),
-                                                       Convert.ToInt32(data[i + 8], 16),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 9], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 10], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 11], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 12], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 13], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 14], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 15], 16)),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
-                                                       Convert.ToInt32(data[i + 17], 16),
-                                                       Convert.ToInt32(data[i + 18], 16),
-                                                       Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
-                }
             }
         }
 
@@ -1341,51 +1457,71 @@ namespace MLSSRandomizerForm
 
         public void Randomize()
         {
-            rBegin:
-            itemArray.Shuffle(random);
-            locationArray = new List<LocationData>(validLocationArray);
-            locationArray.Shuffle(random);
-            int beanCount = 0;
-            for (int i = 0; i < itemArray.Count; i++)
+            if (gameId == 1)
             {
-                reInsert:
-                if (CheckValidSpot(locationArray[i], itemArray[i]))
+                rBegin:
+                itemArray.Shuffle(random);
+                locationArray = new List<dynamic>(validLocationArray);
+                locationArray.Shuffle(random);
+                for (int i = 0; i < itemArray.Count; i++)
                 {
-                    itemArray.Shuffle(random);
-                    goto reInsert;
+                    reInsert:
+                    if (CheckValidSpot(locationArray[i], itemArray[i]))
+                    {
+                        itemArray.Shuffle(random);
+                        goto reInsert;
+                    }
+                    ItemInject(locationArray[i].location, locationArray[i].itemType, itemArray[i]);
                 }
-                ItemInject(locationArray[i].location, locationArray[i].itemType, itemArray[i]);
-            }
-            Console.WriteLine(beanCount);
-            gameState = new LocationData(0);
-            if (!CheckValidity())
-            {
-                validLocations = new List<LocationData>();
-                Console.WriteLine(++iterationCount);
-                goto rBegin;
-            }
-            if (Form1.intro)
-            {
-                stream.Seek(0x244F64, SeekOrigin.Begin);
-                stream.WriteByte(0x0);
-                stream.WriteByte(0x0);
-                stream.WriteByte(0x0);
-                stream.WriteByte(0x0);
-            }
-            if (Form1.castle)
-            {
-                stream.Seek(0x3AEAB0, SeekOrigin.Begin);
-                stream.Write(new byte[] { 0xC1, 0x67, 0x0, 0x6, 0x1C, 0x08, 0x3 }, 0, 7);
-                stream.Seek(0x3AEC18, SeekOrigin.Begin);
-                stream.Write(new byte[] { 0x89, 0x65, 0x0, 0xE, 0xA, 0x08, 0x1 }, 0, 7);
+                gameState = new LocationData(0);
+                if (!CheckValidity())
+                {
+                    validLocations = new List<dynamic>();
+                    Console.WriteLine(++iterationCount);
+                    goto rBegin;
+                }
+                if (Form1.intro)
+                {
+                    stream.Seek(0x244F64, SeekOrigin.Begin);
+                    stream.WriteByte(0x0);
+                    stream.WriteByte(0x0);
+                    stream.WriteByte(0x0);
+                    stream.WriteByte(0x0);
+                }
+                if (Form1.castle)
+                {
+                    stream.Seek(0x3AEAB0, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0xC1, 0x67, 0x0, 0x6, 0x1C, 0x08, 0x3 }, 0, 7);
+                    stream.Seek(0x3AEC18, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x89, 0x65, 0x0, 0xE, 0xA, 0x08, 0x1 }, 0, 7);
 
+                }
+                if (Form1.minecart)
+                {
+                    stream.Seek(0x3AC728, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x1 }, 0, 7);
+                    stream.Seek(0x3AC56C, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x1 }, 0, 7);
+                }
             }
-            if (Form1.minecart)
+
+            if(gameId == 3)
             {
-                stream.Seek(0x3AC728, SeekOrigin.Begin);
-                stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x1 }, 0, 7);
-                stream.Seek(0x3AC56C, SeekOrigin.Begin);
-                stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x1 }, 0, 7);
+                rBegin:
+                itemArray.Shuffle(random);
+                locationArray = new List<dynamic>(validLocationArray);
+                locationArray.Shuffle(random);
+                for (int i = 0; i < itemArray.Count; i++)
+                {
+                    ItemInject(locationArray[i].location, 0, itemArray[i]);
+                }
+                gameState = new LocationData(0);
+                if (!CheckValidity())
+                {
+                    validLocations = new List<dynamic>();
+                    Console.WriteLine(++iterationCount);
+                    goto rBegin;
+                }
             }
         }
 
@@ -1492,57 +1628,65 @@ namespace MLSSRandomizerForm
         }
 
 
-        public void ItemInject(uint location, int itemType, byte item)
+        public void ItemInject(uint location, int itemType, dynamic item)
         {
-
-            switch (itemType)
+            if (gameId == 1)
             {
+                switch (itemType)
+                {
 
-                case 0:
-                    stream.Seek(location, SeekOrigin.Begin);
-                    stream.WriteByte(item);
-                    break;
+                    case 0:
+                        stream.Seek(location, SeekOrigin.Begin);
+                        stream.WriteByte(item);
+                        break;
 
-                case 1:
-                    if (item == 0x1D || item == 0x1E)
-                        item += 0xE;
-                    if (item >= 0x20 && item <= 0x26)
-                        item -= 0x4;
-                    int insert = Convert.ToInt32(item);
-                    int insert2 = insert % 0x10;
-                    insert2 *= 0x10;
-                    insert /= 0x10;
-                    insert += 0x20;
-                    stream.Seek(location, SeekOrigin.Begin);
-                    stream.WriteByte(Convert.ToByte(insert));
-                    stream.WriteByte(Convert.ToByte(insert2));
-                    break;
+                    case 1:
+                        if (item == 0x1D || item == 0x1E)
+                            item += 0xE;
+                        if (item >= 0x20 && item <= 0x26)
+                            item -= 0x4;
+                        int insert = Convert.ToInt32(item);
+                        int insert2 = insert % 0x10;
+                        insert2 *= 0x10;
+                        insert /= 0x10;
+                        insert += 0x20;
+                        stream.Seek(location, SeekOrigin.Begin);
+                        stream.WriteByte(Convert.ToByte(insert));
+                        stream.WriteByte(Convert.ToByte(insert2));
+                        break;
 
-                case 3:
-                    if (item == 0x1D || item == 0x1E)
-                        item += 0xE;
-                    if (item < 0x1D)
-                        item -= 0xA;
-                    if (item >= 0x20 && item <= 0x26)
-                        item -= 0xE;
-                    stream.Seek(location, SeekOrigin.Begin);
-                    stream.WriteByte((byte)item);
-                    break;
+                    case 3:
+                        if (item == 0x1D || item == 0x1E)
+                            item += 0xE;
+                        if (item < 0x1D)
+                            item -= 0xA;
+                        if (item >= 0x20 && item <= 0x26)
+                            item -= 0xE;
+                        stream.Seek(location, SeekOrigin.Begin);
+                        stream.WriteByte((byte)item);
+                        break;
 
-                case 2:
-                    if (item == 0x1D || item == 0x1E)
-                        item += 0xE;
-                    if (item >= 0x20 && item <= 0x26)
-                        item -= 0x4;
-                    stream.Seek(location, SeekOrigin.Begin);
-                    stream.WriteByte(item);
-                    break;
+                    case 2:
+                        if (item == 0x1D || item == 0x1E)
+                            item += 0xE;
+                        if (item >= 0x20 && item <= 0x26)
+                            item -= 0x4;
+                        stream.Seek(location, SeekOrigin.Begin);
+                        stream.WriteByte(item);
+                        break;
 
 
-                default:
-                    stream.Seek(location, SeekOrigin.Begin);
-                    stream.WriteByte(Convert.ToByte(0x18));
-                    break;
+                    default:
+                        stream.Seek(location, SeekOrigin.Begin);
+                        stream.WriteByte(Convert.ToByte(0x18));
+                        break;
+                }
+            }
+
+            if(gameId == 3)
+            {
+                stream.Seek(location, SeekOrigin.Begin);
+                stream.Write(new byte[] { item.quantity, item.byte1, item.byte2 }, 0, 3);
             }
 
         }

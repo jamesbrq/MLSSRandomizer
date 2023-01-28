@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MLSSRandomizerForm
 {
     public partial class Form1 : Form
     {
+        public int gameId;
         readonly string progVersion; // ProductVersion on AssemblyInfo.cs, [AssemblyInformationalVersion(...)]
         string filePath;
         string seed;
@@ -53,11 +56,25 @@ namespace MLSSRandomizerForm
         public static string mPants = "Vanilla";
         public static string lPants = "Vanilla";
 
+        //BiS Variables
+        public readonly string bisHash = "05072F0545BF4492D81FDFF6B595B9D20C816007";
+        public static bool bItems = true;
+
         public Form1()
         {
             InitializeComponent();
             progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             Text += " " + progVersion; // show version in title
+        }
+
+        public string ComputeHash()
+        {
+            StreamReader sr = File.OpenText(filePath);
+            string file = sr.ReadToEnd();
+            byte[] temp = Encoding.Default.GetBytes(file);
+            temp = new SHA1CryptoServiceProvider().ComputeHash(temp);
+            return BitConverter.ToString(temp).Replace("-", "");
+            
         }
 
         private void SelectRomButton_Click(object sender, EventArgs e)
@@ -75,24 +92,44 @@ namespace MLSSRandomizerForm
         {
             try
             {
-                (string newFile, int hash) = Randomize.Random(filePath, seed);
+                Console.WriteLine(ComputeHash());
+                (string newFile, int hash) = Randomize.Random(filePath, seed, gameId);
                 // Hexadecimal ConfigHash is constant regardless of seed, and helps to identify equal settings.
                 var list = new List<string>();
                 Rom.ConfigInfo(list);
                 uint configHash = (uint)string.Join("\n", list).GetHashCode();
                 // Identical ROMs generated on same progVersion will have the same (seed, configHash) tuple
                 // Default file name when saving contains this info for convenience
-                saveFileDialog1.FileName = $"MLSSRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.gba";
-                saveFileDialog1.ShowDialog();
-                if (File.Exists(saveFileDialog1.FileName))
-                    File.Delete(saveFileDialog1.FileName);
-                if (saveFileDialog1.FileName != "")
+                if (gameId == 1)
                 {
-                    File.Copy(newFile, saveFileDialog1.FileName);
-                    File.Delete(newFile);
-                    Console.WriteLine("Seed: " + hash);
-                    if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        Clipboard.SetText(Convert.ToString(hash), TextDataFormat.Text);
+                    saveFileDialog1.FileName = $"MLSSRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.gba";
+                    saveFileDialog1.ShowDialog();
+                    if (File.Exists(saveFileDialog1.FileName))
+                        File.Delete(saveFileDialog1.FileName);
+                    if (saveFileDialog1.FileName != "")
+                    {
+                        File.Copy(newFile, saveFileDialog1.FileName);
+                        File.Delete(newFile);
+                        Console.WriteLine("Seed: " + hash);
+                        if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            Clipboard.SetText(Convert.ToString(hash), TextDataFormat.Text);
+                    }
+                }
+                else if (gameId == 3)
+                {
+                    saveFileDialog2.FileName = $"BISRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.nds";
+                    saveFileDialog2.ShowDialog();
+
+                    if (File.Exists(saveFileDialog2.FileName))
+                        File.Delete(saveFileDialog2.FileName);
+                    if (saveFileDialog2.FileName != "")
+                    {
+                        File.Copy(newFile, saveFileDialog2.FileName);
+                        File.Delete(newFile);
+                        Console.WriteLine("Seed: " + hash);
+                        if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                            Clipboard.SetText(Convert.ToString(hash), TextDataFormat.Text);
+                    }
                 }
             }
             catch (Exception err)
@@ -112,6 +149,19 @@ namespace MLSSRandomizerForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             filePath = textBox1.Text;
+            //string hash = ComputeHash();
+            if (filePath.Contains(".nds"))
+            {
+                tabControl2.Visible = true;
+                gameId = 3;
+            }
+            else if(filePath.Contains(".gba"))
+            {
+                gameId = 1;
+                tabControl1.Enabled = true;
+                tabControl1.Visible = true;
+                tabControl2.Visible = false;
+            }
         }
 
         private void SeedTextbox_TextChanged(object sender, EventArgs e)
@@ -395,6 +445,16 @@ namespace MLSSRandomizerForm
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
             lPants = comboBox4.Text;
+        }
+
+        private void checkBox35_CheckedChanged(object sender, EventArgs e)
+        {
+            bItems = checkBox35.Checked;
+        }
+
+        private void saveFileDialog2_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
         }
     }
 }
