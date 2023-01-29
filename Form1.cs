@@ -55,10 +55,15 @@ namespace MLSSRandomizerForm
         public static string lColor = "Green";
         public static string mPants = "Vanilla";
         public static string lPants = "Vanilla";
+        public static int r = 0;
+        public static int g = 0;
+        public static int b = 0;
 
         //BiS Variables
         public readonly string bisHash = "05072F0545BF4492D81FDFF6B595B9D20C816007";
         public static bool bItems = true;
+
+        
 
         public Form1()
         {
@@ -158,7 +163,7 @@ namespace MLSSRandomizerForm
             else if(filePath.Contains(".gba"))
             {
                 gameId = 1;
-                tabControl1.Visible = true;
+                Colors.Visible = true;
                 tabControl2.Visible = false;
             }
         }
@@ -454,6 +459,81 @@ namespace MLSSRandomizerForm
         private void saveFileDialog2_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
         {
 
+        }
+
+        private void panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox36_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void numericUpDown3_ValueChanged(object sender, EventArgs e)
+        {
+            r = (int)numericUpDown3.Value;
+            panel1.BackColor = System.Drawing.Color.FromArgb(r, g, b);
+        }
+
+        private void numericUpDown1_ValueChanged_1(object sender, EventArgs e)
+        {
+            g = (int)numericUpDown1.Value;
+            panel1.BackColor = System.Drawing.Color.FromArgb(r, g, b);
+        }
+
+        private void numericUpDown4_ValueChanged(object sender, EventArgs e)
+        {
+            b = (int)numericUpDown4.Value;
+            panel1.BackColor = System.Drawing.Color.FromArgb(r, g, b);
+        }
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        //Mario Colors
+        private void button3_Click(object sender, EventArgs e)
+        {
+            mColor = Convert.ToString(r, 16) + ',' + Convert.ToString(g, 16) + ',' + Convert.ToString(b, 16);
+            comboBox1.Items[12] = mColor;
+            comboBox1.SelectedIndex = 12;
+        }
+
+        //Mario Trousers
+        private void button1_Click(object sender, EventArgs e)
+        {
+            mPants = Convert.ToString(r, 16) + ',' + Convert.ToString(g, 16) + ',' + Convert.ToString(b, 16);
+            comboBox3.Items[13] = mPants;
+            comboBox3.SelectedIndex = 13;
+        }
+
+        //Luigi Colors
+        private void button4_Click(object sender, EventArgs e)
+        {
+            lColor = Convert.ToString(r, 16) + ',' + Convert.ToString(g, 16) + ',' + Convert.ToString(b, 16);
+            comboBox2.Items[12] = lColor;
+            comboBox2.SelectedIndex = 12;
+        }
+
+        //Luigi Trousers
+        private void button5_Click(object sender, EventArgs e)
+        {
+            lPants = Convert.ToString(r, 16) + ',' + Convert.ToString(g, 16) + ',' + Convert.ToString(b, 16);
+            comboBox4.Items[13] = lPants;
+            comboBox4.SelectedIndex = 13;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Security.Cryptography;
+using System.Windows.Forms;
 
 
 public static class ListExtensions
@@ -123,6 +124,38 @@ namespace MLSSRandomizerForm
             public int bro;
         }
 
+        public struct GbaColor
+        {
+            public GbaColor(byte byte1, byte byte2)
+            {
+                this.byte1 = byte1;
+                this.byte2 = byte2;
+            }
+
+            public byte byte1;
+            public byte byte2;
+        }
+
+        public struct Palette
+        {
+            public Palette(string hex)
+            {
+                shades = new List<GbaColor>();
+                var tempcolor = HexToColor(hex);
+                shades.Add(HexTo15Bit(tempcolor.R, tempcolor.G, tempcolor.B));
+                var tempshade = ControlPaint.Dark(tempcolor, .1f);
+                shades.Add(HexTo15Bit(tempshade.R, tempshade.G, tempshade.B));
+                tempshade = ControlPaint.Light(tempcolor, .1f);
+                shades.Add(HexTo15Bit(tempshade.R, tempshade.G, tempshade.B));
+                tempshade = ControlPaint.Dark(tempcolor, .2f);
+                shades.Add(HexTo15Bit(tempshade.R, tempshade.G, tempshade.B));
+                tempshade = ControlPaint.Light(tempcolor, .2f);
+                shades.Add(HexTo15Bit(tempshade.R, tempshade.G, tempshade.B));
+            }
+
+            //Shades: 0 - Normal, 1 - Slightly Darker, 2 - Slightly Lighter, 3 - Darker, 4 - Lighter
+            public List<GbaColor> shades { get; set; }
+        }
 
         public struct SpoilerItem
         {
@@ -953,14 +986,35 @@ namespace MLSSRandomizerForm
         {
             if (pants != "" && color == "Vanilla")
                 return;
-            string tempcolor = GenColor(color);
-            string[] temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + pants + tempcolor + ".txt");
+            string tempcolor;
+            string[] temp;
+            Palette palette;
+            if (color.Contains(','))
+            {
+                palette = new Palette(color);
+                temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + pants + "Custom.txt");
+                tempcolor = "Custom";
+            }
+            else 
+            {
+                palette = new Palette();
+                tempcolor = GenColor(color);
+                temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + pants + tempcolor + ".txt");
+            }
             List<Color> colors = new List<Color>();
             if (tempcolor == "Chaos" || tempcolor == "TrueChaos")
             {
                 for (int i = 0; i < temp.Length; i += 2)
                 {
                     colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0x0, 0x7F), (byte)random.Next(0x0, 0xFF), Convert.ToInt32(temp[i + 1], 16)));
+                }
+            }
+            else if(tempcolor == "Custom")
+            {
+                for (int i = 0; i < temp.Length; i += 3)
+                {
+                    int shade = Convert.ToInt32(temp[i + 1], 16);
+                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), palette.shades[shade].byte1, palette.shades[shade].byte2, Convert.ToInt32(temp[i + 2], 16)));
                 }
             }
             else
@@ -1672,7 +1726,7 @@ namespace MLSSRandomizerForm
                         if (item >= 0x20 && item <= 0x26)
                             item -= 0x4;
                         stream.Seek(location, SeekOrigin.Begin);
-                        stream.WriteByte(item);
+                        stream.WriteByte((byte)item);
                         break;
 
 
@@ -1724,6 +1778,33 @@ namespace MLSSRandomizerForm
         public byte[] ASCIIToHex(string strValue)
         {
             return Encoding.UTF8.GetBytes(strValue);
+        }
+
+        public static System.Drawing.Color HexToColor(string hex)
+        {
+            string[] indiv = hex.Split(',');
+            string r = indiv[0];
+            string g = indiv[1];
+            string b = indiv[2];
+            return System.Drawing.ColorTranslator.FromHtml("#" + r + g + b);
+        }
+
+        public static GbaColor HexTo15Bit(byte r, byte g, byte b)
+        {
+            string rs = Convert.ToString(r, 16);
+            string gs = Convert.ToString(g, 16);
+            string bs = Convert.ToString(b, 16);
+            rs = Convert.ToString(Convert.ToInt32(rs, 16), 2).PadLeft(8, '0').Substring(0, 5);
+            gs = Convert.ToString(Convert.ToInt32(gs, 16), 2).PadLeft(8, '0').Substring(0, 5);
+            bs = Convert.ToString(Convert.ToInt32(bs, 16), 2).PadLeft(8, '0').Substring(0, 5);
+            StringBuilder sb = new StringBuilder();
+            sb.Append(bs);
+            sb.Append(gs);
+            sb.Append(rs);
+            uint byte1 = Convert.ToUInt32(sb.ToString().Substring(7), 2);
+            uint byte2 = Convert.ToUInt32(sb.ToString().Substring(0, 7), 2);
+
+            return new GbaColor((byte)byte1, (byte)byte2);
         }
     }
 
