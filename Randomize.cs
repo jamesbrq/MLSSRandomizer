@@ -1356,6 +1356,8 @@ namespace MLSSRandomizerForm
                     if (i == 6)
                         break;
                 }
+                if (count > 4)
+                    count = 4;
                 groupSizes.Add(count);
             }
         }

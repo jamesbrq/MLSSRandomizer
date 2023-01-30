@@ -370,6 +370,9 @@
     .org BEANLET_FIX
         db 0x16
 
+    .org CASTLE_DOOR_FIX
+        db 0xB
+
     .org FLAG_FIX 
         mov r0, r0
 
@@ -617,15 +620,14 @@
 
 
     .org CALC_HEALTH
-    push { r1, r2, lr }
+    push { r1, lr }
     ldr r1, =0x030024B8
     ldrb r1, [r1]
     sub r1, #0x7
-    mov r2, #0x2
-    mul r2, r1
-    add r2, #0xA
+    lsl r1, #0x1
+    add r1, #0xA
     mov r0, r1
-    pop { r1, r2, pc }
+    pop { r1, pc }
     .pool
 
 
