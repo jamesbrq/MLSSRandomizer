@@ -120,6 +120,7 @@ namespace MLSSRandomizerForm
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox36 = new System.Windows.Forms.CheckBox();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -695,6 +696,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBox36);
             this.tabPage5.Controls.Add(this.checkBox32);
             this.tabPage5.Controls.Add(this.checkBox31);
             this.tabPage5.Controls.Add(this.label6);
@@ -1225,6 +1227,18 @@ namespace MLSSRandomizerForm
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
+            // checkBox36
+            // 
+            this.checkBox36.AutoSize = true;
+            this.checkBox36.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox36.Location = new System.Drawing.Point(197, 151);
+            this.checkBox36.Name = "checkBox36";
+            this.checkBox36.Size = new System.Drawing.Size(153, 17);
+            this.checkBox36.TabIndex = 40;
+            this.checkBox36.Text = "Enable Minigame Spoilers?";
+            this.checkBox36.UseVisualStyleBackColor = true;
+            this.checkBox36.CheckedChanged += new System.EventHandler(this.checkBox36_CheckedChanged_1);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1360,6 +1374,7 @@ namespace MLSSRandomizerForm
         private Button button4;
         private Button button3;
         private Button button1;
+        private CheckBox checkBox36;
     }
 }
 

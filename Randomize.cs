@@ -1559,6 +1559,11 @@ namespace MLSSRandomizerForm
                     stream.Seek(0x3AC56C, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x49, 0x16, 0x0, 0x8, 0x8, 0x08, 0x1 }, 0, 7);
                 }
+                if(Form1.minigame)
+                {
+                    stream.Seek(0x1E940F, SeekOrigin.Begin);
+                    stream.WriteByte(0x1);
+                }
             }
 
             if(gameId == 3)

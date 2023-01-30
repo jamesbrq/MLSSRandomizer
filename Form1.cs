@@ -50,6 +50,7 @@ namespace MLSSRandomizerForm
         public static bool minecart = false;
         public static bool trueChaos = false;
         public static bool spangle = true;
+        public static bool minigame = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -534,6 +535,11 @@ namespace MLSSRandomizerForm
             lPants = Convert.ToString(r, 16) + ',' + Convert.ToString(g, 16) + ',' + Convert.ToString(b, 16);
             comboBox4.Items[13] = lPants;
             comboBox4.SelectedIndex = 13;
+        }
+
+        private void checkBox36_CheckedChanged_1(object sender, EventArgs e)
+        {
+            minigame = checkBox36.Checked;
         }
     }
 }
