@@ -629,7 +629,7 @@
     ldr r5, =ERANDOM
     ldrb r5, [r5]
     cmp r5, #0x1
-    beq .xp_end
+    bne .xp_end
     mov r5, r9
     sub r7, r5
     cmp r7, #0x24
