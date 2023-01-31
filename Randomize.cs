@@ -535,6 +535,7 @@ namespace MLSSRandomizerForm
         {
             if (gameId == 1)
             {
+                list.Add("Seed Type: " + Form1.seedType);
                 list.Add("Chuckle: " + Form1.chuckle);
                 list.Add("Rose: " + Form1.rose);
                 list.Add("Brooch: " + Form1.brooch);
@@ -548,6 +549,7 @@ namespace MLSSRandomizerForm
                 list.Add("Neon Eggs: " + Form1.eggs);
                 list.Add("Beanstones: " + Form1.beanstone);
                 list.Add("Beanlets: " + Form1.beanlet);
+                list.Add("Spangle: " + Form1.spangle);
                 list.Add("Hammers: " + Form1.hammers);
                 list.Add("Hammer Moves: " + Form1.goblets);
                 list.Add("Hands: " + Form1.hands);
@@ -559,17 +561,14 @@ namespace MLSSRandomizerForm
                 list.Add("BP Costs: " + Form1.brosBp);
                 list.Add("Item Heal: " + Form1.itemHeal);
                 list.Add("Espresso Stats: " + Form1.coffeeValue);
-                list.Add("Music: " + Form1.music);
                 list.Add("Enemies: " + Form1.enemy);
                 list.Add("Enemy Stats: " + Form1.scale);
-                list.Add("Battle Backgrounds: " + Form1.background);
                 list.Add("Disable Mush: " + Form1.mush);
                 list.Add("Disable Surf: " + Form1.surf);
                 list.Add("Skip Minecart: " + Form1.minecart);
                 list.Add("Skip Bowsers: " + Form1.castle);
                 list.Add("Skip intro: " + Form1.intro);
-                list.Add("Mario Color: " + Form1.mColor);
-                list.Add("Luigi Color: " + Form1.lColor);
+                list.Add("Minigame Spoilers: " + Form1.minigame);
                 list.Add(" ");
             }
         }
@@ -1488,7 +1487,7 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public string[] StreamInitialize(string path)
+        public static string[] StreamInitialize(string path)
         {
             var str = new StreamReader(path).ReadToEnd();
             string[] lines = str.Split(new char[] { ',' });

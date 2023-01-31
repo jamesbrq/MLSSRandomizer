@@ -117,9 +117,13 @@ namespace MLSSRandomizerForm
             this.tabPage8 = new System.Windows.Forms.TabPage();
             this.checkBox35 = new System.Windows.Forms.CheckBox();
             this.saveFileDialog2 = new System.Windows.Forms.SaveFileDialog();
+            this.button6 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -169,7 +173,7 @@ namespace MLSSRandomizerForm
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(332, 256);
+            this.button2.Location = new System.Drawing.Point(344, 259);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 4;
@@ -189,16 +193,16 @@ namespace MLSSRandomizerForm
             // 
             // SeedTextbox
             // 
-            this.SeedTextbox.Location = new System.Drawing.Point(186, 259);
+            this.SeedTextbox.Location = new System.Drawing.Point(253, 261);
             this.SeedTextbox.Name = "SeedTextbox";
-            this.SeedTextbox.Size = new System.Drawing.Size(140, 20);
+            this.SeedTextbox.Size = new System.Drawing.Size(85, 20);
             this.SeedTextbox.TabIndex = 5;
             this.SeedTextbox.TextChanged += new System.EventHandler(this.SeedTextbox_TextChanged);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(145, 262);
+            this.label2.Location = new System.Drawing.Point(212, 264);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 6;
@@ -1217,6 +1221,37 @@ namespace MLSSRandomizerForm
             this.saveFileDialog2.Filter = "Nintendo DS Rom (*.nds)|*.nds|All files (*.*)|*.*";
             this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
+            // saveFileDialog3
+            // 
+            this.saveFileDialog3.DefaultExt = "txt";
+            this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
+            this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
+            // 
+            // button6
+            // 
+            this.button6.Location = new System.Drawing.Point(109, 259);
+            this.button6.Name = "button6";
+            this.button6.Size = new System.Drawing.Size(97, 23);
+            this.button6.TabIndex = 10;
+            this.button6.Text = "Save Settings...";
+            this.button6.UseVisualStyleBackColor = true;
+            this.button6.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(12, 259);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(91, 23);
+            this.button7.TabIndex = 11;
+            this.button7.Text = "Load Settings...";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // openFileDialog2
+            // 
+            this.openFileDialog2.FileName = "openFileDialog2";
+            this.openFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog2_FileOk);
+            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -1234,6 +1269,8 @@ namespace MLSSRandomizerForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(431, 294);
+            this.Controls.Add(this.button7);
+            this.Controls.Add(this.button6);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.SeedTextbox);
             this.Controls.Add(this.button2);
@@ -1364,6 +1401,10 @@ namespace MLSSRandomizerForm
         private Button button3;
         private Button button1;
         private CheckBox checkBox36;
+        private Button button6;
+        private Button button7;
+        private OpenFileDialog openFileDialog2;
+        private SaveFileDialog saveFileDialog3;
     }
 }
 

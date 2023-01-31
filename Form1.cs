@@ -15,6 +15,8 @@ namespace MLSSRandomizerForm
         readonly string progVersion; // ProductVersion on AssemblyInfo.cs, [AssemblyInformationalVersion(...)]
         string filePath;
         string seed;
+
+        Dictionary<string, int> config = new Dictionary<string, int>();
         public static int chuckle = 3;
         public static bool intro = false;
         public static bool mush = false;
@@ -80,6 +82,183 @@ namespace MLSSRandomizerForm
             temp = new SHA1CryptoServiceProvider().ComputeHash(temp);
             return BitConverter.ToString(temp).Replace("-", "");
             
+        }
+
+        public void SetConfig()
+        {
+            int temp;
+            config.TryGetValue("chuckle", out temp);
+            chuckle = temp;
+            switch(temp)
+            {
+                case 1:
+                    radioButton1.Checked = true;
+                    break;
+
+                case 2:
+                    radioButton2.Checked = true;
+                    break;
+
+                case 3:
+                    radioButton3.Checked = true;
+                    break;
+
+                default:
+                    radioButton3.Checked = true;
+                    break;
+            }
+            config.TryGetValue("seedtype", out temp);
+            seedType = temp;
+            switch (temp)
+            {
+                case 1:
+                    radioButton5.Checked = true;
+                    break;
+
+                case 2:
+                    radioButton4.Checked = true;
+                    break;
+
+                default:
+                    radioButton3.Checked = true;
+                    break;
+            }
+            config.TryGetValue("rose", out temp);
+            rose = Convert.ToBoolean(temp);
+            checkBox2.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("brooch", out temp);
+            brooch = Convert.ToBoolean(temp);
+            checkBox3.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("chuckola", out temp);
+            chuckola = Convert.ToBoolean(temp);
+            checkBox4.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("membership", out temp);
+            membership = Convert.ToBoolean(temp);
+            checkBox5.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("winkle", out temp);
+            winkle = Convert.ToBoolean(temp);
+            checkBox6.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("beanstar", out temp);
+            beanstar = Convert.ToBoolean(temp);
+            checkBox7.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("dress", out temp);
+            dress = Convert.ToBoolean(temp);
+            checkBox8.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("fruit", out temp);
+            fruit = Convert.ToBoolean(temp);
+            checkBox9.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("eggs", out temp);
+            eggs = Convert.ToBoolean(temp);
+            checkBox10.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("scrolls", out temp);
+            scrolls = Convert.ToBoolean(temp);
+            checkBox18.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("beanstone", out temp);
+            beanstone = Convert.ToBoolean(temp);
+            checkBox19.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("beanlet", out temp);
+            beanlet = Convert.ToBoolean(temp);
+            checkBox22.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("spangle", out temp);
+            spangle = Convert.ToBoolean(temp);
+            checkBox34.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("hammers", out temp);
+            hammers = Convert.ToBoolean(temp);
+            checkBox11.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("goblets", out temp);
+            goblets = Convert.ToBoolean(temp);
+            checkBox15.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("hands", out temp);
+            hands = Convert.ToBoolean(temp);
+            checkBox12.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("pearls", out temp);
+            pearls = Convert.ToBoolean(temp);
+            checkBox16.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("shops", out temp);
+            eggs = Convert.ToBoolean(temp);
+            checkBox21.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("pants", out temp);
+            pants = Convert.ToBoolean(temp);
+            checkBox14.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("badges", out temp);
+            badges = Convert.ToBoolean(temp);
+            checkBox13.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("espresso", out temp);
+            espresso = Convert.ToBoolean(temp);
+            checkBox17.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("brosbp", out temp);
+            brosBp = Convert.ToBoolean(temp);
+            checkBox26.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("itemheal", out temp);
+            itemHeal = Convert.ToBoolean(temp);
+            checkBox27.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("coffeevalue", out temp);
+            coffeeValue = Convert.ToBoolean(temp);
+            checkBox28.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("intro", out temp);
+            intro = Convert.ToBoolean(temp);
+            checkBox1.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("castle", out temp);
+            castle = Convert.ToBoolean(temp);
+            checkBox24.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("minecart", out temp);
+            minecart = Convert.ToBoolean(temp);
+            checkBox32.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("surf", out temp);
+            surf = Convert.ToBoolean(temp);
+            checkBox23.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("mush", out temp);
+            mush = Convert.ToBoolean(temp);
+            checkBox20.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("enemy", out temp);
+            enemy = Convert.ToBoolean(temp);
+            checkBox25.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("scale", out temp);
+            scale = Convert.ToBoolean(temp);
+            checkBox31.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("minigame", out temp);
+            minigame = Convert.ToBoolean(temp);
+            checkBox36.Checked = Convert.ToBoolean(temp);
+        }
+
+        public void SaveConfig()
+        {
+            List<string> strings = new List<string>();
+            strings.Add("seedtype," + seedType + ",");
+            strings.Add("chuckle," + chuckle + ",");
+            strings.Add("rose," + Convert.ToInt32(rose) + ",");
+            strings.Add("brooch," + Convert.ToInt32(brooch) + ",");
+            strings.Add("chuckola," + Convert.ToInt32(chuckola) + ",");
+            strings.Add("membership," + Convert.ToInt32(membership) + ",");
+            strings.Add("winkle," + Convert.ToInt32(winkle) + ",");
+            strings.Add("dress," + Convert.ToInt32(dress) + ",");
+            strings.Add("beanstar," + Convert.ToInt32(beanstar) + ",");
+            strings.Add("scrolls," + Convert.ToInt32(scrolls) + ",");
+            strings.Add("eggs," + Convert.ToInt32(eggs) + ",");
+            strings.Add("beanstone," + Convert.ToInt32(beanstone) + ",");
+            strings.Add("beanlet," + Convert.ToInt32(beanlet) + ",");
+            strings.Add("fruit," + Convert.ToInt32(fruit) + ",");
+            strings.Add("spangle," + Convert.ToInt32(spangle) + ",");
+            strings.Add("hammers," + Convert.ToInt32(hammers) + ",");
+            strings.Add("goblets," + Convert.ToInt32(goblets) + ",");
+            strings.Add("hands," + Convert.ToInt32(hands)  + ",");
+            strings.Add("pearls," + Convert.ToInt32(pearls) + ",");
+            strings.Add("shops," + Convert.ToInt32(shops) + ",");
+            strings.Add("badges," + Convert.ToInt32(badges) + ",");
+            strings.Add("pants," + Convert.ToInt32(pants) + ",");
+            strings.Add("espresso," + Convert.ToInt32(espresso) + ",");
+            strings.Add("brosbp," + Convert.ToInt32(brosBp) + ",");
+            strings.Add("itemheal," + Convert.ToInt32(itemHeal) + ",");
+            strings.Add("coffeevalue," + Convert.ToInt32(coffeeValue) + ",");
+            strings.Add("intro," + Convert.ToInt32(intro) + ",");
+            strings.Add("castle," + Convert.ToInt32(castle) + ",");
+            strings.Add("minecart," + Convert.ToInt32(minecart) + ",");
+            strings.Add("mush," + Convert.ToInt32(mush) + ",");
+            strings.Add("surf," + Convert.ToInt32(surf) + ",");
+            strings.Add("minigame," + Convert.ToInt32(minigame) + ",");
+            strings.Add("scale," + Convert.ToInt32(scale) + ",");
+            strings.Add("enemy," + Convert.ToInt32(enemy));
+            File.WriteAllLines(saveFileDialog3.FileName, strings);
         }
 
         private void SelectRomButton_Click(object sender, EventArgs e)
@@ -531,6 +710,35 @@ namespace MLSSRandomizerForm
         private void label13_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            openFileDialog2.ShowDialog();
+            int temp;
+            string[] str = Rom.StreamInitialize(openFileDialog2.FileName);
+            for (int i = 0; i < str.Length; i += 2)
+            {
+                if (config.TryGetValue(str[i], out temp))
+                {
+                    config[str[i]] = Convert.ToInt32(str[i + 1], 16);
+                }
+                else
+                    config.Add(str[i], Convert.ToInt32(str[i + 1], 16));
+            }
+            SetConfig();
+        }
+
+        private void openFileDialog2_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            saveFileDialog3.FileName = "Config.txt";
+            saveFileDialog3.ShowDialog();
+            SaveConfig();
         }
     }
 }
