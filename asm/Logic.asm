@@ -556,6 +556,9 @@
     .org HP_SCALE_FIX_HOOK
         bl HP_SCALE_FIX_SUBR
 
+    .org XP_SCALE_HOOK
+        bl XP_SCALE_SUBR
+
 
 
 
@@ -605,11 +608,41 @@
     beq .scale_end
     cmp r1, #0xB1
     beq .scale_end
+    ldr r1, =0x1000
+    cmp r0, r1
+    blt .scale_end
     bl CALC_HEALTH
     .scale_end:
     strh r0, [r6]
     mov r6, r9
     pop { r1, pc }
+    .pool
+
+
+
+
+    .org XP_SCALE_SUBR
+    push { r5, r7, lr }
+    mov r7, r0
+    stmia r1!, { r2, r5, r6 }
+    ldmia r0!, { r3-r4 }
+    ldr r5, =ERANDOM
+    ldrb r5, [r5]
+    cmp r5, #0x1
+    beq .xp_end
+    mov r5, r9
+    sub r7, r5
+    cmp r7, #0x24
+    bne .xp_end
+    lsr r3, #0x10
+    lsl r3, #0x10
+    ldr r7, =0x030024B8
+    ldrb r7, [r7]
+    sub r7, #0x7
+    add r7, #0x4
+    add r3, r7
+    .xp_end:
+    pop { r5, r7, pc }
     .pool
 
 
