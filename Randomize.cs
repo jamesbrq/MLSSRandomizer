@@ -41,10 +41,12 @@ namespace MLSSRandomizerForm
                 rom.EnemyRandomize();
                 rom.RandomizeStats();
                 rom.MusicRandomize();
-                rom.ColorSwap(Rom.GenColor(Form1.mColor), 0, "");
-                rom.ColorSwap(Rom.GenColor(Form1.lColor), 1, "");
-                rom.ColorSwap(Rom.GenColor(Form1.mPants), 0, "pants/");
-                rom.ColorSwap(Rom.GenColor(Form1.lPants), 1, "pants/");
+                Form1.mColor = Rom.GenColor(Form1.mColor, false);
+                Form1.lColor = Rom.GenColor(Form1.lColor, false);
+                rom.ColorSwap(Form1.mColor, 0, "");
+                rom.ColorSwap(Form1.lColor, 1, "");
+                rom.ColorSwap(Rom.GenColor(Form1.mPants, true), 0, "pants/");
+                rom.ColorSwap(Rom.GenColor(Form1.lPants, true), 1, "pants/");
                 rom.stream.Close();
                 rom.Inject();
                 return (Environment.CurrentDirectory + "/asm/mlss_loop.gba", rom.hash);
@@ -984,7 +986,7 @@ namespace MLSSRandomizerForm
 
         public void ColorSwap(string color, int bro, string pants)
         {
-            if (pants != "" && color == "Vanilla")
+            if (pants != "" && (color == "Vanilla" || (bro == 0 && (Form1.mColor == "TrueChaos" || Form1.mColor == "Silhouette")) || (bro == 1 && (Form1.lColor == "TrueChaos" || Form1.lColor == "Silhouette"))))
                 return;
             string tempcolor;
             string[] temp;
@@ -998,7 +1000,7 @@ namespace MLSSRandomizerForm
             else 
             {
                 palette = new Palette();
-                tempcolor = GenColor(color);
+                tempcolor = color;
                 temp = StreamInitialize(Environment.CurrentDirectory + "/colors/" + pants + tempcolor + ".txt");
             }
             List<Color> colors = new List<Color>();
@@ -1006,7 +1008,7 @@ namespace MLSSRandomizerForm
             {
                 for (int i = 0; i < temp.Length; i += 2)
                 {
-                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0x0, 0x7F), (byte)random.Next(0x0, 0xFF), Convert.ToInt32(temp[i + 1], 16)));
+                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0x0, 0xFF), (byte)random.Next(0x0, 0x7F), Convert.ToInt32(temp[i + 1], 16)));
                 }
             }
             else if(tempcolor == "Custom")
@@ -1034,20 +1036,19 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public static string GenColor(string color)
+        public static string GenColor(string color, bool pants)
         {
-            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaos" };
+            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaos", "TrueChaos", "Silhouette"};
+            string[] pColors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaos" };
             string temp = color;
             switch (temp)
             {
 
                 case "Random":
-                    temp = colors[random.Next(0, colors.Length - 1)];
-                    return temp;
-
-                case "Chaos":
-                    if (Form1.trueChaos)
-                        return "TrueChaos";
+                    if(!pants)
+                        temp = colors[random.Next(0, colors.Length - 1)];
+                    else
+                        temp = pColors[random.Next(0, pColors.Length - 1)];
                     return temp;
 
                 default:
@@ -1561,7 +1562,7 @@ namespace MLSSRandomizerForm
                 }
                 if(Form1.minigame)
                 {
-                    stream.Seek(0x1E940F, SeekOrigin.Begin);
+                    stream.Seek(0x1E1EEF, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
             }
