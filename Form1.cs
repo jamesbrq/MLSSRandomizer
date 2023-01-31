@@ -112,15 +112,15 @@ namespace MLSSRandomizerForm
             switch (temp)
             {
                 case 1:
-                    radioButton5.Checked = true;
-                    break;
-
-                case 2:
                     radioButton4.Checked = true;
                     break;
 
+                case 2:
+                    radioButton5.Checked = true;
+                    break;
+
                 default:
-                    radioButton3.Checked = true;
+                    radioButton4.Checked = true;
                     break;
             }
             config.TryGetValue("rose", out temp);
