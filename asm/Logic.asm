@@ -547,6 +547,9 @@
     .org MOLE_FLAG_FIX_PANTS_HOOK
         bl MOLE_FLAG_FIX_PANTS_SUBR
 
+    .org MOLE_ADD_FIX_HOOK
+        bl MOLE_ADD_FIX_SUBR
+
     .org YOSHI_DISPLAY_HOOK
         bl YOSHI_DISPLAY_SUBR
 
@@ -564,6 +567,7 @@
 
     .org HP_SCALE_FIX_SUBR
     push { r2, lr }
+    ldrh r0, [r6, #0x6]
     ldr r2, =ERANDOM
     ldrb r2, [r2]
     cmp r2, #0x1
@@ -580,12 +584,11 @@
     beq .scale_norm
     ldr r2, =0x1000
     cmp r0, r2
-    blt .scale_norm
+    bgt .scale_norm
     bl CALC_HEALTH
     strh r0, [r1]
     bl .scale_end2
     .scale_norm:
-    ldrh r0, [r6, #0x6]
     strh r0, [r1]
     .scale_end2:
     pop { r2, pc }
@@ -613,7 +616,7 @@
     beq .scale_end
     ldr r1, =0x1000
     cmp r0, r1
-    blt .scale_end
+    bgt .scale_end
     bl CALC_HEALTH
     .scale_end:
     strh r0, [r6]
@@ -875,6 +878,19 @@
     strb r4, [r0]
     .flag_end:
     mov r1, r8
+    pop pc
+    .pool
+
+
+
+
+    .org MOLE_ADD_FIX_SUBR
+    push lr
+    cmp r4, #0x23
+    beq .flag_end2
+    strb r0, [r1]
+    .flag_end2:
+    ldr r1, [r2]
     pop pc
     .pool
 

@@ -213,6 +213,7 @@ pop { r2, r3, pc }
 push { r1-r4, lr }
 cmp r0, #0x30
 bge .pants_key
+sub r0, #0xA
 ldr r1, =MUSHROOM
 ldrb r2, [r1, r0]
 cmp r2, #0xFF

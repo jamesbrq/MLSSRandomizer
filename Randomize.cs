@@ -78,7 +78,7 @@ namespace MLSSRandomizerForm
         List<Spoiler> spoilerArray = new List<Spoiler>();
         List<SpoilerItem> spoilerItemArray = new List<SpoilerItem>();
         List<SpoilerLocation> spoilerLocationArray = new List<SpoilerLocation>();
-        List<dynamic> itemArray = new List<dynamic>();
+        List<dynamic> freshItemArray = new List<dynamic>();
         public LocationData gameState = new LocationData(0);
         public int iterationCount = 0;
         public List<Enemy> enemies = new List<Enemy>();
@@ -636,13 +636,13 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 validLocationArray.Add(data);
-                itemArray.Add((byte)data.item);
+                freshItemArray.Add((byte)data.item);
             }
 
             if (gameId == 3)
             {
                 validLocationArray.Add(data);
-                itemArray.Add(data.item);
+                freshItemArray.Add(data.item);
             }
         }
 
@@ -1516,18 +1516,26 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 rBegin:
+                List<dynamic> itemArray = new List<dynamic>(freshItemArray);
                 itemArray.Shuffle(random);
                 locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Shuffle(random);
-                for (int i = 0; i < itemArray.Count; i++)
+                for (int i = freshItemArray.Count - 1; i >= 0; i--)
                 {
+                    int retryCount = 0;
                     reInsert:
                     if (CheckValidSpot(locationArray[i], itemArray[i]))
                     {
+                        if (retryCount > 10)
+                            break;
+                        retryCount++;                    
                         itemArray.Shuffle(random);
                         goto reInsert;
                     }
                     ItemInject(locationArray[i].location, locationArray[i].itemType, itemArray[i]);
+                    itemArray.RemoveAt(i);
+                    if (i == 1)
+                        Console.WriteLine(i);
                 }
                 gameState = new LocationData(0);
                 if (!CheckValidity())
@@ -1569,12 +1577,14 @@ namespace MLSSRandomizerForm
             if(gameId == 3)
             {
                 rBegin:
+                List<dynamic> itemArray = new List<dynamic>(freshItemArray);
                 itemArray.Shuffle(random);
                 locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Shuffle(random);
-                for (int i = 0; i < itemArray.Count; i++)
+                for (int i = itemArray.Count - 1; i < itemArray.Count; i--)
                 {
                     ItemInject(locationArray[i].location, 0, itemArray[i]);
+                    itemArray.RemoveAt(i);
                 }
                 gameState = new LocationData(0);
                 if (!CheckValidity())
