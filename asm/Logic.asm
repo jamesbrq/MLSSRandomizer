@@ -578,6 +578,9 @@
     beq .scale_norm
     cmp r2, #0xB1
     beq .scale_norm
+    ldr r2, =0x1000
+    cmp r0, r2
+    blt .scale_norm
     bl CALC_HEALTH
     strh r0, [r1]
     bl .scale_end2
