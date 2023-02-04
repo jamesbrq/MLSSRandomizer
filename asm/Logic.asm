@@ -2147,6 +2147,10 @@
     cmp r0, r5
     bne .ability_norm
     sub r4, #0xA0
+    mov r0, #0xF
+    and r0, r4
+    cmp r0, #0xF
+    beq .ability_norm
     .cont_check:
     ldr r0, =TEXT_VAR
     sub r4, r0

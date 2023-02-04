@@ -1146,7 +1146,7 @@ namespace MLSSRandomizerForm
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox2.FormattingEnabled = true;
             this.comboBox2.Items.AddRange(new object[] {
-            "Vanilla",
+            "Green",
             "Red",
             "Purple",
             "Yellow",
@@ -1221,12 +1221,6 @@ namespace MLSSRandomizerForm
             this.saveFileDialog2.Filter = "Nintendo DS Rom (*.nds)|*.nds|All files (*.*)|*.*";
             this.saveFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
-            // saveFileDialog3
-            // 
-            this.saveFileDialog3.DefaultExt = "txt";
-            this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
-            this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
-            // 
             // button6
             // 
             this.button6.Location = new System.Drawing.Point(109, 259);
@@ -1263,6 +1257,12 @@ namespace MLSSRandomizerForm
             // romBindingSource
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
+            // 
+            // saveFileDialog3
+            // 
+            this.saveFileDialog3.DefaultExt = "txt";
+            this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
+            this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
             // Form1
             // 

@@ -1581,7 +1581,7 @@ namespace MLSSRandomizerForm
                 itemArray.Shuffle(random);
                 locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Shuffle(random);
-                for (int i = itemArray.Count - 1; i < itemArray.Count; i--)
+                for (int i = freshItemArray.Count - 1; i >= 0; i--)
                 {
                     ItemInject(locationArray[i].location, 0, itemArray[i]);
                     itemArray.RemoveAt(i);
@@ -1593,7 +1593,26 @@ namespace MLSSRandomizerForm
                     Console.WriteLine(++iterationCount);
                     goto rBegin;
                 }
+                //BISRead();
             }
+        }
+
+
+        public void BISRead()
+        {
+            List<string> strings = new List<string>();
+            stream.Seek(0x5944a01, SeekOrigin.Begin);
+            while(true)
+            {
+                byte[] arr = new byte[3];
+                string position = "0x" + string.Format("{0:X}", stream.Position);
+                stream.Read(arr, 0, 3);
+                if (arr[0] == 0 && arr[1] == 0 && arr[2] == 0 && stream.Position >= 0x5946a1A)
+                    break;
+                strings.Add(position + ",0x" + Convert.ToString(arr[1], 16) + ",0x" + Convert.ToString(arr[2], 16) + ",0x" + Convert.ToString(arr[0], 16) + ",");
+                stream.Seek(9, SeekOrigin.Current);
+            }
+            File.WriteAllLines(Environment.CurrentDirectory + "/bis/items/AllAddresses2.txt", strings);
         }
 
         public bool CheckValidSpot(LocationData data, byte item)
