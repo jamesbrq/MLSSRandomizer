@@ -342,16 +342,18 @@ namespace MLSSRandomizerForm
 
         public struct bisitem
         {
-            public bisitem(byte byte1, byte byte2, byte quantity)
+            public bisitem(byte byte1, byte byte2, byte quantity, int itemType)
             {
                 this.byte1 = byte1;
                 this.byte2 = byte2;
                 this.quantity = quantity;
+                this.itemType = itemType;
             }
 
             public byte byte1;
             public byte byte2;
             public byte quantity;
+            public int itemType;
         }
 
         public void UpdateState(byte item)
@@ -462,6 +464,7 @@ namespace MLSSRandomizerForm
             if(gameId == 3)
             {
                 ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/bis/items/AllAddresses.txt"));
+                ArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/bis/items/Shops.txt"));
             }
         }
 
@@ -477,7 +480,7 @@ namespace MLSSRandomizerForm
                         if (data.totalBeanfruit >= 1)
                             gameState.currentBeanfruit -= 1;
                         validLocations.Add(data);
-                        locationArray.RemoveAt(i);
+                        locationArray.RemoveAll(d => d.location == data.location);
                     }
                     i--;
                 }
@@ -591,16 +594,15 @@ namespace MLSSRandomizerForm
                     }
                 }
                 UpdateList();
-                int i = validLocations.Count - 1;
                 if (validLocations.Count > 0)
                 {
                     foreach (LocationData data in validLocations.Reverse<dynamic>())
                     {
                         stream.Seek(Convert.ToUInt32(data.location), SeekOrigin.Begin);
-                        if (data.itemType != 1)
-                            temp = (byte)stream.ReadByte();
-                        else
+                        if (data.itemType == 1 || data.itemType == 5)
                             temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
+                        else
+                            temp = (byte)stream.ReadByte();
                         if (temp == 0x34)
                         {
                             Console.WriteLine(data.location);
@@ -608,8 +610,7 @@ namespace MLSSRandomizerForm
                         if (data.location > 0x3C0000 && temp == 0x38)
                             return false;
                         UpdateState(temp);
-                        validLocations.RemoveAt(i);
-                        i--;
+                        validLocations.RemoveAll(d => d.location == data.location);
                     }
                     goto vBegin;
                 }
@@ -651,7 +652,7 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if ((byte)data.item == 0x31)
                     {
@@ -810,7 +811,7 @@ namespace MLSSRandomizerForm
                     optionsArray.Remove(data);
                 }
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (data.item == 0x38)
                     {
@@ -840,7 +841,7 @@ namespace MLSSRandomizerForm
                     optionsArray.Remove(data);
                 }
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (Form1.espresso)
                     {
@@ -853,7 +854,7 @@ namespace MLSSRandomizerForm
                     optionsArray.Remove(data);
                 }
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (Form1.shops)
                     {
@@ -866,7 +867,7 @@ namespace MLSSRandomizerForm
                     optionsArray.Remove(data);
                 }
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (Form1.surf && data.item == 0xEB)
                     {
@@ -887,7 +888,7 @@ namespace MLSSRandomizerForm
                 }
 
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (Form1.mush && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
                     {
@@ -914,7 +915,7 @@ namespace MLSSRandomizerForm
                 }
 
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
-                foreach (LocationData data in optionsArray.ToList())
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (data.location == 0x39DB0F)
                     {
@@ -961,6 +962,12 @@ namespace MLSSRandomizerForm
             {
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/bis/items/AllAddresses.txt"));
                 foreach(BiSLocationData data in optionsArray)
+                {
+                    ValidArrayAdd(data);
+                }
+
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/bis/items/Shops.txt"));
+                foreach (BiSLocationData data in optionsArray)
                 {
                     ValidArrayAdd(data);
                 }
@@ -1476,12 +1483,12 @@ namespace MLSSRandomizerForm
 
             if(gameId == 3)
             {
-                for(int i = 0; i < data.Length; i += 4)
+                for(int i = 0; i < data.Length; i += 5)
                 {
-                    if(array == 2)
-                        freshLocationArray.Add(new BiSLocationData(Convert.ToUInt32(data[i], 16), new bisitem((byte)Convert.ToUInt32(data[i + 1], 16), (byte)Convert.ToUInt32(data[i + 2], 16), (byte)Convert.ToUInt32(data[i + 3], 16))));
+                    if(array == 0)
+                        freshLocationArray.Add(new BiSLocationData(Convert.ToUInt32(data[i], 16), new bisitem((byte)Convert.ToUInt32(data[i + 1], 16), (byte)Convert.ToUInt32(data[i + 2], 16), (byte)Convert.ToUInt32(data[i + 3], 16), Convert.ToInt32(data[i + 4], 16))));
                     if(array == 1)
-                        optionsArray.Add(new BiSLocationData(Convert.ToUInt32(data[i], 16), new bisitem((byte)Convert.ToUInt32(data[i + 1], 16), (byte)Convert.ToUInt32(data[i + 2], 16), (byte)Convert.ToUInt32(data[i + 3], 16))));
+                        optionsArray.Add(new BiSLocationData(Convert.ToUInt32(data[i], 16), new bisitem((byte)Convert.ToUInt32(data[i + 1], 16), (byte)Convert.ToUInt32(data[i + 2], 16), (byte)Convert.ToUInt32(data[i + 3], 16), Convert.ToInt32(data[i + 4], 16))));
                 }
 
             }
@@ -1526,7 +1533,7 @@ namespace MLSSRandomizerForm
                     reInsert:
                     if (CheckValidSpot(locationArray[i], itemArray[i]))
                     {
-                        if (retryCount > 10)
+                        if (retryCount > 100)
                             break;
                         retryCount++;                    
                         itemArray.Shuffle(random);
@@ -1583,7 +1590,17 @@ namespace MLSSRandomizerForm
                 locationArray.Shuffle(random);
                 for (int i = freshItemArray.Count - 1; i >= 0; i--)
                 {
-                    ItemInject(locationArray[i].location, 0, itemArray[i]);
+                    int retryCount = 0;
+                    reInsert:
+                    if (locationArray[i].item.itemType == 1 && itemArray[i].byte2 == 0xFF)
+                    {
+                        if (retryCount > 100)
+                            break;
+                        retryCount++;
+                        itemArray.Shuffle(random);
+                        goto reInsert;
+                    }
+                    ItemInject(locationArray[i], locationArray[i].item.itemType, itemArray[i]);
                     itemArray.RemoveAt(i);
                 }
                 gameState = new LocationData(0);
@@ -1718,7 +1735,7 @@ namespace MLSSRandomizerForm
         }
 
 
-        public void ItemInject(uint location, int itemType, dynamic item)
+        public void ItemInject(dynamic location, int itemType, dynamic item)
         {
             if (gameId == 1)
             {
@@ -1775,8 +1792,33 @@ namespace MLSSRandomizerForm
 
             if(gameId == 3)
             {
-                stream.Seek(location, SeekOrigin.Begin);
-                stream.Write(new byte[] { item.quantity, item.byte1, item.byte2 }, 0, 3);
+                switch(itemType)
+                {
+                    case 0:
+                        stream.Seek(location.location, SeekOrigin.Begin);
+                        stream.Write(new byte[] { item.quantity, item.byte1, item.byte2 }, 0, 3);
+                        break;
+
+                    case 1:
+                        stream.Seek(location.location, SeekOrigin.Begin);
+                        byte replace = location.item.byte1;
+                        while(true)
+                        {
+                            byte[] arr = new byte[2];
+                            stream.Read(arr, 0, 2);
+                            if (arr[0] + arr[1] == 0)
+                                break;
+                            if(arr[0] == replace)
+                            {
+                                stream.Seek(-2, SeekOrigin.Current);
+                                stream.Write(new byte[] { item.byte1, item.byte2 }, 0, 2);
+                            }
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
         }
