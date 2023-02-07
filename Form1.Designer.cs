@@ -112,6 +112,7 @@ namespace MLSSRandomizerForm
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.tabPage9 = new System.Windows.Forms.TabPage();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
@@ -120,10 +121,14 @@ namespace MLSSRandomizerForm
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
+            this.label14 = new System.Windows.Forms.Label();
+            this.radioButton6 = new System.Windows.Forms.RadioButton();
+            this.radioButton7 = new System.Windows.Forms.RadioButton();
+            this.radioButton8 = new System.Windows.Forms.RadioButton();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -135,6 +140,7 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).BeginInit();
+            this.tabPage9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statCountBindingSource)).BeginInit();
             this.tabControl2.SuspendLayout();
             this.tabPage8.SuspendLayout();
@@ -218,7 +224,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox1.Location = new System.Drawing.Point(85, 105);
+            this.checkBox1.Location = new System.Drawing.Point(100, 107);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(77, 17);
             this.checkBox1.TabIndex = 8;
@@ -235,6 +241,7 @@ namespace MLSSRandomizerForm
             this.Colors.Controls.Add(this.tabPage6);
             this.Colors.Controls.Add(this.tabPage5);
             this.Colors.Controls.Add(this.tabPage7);
+            this.Colors.Controls.Add(this.tabPage9);
             this.Colors.Location = new System.Drawing.Point(25, 32);
             this.Colors.Name = "Colors";
             this.Colors.SelectedIndex = 0;
@@ -701,13 +708,11 @@ namespace MLSSRandomizerForm
             // 
             this.tabPage5.Controls.Add(this.checkBox36);
             this.tabPage5.Controls.Add(this.checkBox32);
-            this.tabPage5.Controls.Add(this.checkBox31);
             this.tabPage5.Controls.Add(this.label6);
             this.tabPage5.Controls.Add(this.radioButton5);
             this.tabPage5.Controls.Add(this.radioButton4);
             this.tabPage5.Controls.Add(this.checkBox30);
             this.tabPage5.Controls.Add(this.checkBox29);
-            this.tabPage5.Controls.Add(this.checkBox25);
             this.tabPage5.Controls.Add(this.checkBox24);
             this.tabPage5.Controls.Add(this.checkBox23);
             this.tabPage5.Controls.Add(this.checkBox1);
@@ -724,7 +729,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox36.AutoSize = true;
             this.checkBox36.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox36.Location = new System.Drawing.Point(197, 151);
+            this.checkBox36.Location = new System.Drawing.Point(214, 107);
             this.checkBox36.Name = "checkBox36";
             this.checkBox36.Size = new System.Drawing.Size(153, 17);
             this.checkBox36.TabIndex = 40;
@@ -736,7 +741,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox32.AutoSize = true;
             this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Location = new System.Drawing.Point(3, 59);
+            this.checkBox32.Location = new System.Drawing.Point(18, 61);
             this.checkBox32.Name = "checkBox32";
             this.checkBox32.Size = new System.Drawing.Size(159, 17);
             this.checkBox32.TabIndex = 39;
@@ -748,8 +753,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox31.AutoSize = true;
             this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox31.Enabled = false;
-            this.checkBox31.Location = new System.Drawing.Point(233, 105);
+            this.checkBox31.Location = new System.Drawing.Point(46, 69);
             this.checkBox31.Name = "checkBox31";
             this.checkBox31.Size = new System.Drawing.Size(118, 17);
             this.checkBox31.TabIndex = 38;
@@ -760,7 +764,7 @@ namespace MLSSRandomizerForm
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(219, 18);
+            this.label6.Location = new System.Drawing.Point(247, 16);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(62, 13);
             this.label6.TabIndex = 37;
@@ -769,7 +773,7 @@ namespace MLSSRandomizerForm
             // radioButton5
             // 
             this.radioButton5.AutoSize = true;
-            this.radioButton5.Location = new System.Drawing.Point(287, 39);
+            this.radioButton5.Location = new System.Drawing.Point(315, 38);
             this.radioButton5.Name = "radioButton5";
             this.radioButton5.Size = new System.Drawing.Size(51, 17);
             this.radioButton5.TabIndex = 36;
@@ -782,7 +786,7 @@ namespace MLSSRandomizerForm
             // 
             this.radioButton4.AutoSize = true;
             this.radioButton4.Checked = true;
-            this.radioButton4.Location = new System.Drawing.Point(287, 16);
+            this.radioButton4.Location = new System.Drawing.Point(315, 14);
             this.radioButton4.Name = "radioButton4";
             this.radioButton4.Size = new System.Drawing.Size(51, 17);
             this.radioButton4.TabIndex = 35;
@@ -795,7 +799,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox30.AutoSize = true;
             this.checkBox30.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox30.Location = new System.Drawing.Point(170, 128);
+            this.checkBox30.Location = new System.Drawing.Point(186, 61);
             this.checkBox30.Name = "checkBox30";
             this.checkBox30.Size = new System.Drawing.Size(181, 17);
             this.checkBox30.TabIndex = 31;
@@ -807,7 +811,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox29.AutoSize = true;
             this.checkBox29.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox29.Location = new System.Drawing.Point(46, 128);
+            this.checkBox29.Location = new System.Drawing.Point(251, 84);
             this.checkBox29.Name = "checkBox29";
             this.checkBox29.Size = new System.Drawing.Size(116, 17);
             this.checkBox29.TabIndex = 30;
@@ -819,7 +823,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox25.AutoSize = true;
             this.checkBox25.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox25.Location = new System.Drawing.Point(223, 82);
+            this.checkBox25.Location = new System.Drawing.Point(36, 42);
             this.checkBox25.Name = "checkBox25";
             this.checkBox25.Size = new System.Drawing.Size(128, 17);
             this.checkBox25.TabIndex = 29;
@@ -831,7 +835,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox24.AutoSize = true;
             this.checkBox24.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox24.Location = new System.Drawing.Point(32, 82);
+            this.checkBox24.Location = new System.Drawing.Point(47, 84);
             this.checkBox24.Name = "checkBox24";
             this.checkBox24.Size = new System.Drawing.Size(130, 17);
             this.checkBox24.TabIndex = 28;
@@ -843,7 +847,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox23.AutoSize = true;
             this.checkBox23.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox23.Location = new System.Drawing.Point(25, 39);
+            this.checkBox23.Location = new System.Drawing.Point(40, 39);
             this.checkBox23.Name = "checkBox23";
             this.checkBox23.Size = new System.Drawing.Size(137, 17);
             this.checkBox23.TabIndex = 27;
@@ -855,7 +859,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox20.AutoSize = true;
             this.checkBox20.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox20.Location = new System.Drawing.Point(32, 16);
+            this.checkBox20.Location = new System.Drawing.Point(47, 16);
             this.checkBox20.Name = "checkBox20";
             this.checkBox20.Size = new System.Drawing.Size(130, 17);
             this.checkBox20.TabIndex = 26;
@@ -1176,6 +1180,22 @@ namespace MLSSRandomizerForm
             this.label7.TabIndex = 41;
             this.label7.Text = "Mario Trousers:";
             // 
+            // tabPage9
+            // 
+            this.tabPage9.Controls.Add(this.label14);
+            this.tabPage9.Controls.Add(this.radioButton6);
+            this.tabPage9.Controls.Add(this.radioButton7);
+            this.tabPage9.Controls.Add(this.radioButton8);
+            this.tabPage9.Controls.Add(this.checkBox25);
+            this.tabPage9.Controls.Add(this.checkBox31);
+            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Name = "tabPage9";
+            this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage9.Size = new System.Drawing.Size(378, 192);
+            this.tabPage9.TabIndex = 7;
+            this.tabPage9.Text = "Enemies";
+            this.tabPage9.UseVisualStyleBackColor = true;
+            // 
             // statCountBindingSource
             // 
             this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
@@ -1246,6 +1266,56 @@ namespace MLSSRandomizerForm
             this.openFileDialog2.FileName = "openFileDialog2";
             this.openFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog2_FileOk);
             // 
+            // saveFileDialog3
+            // 
+            this.saveFileDialog3.DefaultExt = "txt";
+            this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
+            this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(207, 19);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(102, 13);
+            this.label14.TabIndex = 42;
+            this.label14.Text = "Ranzomize Bosses?";
+            // 
+            // radioButton6
+            // 
+            this.radioButton6.AutoSize = true;
+            this.radioButton6.Location = new System.Drawing.Point(209, 81);
+            this.radioButton6.Name = "radioButton6";
+            this.radioButton6.Size = new System.Drawing.Size(65, 17);
+            this.radioButton6.TabIndex = 41;
+            this.radioButton6.Text = "Random";
+            this.radioButton6.UseVisualStyleBackColor = true;
+            this.radioButton6.CheckedChanged += new System.EventHandler(this.radioButton6_CheckedChanged);
+            // 
+            // radioButton7
+            // 
+            this.radioButton7.AutoSize = true;
+            this.radioButton7.Location = new System.Drawing.Point(209, 58);
+            this.radioButton7.Name = "radioButton7";
+            this.radioButton7.Size = new System.Drawing.Size(98, 17);
+            this.radioButton7.TabIndex = 40;
+            this.radioButton7.Text = "Boss < - > Boss";
+            this.radioButton7.UseVisualStyleBackColor = true;
+            this.radioButton7.CheckedChanged += new System.EventHandler(this.radioButton7_CheckedChanged);
+            // 
+            // radioButton8
+            // 
+            this.radioButton8.AutoSize = true;
+            this.radioButton8.Checked = true;
+            this.radioButton8.Location = new System.Drawing.Point(209, 35);
+            this.radioButton8.Name = "radioButton8";
+            this.radioButton8.Size = new System.Drawing.Size(85, 17);
+            this.radioButton8.TabIndex = 39;
+            this.radioButton8.TabStop = true;
+            this.radioButton8.Text = "Not Random";
+            this.radioButton8.UseVisualStyleBackColor = true;
+            this.radioButton8.CheckedChanged += new System.EventHandler(this.radioButton8_CheckedChanged);
+            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -1258,17 +1328,11 @@ namespace MLSSRandomizerForm
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
-            // saveFileDialog3
-            // 
-            this.saveFileDialog3.DefaultExt = "txt";
-            this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
-            this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(431, 294);
+            this.ClientSize = new System.Drawing.Size(430, 294);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button6);
             this.Controls.Add(this.label2);
@@ -1300,6 +1364,8 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown3)).EndInit();
+            this.tabPage9.ResumeLayout(false);
+            this.tabPage9.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.statCountBindingSource)).EndInit();
             this.tabControl2.ResumeLayout(false);
             this.tabPage8.ResumeLayout(false);
@@ -1405,6 +1471,11 @@ namespace MLSSRandomizerForm
         private Button button7;
         private OpenFileDialog openFileDialog2;
         private SaveFileDialog saveFileDialog3;
+        private TabPage tabPage9;
+        private Label label14;
+        private RadioButton radioButton6;
+        private RadioButton radioButton7;
+        private RadioButton radioButton8;
     }
 }
 

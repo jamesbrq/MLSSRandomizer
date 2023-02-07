@@ -18,6 +18,7 @@ namespace MLSSRandomizerForm
 
         Dictionary<string, int> config = new Dictionary<string, int>();
         public static int chuckle = 3;
+        public static int bosses = 1;
         public static bool intro = false;
         public static bool mush = false;
         public static bool rose = true;
@@ -121,6 +122,27 @@ namespace MLSSRandomizerForm
 
                 default:
                     radioButton4.Checked = true;
+                    break;
+            }
+
+            config.TryGetValue("bosses", out temp);
+            seedType = temp;
+            switch (temp)
+            {
+                case 1:
+                    radioButton8.Checked = true;
+                    break;
+
+                case 2:
+                    radioButton7.Checked = true;
+                    break;
+
+                case 3:
+                    radioButton6.Checked = true;
+                    break;
+
+                default:
+                    radioButton8.Checked = true;
                     break;
             }
             config.TryGetValue("rose", out temp);
@@ -257,7 +279,8 @@ namespace MLSSRandomizerForm
             strings.Add("surf," + Convert.ToInt32(surf) + ",");
             strings.Add("minigame," + Convert.ToInt32(minigame) + ",");
             strings.Add("scale," + Convert.ToInt32(scale) + ",");
-            strings.Add("enemy," + Convert.ToInt32(enemy));
+            strings.Add("enemy," + Convert.ToInt32(enemy) + ",");
+            strings.Add("bosses," + bosses);
             File.WriteAllLines(saveFileDialog3.FileName, strings);
         }
 
@@ -525,10 +548,6 @@ namespace MLSSRandomizerForm
         private void checkBox25_CheckedChanged(object sender, EventArgs e)
         {
             enemy = checkBox25.Checked;
-            if (enemy)
-                checkBox31.Enabled = true;
-            else
-                checkBox31.Enabled = false;
 
         }
 
@@ -739,6 +758,21 @@ namespace MLSSRandomizerForm
             saveFileDialog3.FileName = "Config.txt";
             saveFileDialog3.ShowDialog();
             SaveConfig();
+        }
+
+        private void radioButton6_CheckedChanged(object sender, EventArgs e)
+        {
+            bosses = 3;
+        }
+
+        private void radioButton7_CheckedChanged(object sender, EventArgs e)
+        {
+            bosses = 2;
+        }
+
+        private void radioButton8_CheckedChanged(object sender, EventArgs e)
+        {
+            bosses = 1;
         }
     }
 }

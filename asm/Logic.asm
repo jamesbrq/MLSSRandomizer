@@ -17,6 +17,12 @@
     .org 0x082000A4
         db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA
 
+    .org GUFAWHA_SKIP_ETR
+        db 0x81, 0x52, 0x0, 0x6, 0x12, 0x8, 0x1
+
+    .org GUFAWHA_SKIP_EXIT
+        db 0x9, 0x52, 0x0, 0x4, 0xD, 0x8, 0x1
+
     .org GRASS_FIX
         db 0x24, 0x40
 
@@ -3828,11 +3834,6 @@
     mov r2, #0x1
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =0x020043E0
-    ldrb r1, [r0]
-    mov r2, #0x1
-    orr r1, r2
-    strb r1, [r0]
     pop { r2, pc }
     .pool
 
@@ -3956,9 +3957,9 @@
     bic r1, r2
     strb r1, [r0]
     .shop_skip:
-    ldr r0, =0x02004359 ;ruins
+    ldr r0, =0x0200452D ;teehee valley super rock
     ldrb r1, [r0]
-    mov r2, #0x6
+    mov r2, #0x4
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork

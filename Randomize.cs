@@ -84,6 +84,7 @@ namespace MLSSRandomizerForm
         public List<Enemy> enemies = new List<Enemy>();
         public List<int> groupSizes = new List<int>();
         public List<EnemyGroup> groups = new List<EnemyGroup>();
+        public List<EnemyGroup> bossGroups = new List<EnemyGroup>();
         public List<StatCount> enemyCount = new List<StatCount>();
 
 
@@ -808,8 +809,8 @@ namespace MLSSRandomizerForm
                         }
                     }
 
-                    optionsArray.Remove(data);
                 }
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -838,8 +839,8 @@ namespace MLSSRandomizerForm
                             stream.WriteByte(0x1);
                         }
                     }
-                    optionsArray.Remove(data);
                 }
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -851,8 +852,8 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
-                    optionsArray.Remove(data);
                 }
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -864,8 +865,8 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
-                    optionsArray.Remove(data);
                 }
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -883,10 +884,9 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
-                    surfSkip:
-                    optionsArray.Remove(data);
+                    surfSkip:;
                 }
-
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -910,10 +910,9 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
-                    mushSkip:
-                    optionsArray.Remove(data);
+                    mushSkip:;
                 }
-
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -955,21 +954,23 @@ namespace MLSSRandomizerForm
                     {
                         ValidArrayAdd(data);
                     }
-                    optionsArray.Remove(data);
                 }
+                optionsArray = new List<dynamic>();
             }
             if(gameId == 3)
             {
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/bis/items/AllAddresses.txt"));
-                foreach(BiSLocationData data in optionsArray)
+                foreach(BiSLocationData data in optionsArray.ToArray())
                 {
                     ValidArrayAdd(data);
+                    optionsArray.Remove(data);
                 }
 
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/bis/items/Shops.txt"));
-                foreach (BiSLocationData data in optionsArray)
+                foreach (BiSLocationData data in optionsArray.ToArray())
                 {
                     ValidArrayAdd(data);
+                    optionsArray.Remove(data);
                 }
             }
         }
@@ -1125,16 +1126,20 @@ namespace MLSSRandomizerForm
             }
             PopulateEnemyArray();
             GenerateGroups();
-            GenerateBossGroups();
+            if(Form1.bosses != 1)
+                GenerateBossGroups();
             InsertGroups();
         }
 
         public void InsertGroups()
         {
+            if (Form1.bosses != 2)
+                groups.AddRange(bossGroups);
             groups.Shuffle(random);
             string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
             string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
-            location = location.Concat(boss).ToArray();
+            if(Form1.bosses == 3)
+                location = location.Concat(boss).ToArray();
             Array.Sort(location);
             int count = 0;
             foreach (string str in location)
@@ -1181,6 +1186,57 @@ namespace MLSSRandomizerForm
                 {
                     stream.Seek(Convert.ToUInt32(str, 16) + 4, SeekOrigin.Begin);
                     stream.Write(tempgroup.data, 0, 4);
+                }
+            }
+
+            if (Form1.bosses == 2)
+            {
+                foreach (string str in boss)
+                {
+                    bossGroups.Shuffle(random);
+                    count++;
+                    EnemyGroup tempgroup = bossGroups[0];
+                    bossGroups.RemoveAt(0);
+                    stream.Seek(Convert.ToUInt32(str, 16), SeekOrigin.Begin);
+                    stream.WriteByte(tempgroup.groupType);
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (i < tempgroup.id.Count)
+                        {
+                            for (int j = 0; j < enemyCount.Count; j++)
+                            {
+                                if (tempgroup.id[i] == enemyCount[j].id)
+                                {
+                                    StatCount temp = enemyCount[j];
+                                    temp.total += count;
+                                    enemyCount[j] = temp;
+                                    break;
+                                }
+                            }
+                            stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
+                            stream.WriteByte(tempgroup.id[i]);
+                            stream.Seek(1, SeekOrigin.Current);
+                            stream.WriteByte(tempgroup.type[i]);
+                            stream.Seek(Convert.ToUInt32(str, 16) + 1, SeekOrigin.Begin);
+                            stream.WriteByte((byte)tempgroup.position);
+                        }
+                        else
+                        {
+                            stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
+                            stream.WriteByte(0);
+                            stream.Seek(1, SeekOrigin.Current);
+                            stream.WriteByte(7);
+                        }
+                    }
+
+                    stream.Seek(Convert.ToUInt32(str, 16) + 2, SeekOrigin.Begin);
+                    stream.WriteByte((byte)tempgroup.boss);
+
+                    if (tempgroup.data.Length > 0)
+                    {
+                        stream.Seek(Convert.ToUInt32(str, 16) + 4, SeekOrigin.Begin);
+                        stream.Write(tempgroup.data, 0, 4);
+                    }
                 }
             }
         }
@@ -1310,7 +1366,7 @@ namespace MLSSRandomizerForm
                         break;
                 }
                 stream.Seek(Convert.ToUInt32(str, 16) + 1, SeekOrigin.Begin);
-                groups.Add(new EnemyGroup(0xE4, id, types, stream.ReadByte(), data, boss));
+                bossGroups.Add(new EnemyGroup(0xE4, id, types, stream.ReadByte(), data, boss));
             }
         }
 
