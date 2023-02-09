@@ -4381,6 +4381,26 @@
 
 
 
+    .org PEACH_KIDNAPPED
+    push lr
+    ldr r0, =0x0200434C
+    ldrb r0, [r0]
+    mov r1, #0x2
+    and r1, r0
+    cmp r1, #0x2
+    bne .kidnap_skip
+    ldr r0, =0x0200433D
+    ldrb r1, [r0]
+    mov r2, #0x4
+    orr r1, r2
+    strb r1, [r0]
+    .kidnap_skip:
+    pop pc
+    .pool
+
+
+
+
     .org KOOPA_BLOCK_SUBR
     push { r0, r1, r2, lr }
     ldr r0, =YOSHI_DISPLAY_RAM
@@ -4398,6 +4418,7 @@
     bic r1, r2
     strb r1, [r0, #0x1]
     .coral_skip:
+    bl PEACH_KIDNAPPED
     bl JUMP_TUT
     bl EGG_CHECK
     bl STAR_QUEST

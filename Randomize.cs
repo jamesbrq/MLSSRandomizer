@@ -1737,6 +1737,15 @@ namespace MLSSRandomizerForm
 
         public bool CheckValidSpot(LocationData data, byte item)
         {
+
+            /* if (item >= 47 && item <= 0x55)
+            {
+                if (data.totalBeanfruit > 0)
+                    return true;
+                else
+                    return false;
+            } */
+
             switch (item)
             {
 
