@@ -52,6 +52,7 @@ namespace MLSSRandomizerForm
         public static bool scale = false;
         public static bool minecart = false;
         public static bool spangle = true;
+        public static bool pieces = true;
         public static bool minigame = false;
         public static int seedType = 1;
         public static string mColor = "Red";
@@ -241,12 +242,16 @@ namespace MLSSRandomizerForm
             config.TryGetValue("minigame", out temp);
             minigame = Convert.ToBoolean(temp);
             checkBox36.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("pieces", out temp);
+            minigame = Convert.ToBoolean(temp);
+            checkBox33.Checked = Convert.ToBoolean(temp);
         }
 
         public void SaveConfig()
         {
             List<string> strings = new List<string>();
             strings.Add("seedtype," + seedType + ",");
+            strings.Add("pieces," + Convert.ToInt32(pieces) + ",");
             strings.Add("chuckle," + chuckle + ",");
             strings.Add("rose," + Convert.ToInt32(rose) + ",");
             strings.Add("brooch," + Convert.ToInt32(brooch) + ",");
@@ -773,6 +778,11 @@ namespace MLSSRandomizerForm
         private void radioButton8_CheckedChanged(object sender, EventArgs e)
         {
             bosses = 1;
+        }
+
+        private void checkBox33_CheckedChanged(object sender, EventArgs e)
+        {
+            pieces = checkBox33.Checked;
         }
     }
 }

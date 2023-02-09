@@ -74,6 +74,7 @@ namespace MLSSRandomizerForm
         List<dynamic> validLocationArray = new List<dynamic>();
         List<dynamic> optionsArray = new List<dynamic>();
         List<dynamic> locationArray = new List<dynamic>();
+        List<dynamic> validityArray = new List<dynamic>();
         List<dynamic> validLocations = new List<dynamic>();
         List<Spoiler> spoilerArray = new List<Spoiler>();
         List<SpoilerItem> spoilerItemArray = new List<SpoilerItem>();
@@ -255,7 +256,7 @@ namespace MLSSRandomizerForm
 
         public struct LocationData
         {
-            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle)
+            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces)
             {
                 this.location = location;
                 this.item = item;
@@ -278,6 +279,7 @@ namespace MLSSRandomizerForm
                 totalBeanfruit = beanfruit;
                 currentBeanfruit = 0;
                 this.spangle = spangle;
+                this.pieces = pieces;
             }
 
             public LocationData(int def)
@@ -303,6 +305,7 @@ namespace MLSSRandomizerForm
                 totalBeanfruit = 0;
                 currentBeanfruit = 0;
                 spangle = false;
+                pieces = 0;
             }
 
             public uint location;
@@ -326,6 +329,7 @@ namespace MLSSRandomizerForm
             public int totalBeanfruit;
             public int currentBeanfruit;
             public bool spangle;
+            public int pieces;
         }
 
         public struct BiSLocationData
@@ -369,6 +373,14 @@ namespace MLSSRandomizerForm
             {
                 gameState.totalBeanfruit += 1;
                 gameState.currentBeanfruit += 1;
+                return;
+            }
+
+            if (item == 0x70 || item == 0x65  || item == 0x66 || item == 0x67)
+            {
+                gameState.pieces += 1;
+                if (gameState.pieces == 5)
+                    Console.WriteLine("pieces");
                 return;
             }
 
@@ -473,27 +485,36 @@ namespace MLSSRandomizerForm
         {
             if (gameId == 1)
             {
-                int i = locationArray.Count - 1;
-                foreach (LocationData data in locationArray.Reverse<dynamic>())
+                for (int i = validityArray.Count - 1; i >= 0; i--)
                 {
-                    if (gameState.hammerState >= data.hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(data.rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(data.brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(data.fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(data.thunder) && gameState.fruitState >= data.fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(data.membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(data.winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(data.beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(data.dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(data.mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(data.under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(data.dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(data.crash) && gameState.neon >= data.neon && gameState.currentBeanfruit >= data.totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(data.spangle))
+                    if (i <= validityArray.Count - 1)
                     {
-                        if (data.totalBeanfruit >= 1)
-                            gameState.currentBeanfruit -= 1;
-                        validLocations.Add(data);
-                        locationArray.RemoveAll(d => d.location == data.location);
+                        if (Form1.pieces && validityArray[i].pieces != 0)
+                        {
+                            if (gameState.pieces == 4 && gameState.brooch && gameState.rose && gameState.fruitState == 3)
+                            {
+                                validLocations.Add(validityArray[i]);
+                                validityArray = validityArray.Where(x => x.location != validityArray[i].location).ToList();
+                            }
+                        }
+                        else if (gameState.hammerState >= validityArray[i].hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(validityArray[i].rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(validityArray[i].brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(validityArray[i].fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(validityArray[i].thunder) && gameState.fruitState >= validityArray[i].fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(validityArray[i].membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(validityArray[i].winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(validityArray[i].beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(validityArray[i].dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(validityArray[i].mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(validityArray[i].under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(validityArray[i].dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(validityArray[i].crash) && gameState.neon >= validityArray[i].neon && gameState.currentBeanfruit >= validityArray[i].totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(validityArray[i].spangle))
+                        {
+                            if (validityArray[i].totalBeanfruit >= 1)
+                                gameState.currentBeanfruit -= 1;
+                            validLocations.Add(validityArray[i]);
+                            validityArray = validityArray.Where(x => x.location != validityArray[i].location).ToList();
+                        }
                     }
-                    i--;
                 }
             }
 
             if(gameId == 3)
             {
                 int i = locationArray.Count - 1;
-                foreach (LocationData data in locationArray.Reverse<dynamic>())
+                foreach (LocationData data in validityArray.ToArray())
                 {
                     validLocations.Add(data);
-                    locationArray.RemoveAt(i);
+                    validityArray.RemoveAt(i);
                     i--;
                 }
             }
@@ -503,7 +524,7 @@ namespace MLSSRandomizerForm
         {
             SpoilerArrayInitialize(0, StreamInitialize(Environment.CurrentDirectory + "/items/SpoilerNames.txt"));
             SpoilerArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/LocationNames.txt"));
-            foreach (LocationData data in freshLocationArray.ToList())
+            foreach (LocationData data in freshLocationArray.Where(d => d.itemType !=4 && d.itemType != 5).ToList())
             {
                 int temp = 0;
                 stream.Seek(data.location, SeekOrigin.Begin);
@@ -554,6 +575,7 @@ namespace MLSSRandomizerForm
                 list.Add("Beanstones: " + Form1.beanstone);
                 list.Add("Beanlets: " + Form1.beanlet);
                 list.Add("Spangle: " + Form1.spangle);
+                list.Add("Beanstar Pieces: " + Form1.pieces);
                 list.Add("Hammers: " + Form1.hammers);
                 list.Add("Hammer Moves: " + Form1.goblets);
                 list.Add("Hands: " + Form1.hands);
@@ -582,10 +604,8 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 byte temp;
-                locationArray = new List<dynamic>(freshLocationArray);
+                validityArray = new List<dynamic>(freshLocationArray);
                 vBegin:
-                if (validLocations.Count >= 1)
-                    Console.WriteLine(validLocations.Count);
                 if (!Form1.goblets)
                 {
                     if (gameState.hammerState >= 1 && gameState.brooch)
@@ -597,31 +617,38 @@ namespace MLSSRandomizerForm
                 UpdateList();
                 if (validLocations.Count > 0)
                 {
-                    foreach (LocationData data in validLocations.Reverse<dynamic>())
+                    for (int i = validLocationArray.Count - 1; i >= 0; i--)
                     {
-                        stream.Seek(Convert.ToUInt32(data.location), SeekOrigin.Begin);
-                        if (data.itemType == 1 || data.itemType == 5)
-                            temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
-                        else
-                            temp = (byte)stream.ReadByte();
-                        if (temp == 0x34)
+                        if (i <= validLocations.Count - 1)
                         {
-                            Console.WriteLine(data.location);
+                            stream.Seek(Convert.ToUInt32(validLocations[i].location), SeekOrigin.Begin);
+                            if (validLocations[i].itemType == 1 || validLocations[i].itemType == 5)
+                                temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
+                            else
+                                temp = (byte)stream.ReadByte();
+                            if (validLocations[i].location > 0x3C0000 && temp == 0x38)
+                                return false;
+                            UpdateState(temp);
+                            validLocations.RemoveAll(d => d.location == validLocations[i].location);
                         }
-                        if (data.location > 0x3C0000 && temp == 0x38)
-                            return false;
-                        UpdateState(temp);
-                        validLocations.RemoveAll(d => d.location == data.location);
                     }
                     goto vBegin;
                 }
                 else
                 {
-                    if (locationArray.Count < 100)
-                        Console.WriteLine("a");
                     if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash)
-                        return true;
-                    if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.winkle)
+                    {
+                        if (Form1.pieces)
+                        {
+                            if(gameState.pieces == 4 && gameState.brooch && gameState.fruitState == 3)
+                                return true;
+                            else
+                                return false;
+                        }
+                        else
+                            return true;
+                    }
+                    if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.spangle && gameState.pieces == 4)
                         return true;
                 }
             }
@@ -763,6 +790,20 @@ namespace MLSSRandomizerForm
                     {
                         if (Form1.eggs)
                             ValidArrayAdd(data);
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item >= 0x65 && data.item <= 0x70)
+                    {
+                        if (Form1.pieces)
+                        {
+                            ValidArrayAdd(data);
+                            stream.Seek(0x1E1EEE, SeekOrigin.Begin);
+                            stream.WriteByte(0x1);
+                        }
                         else
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
@@ -921,12 +962,15 @@ namespace MLSSRandomizerForm
                         if (Form1.minecart)
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
+                            continue;
                         }
                         else
                         {
                             ValidArrayAdd(data);
+                            continue;
                         }
                     }
+
                     if (data.item == 0x1E)
                     {
                         if (Form1.chuckle == 3)
@@ -1045,8 +1089,8 @@ namespace MLSSRandomizerForm
 
         public static string GenColor(string color, bool pants)
         {
-            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaos", "TrueChaos", "Silhouette"};
-            string[] pColors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Chaos" };
+            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Silhouette"};
+            string[] pColors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
             string temp = color;
             switch (temp)
             {
@@ -1485,7 +1529,7 @@ namespace MLSSRandomizerForm
         {
             if (gameId == 1)
             {
-                for (int i = 0; i < data.Length; i += 20)
+                for (int i = 0; i < data.Length; i += 21)
                 {
                     if (array == 1)
                     {
@@ -1508,7 +1552,8 @@ namespace MLSSRandomizerForm
                                                            Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
                                                            Convert.ToInt32(data[i + 17], 16),
                                                            Convert.ToInt32(data[i + 18], 16),
-                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16)),
+                                                           Convert.ToInt32(data[i + 20], 16)));
                     }
 
                     if (array == 2)
@@ -1532,7 +1577,8 @@ namespace MLSSRandomizerForm
                                                            Convert.ToBoolean(Convert.ToInt32(data[i + 16], 16)),
                                                            Convert.ToInt32(data[i + 17], 16),
                                                            Convert.ToInt32(data[i + 18], 16),
-                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16))));
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16)),
+                                                           Convert.ToInt32(data[i + 20], 16)));
                     }
                 }
             }
@@ -1578,27 +1624,28 @@ namespace MLSSRandomizerForm
         {
             if (gameId == 1)
             {
-                rBegin:
                 List<dynamic> itemArray = new List<dynamic>(freshItemArray);
-                itemArray.Shuffle(random);
                 locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Shuffle(random);
+                rBegin:
+                itemArray.Shuffle(random);
+                itemArray.Shuffle(random);
+                List<dynamic> tempItemArray = new List<dynamic>(itemArray);
+                List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
                 for (int i = freshItemArray.Count - 1; i >= 0; i--)
                 {
                     int retryCount = 0;
                     reInsert:
-                    if (CheckValidSpot(locationArray[i], itemArray[i]))
+                    if (CheckValidSpot(tempLocationArray[i], tempItemArray[i]))
                     {
                         if (retryCount > 100)
                             break;
                         retryCount++;                    
-                        itemArray.Shuffle(random);
+                        tempItemArray.Shuffle(random);
                         goto reInsert;
                     }
-                    ItemInject(locationArray[i].location, locationArray[i].itemType, itemArray[i]);
-                    itemArray.RemoveAt(i);
-                    if (i == 1)
-                        Console.WriteLine(i);
+                    ItemInject(tempLocationArray[i].location, tempLocationArray[i].itemType, tempItemArray[i]);
+                    tempItemArray.RemoveAt(i);
                 }
                 gameState = new LocationData(0);
                 if (!CheckValidity())
@@ -1766,6 +1813,26 @@ namespace MLSSRandomizerForm
 
                 case 0x46:
                     if (data.crash == true)
+                        return true;
+                    return false;
+
+                case 0x65:
+                    if (data.pieces != 0)
+                        return true;
+                    return false;
+
+                case 0x66:
+                    if (data.pieces != 0)
+                        return true;
+                    return false;
+
+                case 0x67:
+                    if (data.pieces != 0)
+                        return true;
+                    return false;
+
+                case 0x70:
+                    if (data.pieces != 0)
                         return true;
                     return false;
 

@@ -568,6 +568,64 @@
     .org XP_SCALE_HOOK
         bl XP_SCALE_SUBR
 
+    .org BPIECE_FIX_HOOK
+        bl BPIECE_FIX_SUBR
+
+    .org HSPRITE_FIX_HOOK
+        bl HSPRITE_FIX_SUBR
+
+
+
+
+    .org HSPRITE_FIX_SUBR
+    push lr
+    ldr r2, =0x216
+    ldr r1, =ROOM
+    ldrh r1, [r1]
+    cmp r1, #0x33
+    bne .hsprite_norm
+    ldr r1, =0x02007BF0
+    cmp r1, r4
+    bne .hsprite_norm
+    mov r1, #0x0
+    bl .hsprite_end
+    .hsprite_norm:
+    ldrh r1, [r4]
+    .hsprite_end:
+    pop pc
+    .pool
+
+
+
+    .org BPIECE_FIX_SUBR
+    push { r0, lr }
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x1F
+    beq .bpiece_norm
+    mov r7, #0x1
+    ldr r0, =0x0200490D
+    cmp r0, r6
+    bne .bpiece2
+    mov r0, #0xE0
+    and r0, r4
+    cmp r0, #0x0
+    bne .bpiece_end
+    bl .bpiece_norm
+    .bpiece2:
+    add r0, #0x1
+    cmp r0, r6
+    bne .bpiece_norm
+    mov r0, #0x1
+    and r0, r4
+    cmp r0, #0x0
+    bne .bpiece_end
+    .bpiece_norm:
+    strb r1, [r6]
+    .bpiece_end:
+    pop { r0, pc }
+    .pool
+
 
 
 
@@ -1979,8 +2037,6 @@
     beq .castle_door
     cmp r0, #0x79
     beq .dress_door
-    cmp r0, #0x90
-    beq .beanstar_door
     bl .end2
 
     .dress_door:
@@ -1993,27 +2049,21 @@
     beq .end2
     ldr r0, =KEY_ITEM
     ldrb r0, [r0, #0x1]
-    mov r6, #0x4
+    mov r6, #0xC
     and r0, r6
-    cmp r0, #0x0
-    bne .end2
-    mov r3, #0xFF
-    bl .end3
-
-    .beanstar_door:
-    ldr r0, =ROOM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x1
-    bne .end2
-    ldr r0, =BEANSTAR_DOOR
-    cmp r1, r0
+    cmp r0, #0xC
     beq .end2
-    ldr r0, =KEY_ITEM
-    ldrb r0, [r0, #0x1]
-    mov r6, #0x8
+    ldr r0, =BEANSTAR_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    bne .bstar_skip
+    ldr r0, =0x0200490E
+    ldrb r0, [r0]
+    mov r6, #0x2
     and r0, r6
-    cmp r0, #0x0
-    bne .end2
+    cmp r0, #0x2
+    beq .end2
+    .bstar_skip:
     mov r3, #0xFF
     bl .end3
 
@@ -2584,10 +2634,84 @@
 
 
 
+     .org BEANSTAR_TEXT
+     push { r1, r2, lr }
+     ldr r1, =0x084F226C
+     cmp r1, r7
+     bne .text2
+     bl .piece1
+     .text2:
+     ldr r1, =0x084F30B8
+     cmp r1, r7
+     bne .bt_end
+     .piece1:
+     ldr r1, =ROOM
+     ldrh r1, [r1]
+     cmp r1, #0x9D ; Popple
+     bne .piece2
+     ldr r2, =TEXT_VAR
+     ldr r1, =0x081E9440
+     ldrb r1, [r1]
+     add r2, r1
+     ldr r1, =TEXT_ITEM
+     str r2, [r1]
+     ldr r1, =FRUIT_REMOVE_RAM
+     mov r2, #0x1
+     strb r2, [r1]
+     bl .bt_end
+     .piece2:
+     ldr r2, =0x191 ; Harhall
+     cmp r1, r2
+     bne .piece3
+     ldr r2, =TEXT_VAR
+     ldr r1, =0x081E9441
+     ldrb r1, [r1]
+     add r2, r1
+     ldr r1, =TEXT_ITEM
+     str r2, [r1]
+     ldr r1, =FRUIT_REMOVE_RAM
+     mov r2, #0x1
+     strb r2, [r1]
+     bl .bt_end
+     .piece3:
+     ldr r2, =0x1CC ; Theater
+     cmp r1, r2
+     bne .piece4
+     ldr r2, =TEXT_VAR
+     ldr r1, =0x081E9442
+     ldrb r1, [r1]
+     add r2, r1
+     ldr r1, =TEXT_ITEM
+     str r2, [r1]
+     ldr r1, =FRUIT_REMOVE_RAM
+     mov r2, #0x1
+     strb r2, [r1]
+     bl .bt_end
+     .piece4:
+     cmp r1, #0xFF ; Hermie
+     bne .bt_end
+     ldr r2, =TEXT_VAR
+     ldr r1, =0x081E9443
+     ldrb r1, [r1]
+     add r2, r1
+     ldr r1, =TEXT_ITEM
+     str r2, [r1]
+     ldr r1, =FRUIT_REMOVE_RAM
+     mov r2, #0x1
+     strb r2, [r1]
+     .bt_end:
+     pop { r1, r2, pc }
+     .pool
+
+
+
+
+
 
 
     .org TEXT_ITEM_INJECT_SUBR
     push { r1, r2, lr }
+    bl BEANSTAR_TEXT
     ldr r1, =0x084F3784
     cmp r7, r1
     beq .inject_norm2
@@ -3834,6 +3958,11 @@
     mov r2, #0x1
     orr r1, r2
     strb r1, [r0]
+    ldr r0, =0x0200430A
+    ldrb r1, [r0]
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
     pop { r2, pc }
     .pool
 
@@ -3959,7 +4088,7 @@
     .shop_skip:
     ldr r0, =0x0200452D ;teehee valley super rock
     ldrb r1, [r0]
-    mov r2, #0x4
+    mov r2, #0x10
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork
@@ -3999,7 +4128,12 @@
     strb r1, [r0]
     ldr r0, =0x02004359 ;fire_rock
     ldrb r1, [r0]
-    mov r2, #0x2
+    mov r2, #0xE
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004406
+    ldrb r1, [r0]
+    mov r2, #0x10
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004409
@@ -4119,9 +4253,20 @@
 
     .org STAR_QUEST
     push lr
-    ldr r0, =0x020046FB
-    ldrb r0, [r0]
-    cmp r0, #0x4
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x3E
+    bne .quest_skip
+    ldr r0, =0x0200490D
+    ldrb r2, [r0]
+    mov r1, #0xE0
+    and r1, r2
+    cmp r1, #0xE0
+    bne .quest_skip
+    ldrb r2, [r0, #0x1]
+    mov r1, #0x1
+    and r1, r2
+    cmp r1, #0x1
     bne .quest_skip
     ldr r0, =0x020046F6
     mov r1, #0x4F
@@ -4211,6 +4356,31 @@
 
 
 
+
+
+
+    .org SEWER_BLOCK
+    push lr
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x3D
+    bne .sewer_end
+    ldr r0, =0x0200490A
+    mov r1, #0x2
+    ldrb r0, [r0]
+    and r1, r0
+    cmp r1, #0x2
+    beq .sewer_end
+    ldr r0, =0x02007351
+    mov r1, #0x1
+    strb r1, [r0]
+    .sewer_end:
+    pop pc
+    .pool
+
+
+
+
     .org KOOPA_BLOCK_SUBR
     push { r0, r1, r2, lr }
     ldr r0, =YOSHI_DISPLAY_RAM
@@ -4237,6 +4407,7 @@
     bl SCROLL_CHECK
     bl ROCK_BLOCK
     bl FAWFUL_BLOCK
+    bl SEWER_BLOCK
     ldr r0, =PEACH_BUFFER
     ldrb r1, [r0]
     cmp r1, #0x0
