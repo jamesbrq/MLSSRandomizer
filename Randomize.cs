@@ -617,7 +617,7 @@ namespace MLSSRandomizerForm
                 UpdateList();
                 if (validLocations.Count > 0)
                 {
-                    for (int i = validLocationArray.Count - 1; i >= 0; i--)
+                    for (int i = validLocations.Count - 1; i >= 0; i--)
                     {
                         if (i <= validLocations.Count - 1)
                         {

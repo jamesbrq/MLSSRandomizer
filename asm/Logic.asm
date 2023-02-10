@@ -598,11 +598,14 @@
 
 
     .org BPIECE_FIX_SUBR
-    push { r0, lr }
+    push { r0, r2, lr }
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x1F
     beq .bpiece_norm
+    ldr r2, =0x177
+    cmp r0, r2
+    beq .bpiece_end
     mov r7, #0x1
     ldr r0, =0x0200490D
     cmp r0, r6
@@ -623,7 +626,7 @@
     .bpiece_norm:
     strb r1, [r6]
     .bpiece_end:
-    pop { r0, pc }
+    pop { r0, r2, pc }
     .pool
 
 
