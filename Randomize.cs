@@ -1110,39 +1110,30 @@ namespace MLSSRandomizerForm
 
         public void MusicRandomize()
         {
+            if (Form1.mDisable)
+            {
+                stream.Seek(0x19B118, SeekOrigin.Begin);
+                stream.Write(new byte[] { 0x0, 0x25 }, 0, 2);
+                return;
+            }
+
             if (!Form1.music)
                 return;
-
-            List<int> changed = new List<int>();
-            for (int i = 0; i < 0x32; i++)
+            List<byte[]> songs = new List<byte[]>();
+            stream.Seek(0x21cb74, SeekOrigin.Begin);
+            while(true)
             {
-                int j = 0;
-                stream.Seek(0x3a78E8, SeekOrigin.Begin);
-                bool iterate = true;
-                retry:
-                byte rand = (byte)random.Next(0x0, 0x32);
-                if (rand == 0x1A || rand == i)
-                    goto retry;
-                while (iterate)
-                {
-                    int temp = stream.ReadByte();
-                    if (temp == i)
-                        stream.Seek(-1, SeekOrigin.Current);
-                    else
-                        goto skip;
-                    foreach (int k in changed)
-                    {
-                        if (k == j)
-                            goto skip;
-                    }
-                    stream.WriteByte(rand);
-                    changed.Add(j);
-                    skip:
-                    if (stream.Position >= 0x3AA8D0)
-                        iterate = false;
-                    stream.Seek(0x17, SeekOrigin.Current);
-                    j++;
-                }
+                if (stream.Position == 0x21cc3c)
+                    break;
+                byte[] temp = new byte[4];
+                stream.Read(temp, 0, 4);
+                songs.Add(temp);
+            }
+            songs.Shuffle(random);
+            stream.Seek(0x21cb74, SeekOrigin.Begin);
+            for (int i = songs.Count - 1; i >= 0; i--)
+            {
+                stream.Write(songs[i], 0, 4);
             }
         }
 
@@ -1626,10 +1617,8 @@ namespace MLSSRandomizerForm
             {
                 List<dynamic> itemArray = new List<dynamic>(freshItemArray);
                 locationArray = new List<dynamic>(validLocationArray);
-                locationArray.Shuffle(random);
                 rBegin:
-                itemArray.Shuffle(random);
-                itemArray.Shuffle(random);
+                locationArray = locationArray.OrderBy(c => random.Next()).ToList();
                 List<dynamic> tempItemArray = new List<dynamic>(itemArray);
                 List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
                 for (int i = freshItemArray.Count - 1; i >= 0; i--)
@@ -1638,14 +1627,14 @@ namespace MLSSRandomizerForm
                     reInsert:
                     if (CheckValidSpot(tempLocationArray[i], tempItemArray[i]))
                     {
-                        if (retryCount > 100)
+                        if (retryCount > 10)
                             break;
                         retryCount++;                    
-                        tempItemArray.Shuffle(random);
+                        tempLocationArray.Shuffle(random);
                         goto reInsert;
                     }
                     ItemInject(tempLocationArray[i].location, tempLocationArray[i].itemType, tempItemArray[i]);
-                    tempItemArray.RemoveAt(i);
+                    tempLocationArray.RemoveAt(i);
                 }
                 gameState = new LocationData(0);
                 if (!CheckValidity())

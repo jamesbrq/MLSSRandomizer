@@ -2040,7 +2040,13 @@
     beq .castle_door
     cmp r0, #0x79
     beq .dress_door
+    cmp r0, #0x5A
+    beq .ruins_door
     bl .end2
+
+    .ruins_door:
+    bl RUINS_DOORS
+    bl .end3
 
     .dress_door:
     ldr r0, =ROOM
@@ -2099,6 +2105,32 @@
     strb r6, [r0]
     .end4:
     pop { r0, r1, r6, pc }
+    .pool
+
+
+
+
+
+    .org RUINS_DOORS
+    push lr
+    ldr r0, =0x0200434C
+    ldrb r0, [r0]
+    mov r6, #0x3
+    and r0, r6
+    cmp r0, #0x1
+    bne .ruins_norm
+    ldr r0, =0x083AC748
+    cmp r1, r0
+    beq .ruins_norm
+    ldr r0, =0x083AC754
+    cmp r1, r0
+    beq .ruins_norm
+    mov r3, #0xff
+    bl .ruins_end
+    .ruins_norm:
+    ldrb r3, [r1]
+    .ruins_end:
+    pop pc
     .pool
 
 
@@ -3951,11 +3983,6 @@
     mov r2, #0x10
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =RUINS
-    ldrb r1, [r0]
-    mov r2, #0x8
-    orr r1, r2
-    strb r1, [r0]
     ldr r0, =0x0200433E
     ldrb r1, [r0]
     mov r2, #0x1
@@ -4398,6 +4425,18 @@
     orr r1, r2
     strb r1, [r0]
     .kidnap_skip:
+    ldr r0, =0x0200490E
+    ldrb r0, [r0]
+    mov r1, #0x2
+    and r1, r0
+    cmp r1, #0x2
+    bne .bestar_skip
+    ldr r0, =0x0200433D
+    ldrb r1, [r0]
+    mov r2, #0x8
+    orr r1, r2
+    strb r1, [r0]
+    .bestar_skip:
     pop pc
     .pool
 
@@ -4421,7 +4460,7 @@
     bic r1, r2
     strb r1, [r0, #0x1]
     .coral_skip:
-    bl PEACH_KIDNAPPED
+    bl PEACH_KIDNAPPED  
     bl JUMP_TUT
     bl EGG_CHECK
     bl STAR_QUEST

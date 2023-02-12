@@ -50,6 +50,7 @@ namespace MLSSRandomizerForm
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkBox33 = new System.Windows.Forms.CheckBox();
             this.checkBox34 = new System.Windows.Forms.CheckBox();
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
@@ -80,13 +81,11 @@ namespace MLSSRandomizerForm
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.checkBox36 = new System.Windows.Forms.CheckBox();
             this.checkBox32 = new System.Windows.Forms.CheckBox();
-            this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.checkBox30 = new System.Windows.Forms.CheckBox();
             this.checkBox29 = new System.Windows.Forms.CheckBox();
-            this.checkBox25 = new System.Windows.Forms.CheckBox();
             this.checkBox24 = new System.Windows.Forms.CheckBox();
             this.checkBox23 = new System.Windows.Forms.CheckBox();
             this.checkBox20 = new System.Windows.Forms.CheckBox();
@@ -113,6 +112,12 @@ namespace MLSSRandomizerForm
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
             this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.label14 = new System.Windows.Forms.Label();
+            this.radioButton6 = new System.Windows.Forms.RadioButton();
+            this.radioButton7 = new System.Windows.Forms.RadioButton();
+            this.radioButton8 = new System.Windows.Forms.RadioButton();
+            this.checkBox25 = new System.Windows.Forms.CheckBox();
+            this.checkBox31 = new System.Windows.Forms.CheckBox();
             this.statCountBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
@@ -122,14 +127,10 @@ namespace MLSSRandomizerForm
             this.button7 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
-            this.label14 = new System.Windows.Forms.Label();
-            this.radioButton6 = new System.Windows.Forms.RadioButton();
-            this.radioButton7 = new System.Windows.Forms.RadioButton();
-            this.radioButton8 = new System.Windows.Forms.RadioButton();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox33 = new System.Windows.Forms.CheckBox();
+            this.checkBox37 = new System.Windows.Forms.CheckBox();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -334,6 +335,20 @@ namespace MLSSRandomizerForm
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Key Items";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // checkBox33
+            // 
+            this.checkBox33.AutoSize = true;
+            this.checkBox33.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox33.Checked = true;
+            this.checkBox33.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox33.Location = new System.Drawing.Point(192, 157);
+            this.checkBox33.Name = "checkBox33";
+            this.checkBox33.Size = new System.Drawing.Size(109, 17);
+            this.checkBox33.TabIndex = 23;
+            this.checkBox33.Text = "Beanstar Pieces?";
+            this.checkBox33.UseVisualStyleBackColor = true;
+            this.checkBox33.CheckedChanged += new System.EventHandler(this.checkBox33_CheckedChanged);
             // 
             // checkBox34
             // 
@@ -708,6 +723,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBox37);
             this.tabPage5.Controls.Add(this.checkBox36);
             this.tabPage5.Controls.Add(this.checkBox32);
             this.tabPage5.Controls.Add(this.label6);
@@ -731,7 +747,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox36.AutoSize = true;
             this.checkBox36.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox36.Location = new System.Drawing.Point(214, 107);
+            this.checkBox36.Location = new System.Drawing.Point(213, 84);
             this.checkBox36.Name = "checkBox36";
             this.checkBox36.Size = new System.Drawing.Size(153, 17);
             this.checkBox36.TabIndex = 40;
@@ -750,18 +766,6 @@ namespace MLSSRandomizerForm
             this.checkBox32.Text = "Disable Minecart Minigame?";
             this.checkBox32.UseVisualStyleBackColor = true;
             this.checkBox32.CheckedChanged += new System.EventHandler(this.checkBox32_CheckedChanged);
-            // 
-            // checkBox31
-            // 
-            this.checkBox31.AutoSize = true;
-            this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox31.Location = new System.Drawing.Point(46, 69);
-            this.checkBox31.Name = "checkBox31";
-            this.checkBox31.Size = new System.Drawing.Size(118, 17);
-            this.checkBox31.TabIndex = 38;
-            this.checkBox31.Text = "Scale enemy stats?";
-            this.checkBox31.UseVisualStyleBackColor = true;
-            this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
             // 
             // label6
             // 
@@ -813,25 +817,13 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox29.AutoSize = true;
             this.checkBox29.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox29.Location = new System.Drawing.Point(251, 84);
+            this.checkBox29.Location = new System.Drawing.Point(250, 107);
             this.checkBox29.Name = "checkBox29";
             this.checkBox29.Size = new System.Drawing.Size(116, 17);
             this.checkBox29.TabIndex = 30;
             this.checkBox29.Text = "Randomize Music?";
             this.checkBox29.UseVisualStyleBackColor = true;
             this.checkBox29.CheckedChanged += new System.EventHandler(this.checkBox29_CheckedChanged);
-            // 
-            // checkBox25
-            // 
-            this.checkBox25.AutoSize = true;
-            this.checkBox25.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox25.Location = new System.Drawing.Point(36, 42);
-            this.checkBox25.Name = "checkBox25";
-            this.checkBox25.Size = new System.Drawing.Size(128, 17);
-            this.checkBox25.TabIndex = 29;
-            this.checkBox25.Text = "Randomize Enemies?";
-            this.checkBox25.UseVisualStyleBackColor = true;
-            this.checkBox25.CheckedChanged += new System.EventHandler(this.checkBox25_CheckedChanged);
             // 
             // checkBox24
             // 
@@ -1198,6 +1190,74 @@ namespace MLSSRandomizerForm
             this.tabPage9.Text = "Enemies";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(207, 19);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(102, 13);
+            this.label14.TabIndex = 42;
+            this.label14.Text = "Ranzomize Bosses?";
+            // 
+            // radioButton6
+            // 
+            this.radioButton6.AutoSize = true;
+            this.radioButton6.Location = new System.Drawing.Point(209, 81);
+            this.radioButton6.Name = "radioButton6";
+            this.radioButton6.Size = new System.Drawing.Size(65, 17);
+            this.radioButton6.TabIndex = 41;
+            this.radioButton6.Text = "Random";
+            this.radioButton6.UseVisualStyleBackColor = true;
+            this.radioButton6.CheckedChanged += new System.EventHandler(this.radioButton6_CheckedChanged);
+            // 
+            // radioButton7
+            // 
+            this.radioButton7.AutoSize = true;
+            this.radioButton7.Location = new System.Drawing.Point(209, 58);
+            this.radioButton7.Name = "radioButton7";
+            this.radioButton7.Size = new System.Drawing.Size(98, 17);
+            this.radioButton7.TabIndex = 40;
+            this.radioButton7.Text = "Boss < - > Boss";
+            this.radioButton7.UseVisualStyleBackColor = true;
+            this.radioButton7.CheckedChanged += new System.EventHandler(this.radioButton7_CheckedChanged);
+            // 
+            // radioButton8
+            // 
+            this.radioButton8.AutoSize = true;
+            this.radioButton8.Checked = true;
+            this.radioButton8.Location = new System.Drawing.Point(209, 35);
+            this.radioButton8.Name = "radioButton8";
+            this.radioButton8.Size = new System.Drawing.Size(85, 17);
+            this.radioButton8.TabIndex = 39;
+            this.radioButton8.TabStop = true;
+            this.radioButton8.Text = "Not Random";
+            this.radioButton8.UseVisualStyleBackColor = true;
+            this.radioButton8.CheckedChanged += new System.EventHandler(this.radioButton8_CheckedChanged);
+            // 
+            // checkBox25
+            // 
+            this.checkBox25.AutoSize = true;
+            this.checkBox25.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox25.Location = new System.Drawing.Point(36, 42);
+            this.checkBox25.Name = "checkBox25";
+            this.checkBox25.Size = new System.Drawing.Size(128, 17);
+            this.checkBox25.TabIndex = 29;
+            this.checkBox25.Text = "Randomize Enemies?";
+            this.checkBox25.UseVisualStyleBackColor = true;
+            this.checkBox25.CheckedChanged += new System.EventHandler(this.checkBox25_CheckedChanged);
+            // 
+            // checkBox31
+            // 
+            this.checkBox31.AutoSize = true;
+            this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox31.Location = new System.Drawing.Point(46, 69);
+            this.checkBox31.Name = "checkBox31";
+            this.checkBox31.Size = new System.Drawing.Size(118, 17);
+            this.checkBox31.TabIndex = 38;
+            this.checkBox31.Text = "Scale enemy stats?";
+            this.checkBox31.UseVisualStyleBackColor = true;
+            this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
+            // 
             // statCountBindingSource
             // 
             this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
@@ -1274,50 +1334,6 @@ namespace MLSSRandomizerForm
             this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
             this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(207, 19);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(102, 13);
-            this.label14.TabIndex = 42;
-            this.label14.Text = "Ranzomize Bosses?";
-            // 
-            // radioButton6
-            // 
-            this.radioButton6.AutoSize = true;
-            this.radioButton6.Location = new System.Drawing.Point(209, 81);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(65, 17);
-            this.radioButton6.TabIndex = 41;
-            this.radioButton6.Text = "Random";
-            this.radioButton6.UseVisualStyleBackColor = true;
-            this.radioButton6.CheckedChanged += new System.EventHandler(this.radioButton6_CheckedChanged);
-            // 
-            // radioButton7
-            // 
-            this.radioButton7.AutoSize = true;
-            this.radioButton7.Location = new System.Drawing.Point(209, 58);
-            this.radioButton7.Name = "radioButton7";
-            this.radioButton7.Size = new System.Drawing.Size(98, 17);
-            this.radioButton7.TabIndex = 40;
-            this.radioButton7.Text = "Boss < - > Boss";
-            this.radioButton7.UseVisualStyleBackColor = true;
-            this.radioButton7.CheckedChanged += new System.EventHandler(this.radioButton7_CheckedChanged);
-            // 
-            // radioButton8
-            // 
-            this.radioButton8.AutoSize = true;
-            this.radioButton8.Checked = true;
-            this.radioButton8.Location = new System.Drawing.Point(209, 35);
-            this.radioButton8.Name = "radioButton8";
-            this.radioButton8.Size = new System.Drawing.Size(85, 17);
-            this.radioButton8.TabIndex = 39;
-            this.radioButton8.TabStop = true;
-            this.radioButton8.Text = "Not Random";
-            this.radioButton8.UseVisualStyleBackColor = true;
-            this.radioButton8.CheckedChanged += new System.EventHandler(this.radioButton8_CheckedChanged);
-            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -1330,19 +1346,17 @@ namespace MLSSRandomizerForm
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
-            // checkBox33
+            // checkBox37
             // 
-            this.checkBox33.AutoSize = true;
-            this.checkBox33.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox33.Checked = true;
-            this.checkBox33.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox33.Location = new System.Drawing.Point(192, 157);
-            this.checkBox33.Name = "checkBox33";
-            this.checkBox33.Size = new System.Drawing.Size(109, 17);
-            this.checkBox33.TabIndex = 23;
-            this.checkBox33.Text = "Beanstar Pieces?";
-            this.checkBox33.UseVisualStyleBackColor = true;
-            this.checkBox33.CheckedChanged += new System.EventHandler(this.checkBox33_CheckedChanged);
+            this.checkBox37.AutoSize = true;
+            this.checkBox37.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox37.Location = new System.Drawing.Point(268, 130);
+            this.checkBox37.Name = "checkBox37";
+            this.checkBox37.Size = new System.Drawing.Size(98, 17);
+            this.checkBox37.TabIndex = 41;
+            this.checkBox37.Text = "Disable Music?";
+            this.checkBox37.UseVisualStyleBackColor = true;
+            this.checkBox37.CheckedChanged += new System.EventHandler(this.checkBox37_CheckedChanged);
             // 
             // Form1
             // 
@@ -1493,6 +1507,7 @@ namespace MLSSRandomizerForm
         private RadioButton radioButton7;
         private RadioButton radioButton8;
         private CheckBox checkBox33;
+        private CheckBox checkBox37;
     }
 }
 

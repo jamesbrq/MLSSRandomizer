@@ -54,6 +54,7 @@ namespace MLSSRandomizerForm
         public static bool spangle = true;
         public static bool pieces = true;
         public static bool minigame = false;
+        public static bool mDisable = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -783,6 +784,11 @@ namespace MLSSRandomizerForm
         private void checkBox33_CheckedChanged(object sender, EventArgs e)
         {
             pieces = checkBox33.Checked;
+        }
+
+        private void checkBox37_CheckedChanged(object sender, EventArgs e)
+        {
+            mDisable = checkBox37.Checked;
         }
     }
 }
