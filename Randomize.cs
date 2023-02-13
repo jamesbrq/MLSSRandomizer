@@ -1059,7 +1059,7 @@ namespace MLSSRandomizerForm
             {
                 for (int i = 0; i < temp.Length; i += 2)
                 {
-                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0x0, 0xFF), (byte)random.Next(0x0, 0x7F), Convert.ToInt32(temp[i + 1], 16)));
+                    colors.Add(new Color(Convert.ToUInt32(temp[i], 16), (byte)random.Next(0x0, 0x100), (byte)random.Next(0x0, 0x80), Convert.ToInt32(temp[i + 1], 16)));
                 }
             }
             else if(tempcolor == "Custom")
@@ -1097,9 +1097,9 @@ namespace MLSSRandomizerForm
 
                 case "Random":
                     if(!pants)
-                        temp = colors[random.Next(0, colors.Length - 1)];
+                        temp = colors[random.Next(0, colors.Length)];
                     else
-                        temp = pColors[random.Next(0, pColors.Length - 1)];
+                        temp = pColors[random.Next(0, pColors.Length)];
                     return temp;
 
                 default:
@@ -1110,6 +1110,25 @@ namespace MLSSRandomizerForm
 
         public void MusicRandomize()
         {
+            if(Form1.sounds)
+            {
+                List<byte[]> sounds = new List<byte[]>();
+                stream.Seek(0x21CC44, SeekOrigin.Begin);
+                while (true)
+                {
+                    if (stream.Position == 0x21D1CC)
+                        break;
+                    byte[] temp = new byte[4];
+                    stream.Read(temp, 0, 4);
+                    sounds.Add(temp);
+                }
+                sounds.Shuffle(random);
+                stream.Seek(0x21CC44, SeekOrigin.Begin);
+                for (int i = sounds.Count - 1; i >= 0; i--)
+                {
+                    stream.Write(sounds[i], 0, 4);
+                }
+            }
             if (Form1.mDisable)
             {
                 stream.Seek(0x19B118, SeekOrigin.Begin);
@@ -1123,6 +1142,11 @@ namespace MLSSRandomizerForm
             stream.Seek(0x21cb74, SeekOrigin.Begin);
             while(true)
             {
+                if(stream.Position == 0x21cbd8)
+                {
+                    stream.Seek(4, SeekOrigin.Current);
+                    continue;
+                }
                 if (stream.Position == 0x21cc3c)
                     break;
                 byte[] temp = new byte[4];
@@ -1133,6 +1157,12 @@ namespace MLSSRandomizerForm
             stream.Seek(0x21cb74, SeekOrigin.Begin);
             for (int i = songs.Count - 1; i >= 0; i--)
             {
+                if (stream.Position == 0x21cbd8)
+                {
+                    stream.Seek(4, SeekOrigin.Current);
+                    i++;
+                    continue;
+                }
                 stream.Write(songs[i], 0, 4);
             }
         }

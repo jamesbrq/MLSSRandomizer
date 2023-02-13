@@ -79,6 +79,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox37 = new System.Windows.Forms.CheckBox();
             this.checkBox36 = new System.Windows.Forms.CheckBox();
             this.checkBox32 = new System.Windows.Forms.CheckBox();
             this.label6 = new System.Windows.Forms.Label();
@@ -130,7 +131,7 @@ namespace MLSSRandomizerForm
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox37 = new System.Windows.Forms.CheckBox();
+            this.checkBox38 = new System.Windows.Forms.CheckBox();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -723,6 +724,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBox38);
             this.tabPage5.Controls.Add(this.checkBox37);
             this.tabPage5.Controls.Add(this.checkBox36);
             this.tabPage5.Controls.Add(this.checkBox32);
@@ -742,6 +744,18 @@ namespace MLSSRandomizerForm
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBox37
+            // 
+            this.checkBox37.AutoSize = true;
+            this.checkBox37.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox37.Location = new System.Drawing.Point(268, 153);
+            this.checkBox37.Name = "checkBox37";
+            this.checkBox37.Size = new System.Drawing.Size(98, 17);
+            this.checkBox37.TabIndex = 41;
+            this.checkBox37.Text = "Disable Music?";
+            this.checkBox37.UseVisualStyleBackColor = true;
+            this.checkBox37.CheckedChanged += new System.EventHandler(this.checkBox37_CheckedChanged);
             // 
             // checkBox36
             // 
@@ -817,7 +831,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox29.AutoSize = true;
             this.checkBox29.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox29.Location = new System.Drawing.Point(250, 107);
+            this.checkBox29.Location = new System.Drawing.Point(250, 130);
             this.checkBox29.Name = "checkBox29";
             this.checkBox29.Size = new System.Drawing.Size(116, 17);
             this.checkBox29.TabIndex = 30;
@@ -1346,17 +1360,17 @@ namespace MLSSRandomizerForm
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
-            // checkBox37
+            // checkBox38
             // 
-            this.checkBox37.AutoSize = true;
-            this.checkBox37.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox37.Location = new System.Drawing.Point(268, 130);
-            this.checkBox37.Name = "checkBox37";
-            this.checkBox37.Size = new System.Drawing.Size(98, 17);
-            this.checkBox37.TabIndex = 41;
-            this.checkBox37.Text = "Disable Music?";
-            this.checkBox37.UseVisualStyleBackColor = true;
-            this.checkBox37.CheckedChanged += new System.EventHandler(this.checkBox37_CheckedChanged);
+            this.checkBox38.AutoSize = true;
+            this.checkBox38.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox38.Location = new System.Drawing.Point(242, 107);
+            this.checkBox38.Name = "checkBox38";
+            this.checkBox38.Size = new System.Drawing.Size(124, 17);
+            this.checkBox38.TabIndex = 42;
+            this.checkBox38.Text = "Randomize Sounds?";
+            this.checkBox38.UseVisualStyleBackColor = true;
+            this.checkBox38.CheckedChanged += new System.EventHandler(this.checkBox38_CheckedChanged);
             // 
             // Form1
             // 
@@ -1508,6 +1522,7 @@ namespace MLSSRandomizerForm
         private RadioButton radioButton8;
         private CheckBox checkBox33;
         private CheckBox checkBox37;
+        private CheckBox checkBox38;
     }
 }
 
