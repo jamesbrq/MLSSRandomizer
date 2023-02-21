@@ -74,7 +74,7 @@
 
     .org SHAMMERS_SHOP2
        dw SHAMMERS_SHOPNAME
-        dw SHAMMERS_SHOPNAME
+       dw SHAMMERS_SHOPNAME
 
     .org SHAMMERS_SHOPNAME
         db 0x53, 0x75, 0x70, 0x65, 0x72, 0x20, 0x48, 0x61, 0x6D, 0x6D, 0x65, 0x72, 0x73, 0x0
@@ -397,7 +397,7 @@
         db 0xFF, 0x11, 0x1, 0xFF, 0xA
 
     .org NUT_TEXT
-        db 0x13, 0x2, 0xFF, 0xB, 0x2, 0xFF, 0x41, 0xFF, 0x25
+        db 0x13, 0x2, 0xFF, 0xB, 0x1, 0xFF, 0x41, 0xFF, 0x25
         db 0x59, 0x6F, 0x75, 0x20, 0x67, 0x6F, 0x74, 0x20, 0x61, 0x20, 0x4E, 0x75, 0x74, 0x21
         db 0xFF, 0x11, 0x1, 0xFF, 0xA
 
@@ -3946,8 +3946,32 @@
 
 
 
+    .org GWAHAR_PIPE
+    push r1
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0xC9
+    bne .pipe_skip
+    ldr r0, =0x0200435A
+    ldrb r1, [r0]
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    .pipe_skip:
+    pop r1
+    add r1, #0x1
+    bx r1
+    .pool
+
+
+
+
+
     .org OCEAN_BLOCK
     push { r2, lr }
+    ldr r0, =GWAHAR_PIPE + 1
+    mov r1, pc
+    bx r0
     ldr r0, =HOONIVERSITY
     ldrb r1, [r0]
     mov r2, #0x80
@@ -4240,9 +4264,47 @@
 
 
 
+    .org FAWFUL_FLAGS
+    push r1
+    ldr r0, =0x020046EC
+    mov r1, #0xF
+    ldrb r2, [r0]
+    orr r2, r1
+    strb r2, [r0]
+    ldr r0, =0x02004724
+    mov r1, #0x3
+    ldrb r2, [r0]
+    orr r2, r1
+    strb r2, [r0]
+    ldr r0, =0x020043DE
+    mov r1, #0x80
+    ldrb r2, [r0]
+    orr r2, r1
+    strb r2, [r0]
+    ldr r0, =0x020042FB
+    mov r1, #0x60
+    ldrb r2, [r0]
+    orr r2, r1
+    strb r2, [r0]
+    ldr r0, =0x020042F9
+    mov r1, #0x1
+    ldrb r2, [r0]
+    orr r2, r1
+    strb r2, [r0]
+    pop r1
+    add r1, #0x1
+    bx r1
+    .pool
+
+
+
+
 
     .org FAWFUL_BLOCK
     push { r0, lr }
+    ldr r0, =FAWFUL_FLAGS + 1
+    mov r1, pc
+    bx r0
     ldr r0, =ROOM
     ldrb r0, [r0]
     cmp r0, #0x4D

@@ -41,6 +41,7 @@ namespace MLSSRandomizerForm
                 rom.EnemyRandomize();
                 rom.RandomizeStats();
                 rom.MusicRandomize();
+                rom.BackgroundRandomize();
                 Form1.mColor = Rom.GenColor(Form1.mColor, false);
                 Form1.lColor = Rom.GenColor(Form1.lColor, false);
                 rom.ColorSwap(Form1.mColor, 0, "");
@@ -472,6 +473,7 @@ namespace MLSSRandomizerForm
                 ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
                 ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
                 ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
             }
 
             if(gameId == 3)
@@ -648,6 +650,7 @@ namespace MLSSRandomizerForm
                         else
                             return true;
                     }
+                    Console.WriteLine(gameState.hammerState + " " + gameState.rose + " " + gameState.brooch + " " + gameState.fire + " " + gameState.thunder + " " + gameState.fruitState + " " + gameState.membership + " " + gameState.winkle + " " + gameState.dress + " " + gameState.beanstar + " " + gameState.mini + " " + gameState.under + " " + gameState.dash + " " + gameState.crash + " " + gameState.totalBeanfruit + " " + gameState.neon + " " + gameState.spangle + " " + gameState.pieces); ;
                     if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.spangle && gameState.pieces == 4)
                         return true;
                 }
@@ -928,6 +931,19 @@ namespace MLSSRandomizerForm
                     surfSkip:;
                 }
                 optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (!Form1.castle)
+                    {
+                        ValidArrayAdd(data);
+                    }
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                }
+                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -1116,6 +1132,11 @@ namespace MLSSRandomizerForm
                 stream.Seek(0x21CC44, SeekOrigin.Begin);
                 while (true)
                 {
+                    if (stream.Position == 0x21CDDC)
+                    {
+                        stream.Seek(4, SeekOrigin.Current);
+                        continue;
+                    }
                     if (stream.Position == 0x21D1CC)
                         break;
                     byte[] temp = new byte[4];
@@ -1126,6 +1147,12 @@ namespace MLSSRandomizerForm
                 stream.Seek(0x21CC44, SeekOrigin.Begin);
                 for (int i = sounds.Count - 1; i >= 0; i--)
                 {
+                    if (stream.Position == 0x21CDDC)
+                    {
+                        stream.Seek(4, SeekOrigin.Current);
+                        i++;
+                        continue;
+                    }
                     stream.Write(sounds[i], 0, 4);
                 }
             }
@@ -1167,7 +1194,7 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public void EnemyRandomize()
+        public void BackgroundRandomize()
         {
             if (Form1.background)
             {
@@ -1180,7 +1207,10 @@ namespace MLSSRandomizerForm
                     stream.WriteByte((byte)random.Next(0, 0x27));
                 }
             }
+        }
 
+        public void EnemyRandomize()
+        {
             if (!Form1.enemy)
                 return;
             //Write byte for stat scale execution
@@ -1454,7 +1484,7 @@ namespace MLSSRandomizerForm
                         break;
                     stream.Seek(-3, SeekOrigin.Current);
                     id = stream.ReadByte();
-                    if (id == 0x18 || id == 0x53 || id == 0x4B)
+                    if (id == 0x18 || id == 0x53 || id == 0x4B || (id >= 0x2D && id <= 0x30))
                         type = 0x4;
                     if (enemyCount.Count == 0)
                         enemyCount.Add(new StatCount(id));
@@ -1670,6 +1700,8 @@ namespace MLSSRandomizerForm
                 if (!CheckValidity())
                 {
                     validLocations = new List<dynamic>();
+                    if (iterationCount >= 290)
+                        Console.WriteLine("aa");
                     Console.WriteLine(++iterationCount);
                     goto rBegin;
                 }

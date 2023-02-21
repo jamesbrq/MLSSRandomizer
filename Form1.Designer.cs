@@ -79,6 +79,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox38 = new System.Windows.Forms.CheckBox();
             this.checkBox37 = new System.Windows.Forms.CheckBox();
             this.checkBox36 = new System.Windows.Forms.CheckBox();
             this.checkBox32 = new System.Windows.Forms.CheckBox();
@@ -131,7 +132,6 @@ namespace MLSSRandomizerForm
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.checkBox38 = new System.Windows.Forms.CheckBox();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -745,6 +745,18 @@ namespace MLSSRandomizerForm
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
+            // checkBox38
+            // 
+            this.checkBox38.AutoSize = true;
+            this.checkBox38.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox38.Location = new System.Drawing.Point(242, 107);
+            this.checkBox38.Name = "checkBox38";
+            this.checkBox38.Size = new System.Drawing.Size(124, 17);
+            this.checkBox38.TabIndex = 42;
+            this.checkBox38.Text = "Randomize Sounds?";
+            this.checkBox38.UseVisualStyleBackColor = true;
+            this.checkBox38.CheckedChanged += new System.EventHandler(this.checkBox38_CheckedChanged);
+            // 
             // checkBox37
             // 
             this.checkBox37.AutoSize = true;
@@ -789,6 +801,7 @@ namespace MLSSRandomizerForm
             this.label6.Size = new System.Drawing.Size(62, 13);
             this.label6.TabIndex = 37;
             this.label6.Text = "Seed Type:";
+            this.label6.Click += new System.EventHandler(this.label6_Click);
             // 
             // radioButton5
             // 
@@ -1359,18 +1372,6 @@ namespace MLSSRandomizerForm
             // romBindingSource
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
-            // 
-            // checkBox38
-            // 
-            this.checkBox38.AutoSize = true;
-            this.checkBox38.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox38.Location = new System.Drawing.Point(242, 107);
-            this.checkBox38.Name = "checkBox38";
-            this.checkBox38.Size = new System.Drawing.Size(124, 17);
-            this.checkBox38.TabIndex = 42;
-            this.checkBox38.Text = "Randomize Sounds?";
-            this.checkBox38.UseVisualStyleBackColor = true;
-            this.checkBox38.CheckedChanged += new System.EventHandler(this.checkBox38_CheckedChanged);
             // 
             // Form1
             // 

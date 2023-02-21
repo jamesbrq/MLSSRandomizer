@@ -129,7 +129,7 @@ namespace MLSSRandomizerForm
             }
 
             config.TryGetValue("bosses", out temp);
-            seedType = temp;
+            bosses = temp;
             switch (temp)
             {
                 case 1:
@@ -245,7 +245,7 @@ namespace MLSSRandomizerForm
             minigame = Convert.ToBoolean(temp);
             checkBox36.Checked = Convert.ToBoolean(temp);
             config.TryGetValue("pieces", out temp);
-            minigame = Convert.ToBoolean(temp);
+            pieces = Convert.ToBoolean(temp);
             checkBox33.Checked = Convert.ToBoolean(temp);
         }
 
@@ -795,6 +795,11 @@ namespace MLSSRandomizerForm
         private void checkBox38_CheckedChanged(object sender, EventArgs e)
         {
             sounds = checkBox38.Checked;
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
