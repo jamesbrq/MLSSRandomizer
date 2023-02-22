@@ -376,9 +376,6 @@
     .org BEANLET_FIX
         db 0x16
 
-    .org CASTLE_DOOR_FIX
-        db 0xB
-
     .org FLAG_FIX 
         mov r0, r0
 
@@ -573,6 +570,9 @@
 
     .org HSPRITE_FIX_HOOK
         bl HSPRITE_FIX_SUBR
+
+    .org YOSHI_TEXT_FIX_HOOK
+        bl YOSHI_TEXT_FIX_SUBR
 
 
 
@@ -849,6 +849,21 @@
     mov r3, #0xD4
     lsl r3, #0x2
     pop { r0-r2, lr }
+    .pool
+
+
+
+
+    .org YOSHI_TEXT_FIX_SUBR
+    push { r6, lr }
+    ldr r6, =0x296
+    cmp r6, r3
+    bne .norm
+    mov r3, #0x0
+    .norm:
+    sub r0, #0x40
+    str r3, [r0]
+    pop { r6, pc }
     .pool
 
 
