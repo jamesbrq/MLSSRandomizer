@@ -2045,10 +2045,20 @@
 
 
 
-
     .org DOOR_SUBR
-    
     push { r0, r1, r6, lr }
+    ldr r0, =DOOR_DATA + 1
+    mov r6, pc
+    bx r0
+    pop { r0, r1, r6, pc }
+    .pool
+
+
+
+
+
+    .org DOOR_DATA  
+    push r6
     ldr r0, =ROOM
     ldrb r0, [r0]
     cmp r0, #0x36
@@ -2060,7 +2070,9 @@
     bl .end2
 
     .ruins_door:
-    bl RUINS_DOORS
+    ldr r0, =RUINS_DOORS + 1
+    mov r6, pc
+    bx r0
     bl .end3
 
     .dress_door:
@@ -2119,7 +2131,15 @@
     mov r6, #0x1
     strb r6, [r0]
     .end4:
-    pop { r0, r1, r6, pc }
+    ldr r0, =GATES_RAM
+    ldrb r0, [r0]
+    ldr r1, =0x02004303
+    ldrb r6, [r1]
+    bic r6, r0
+    strb r6, [r1]
+    pop r6
+    add r6, #0x1
+    bx r6
     .pool
 
 
@@ -2127,7 +2147,7 @@
 
 
     .org RUINS_DOORS
-    push lr
+    push r6
     ldr r0, =0x0200434C
     ldrb r0, [r0]
     mov r6, #0x3
@@ -2145,7 +2165,9 @@
     .ruins_norm:
     ldrb r3, [r1]
     .ruins_end:
-    pop pc
+    pop r6
+    add r6, #0x1
+    bx r6
     .pool
 
 
@@ -4316,7 +4338,7 @@
 
 
     .org FAWFUL_BLOCK
-    push { r0, lr }
+    push r1
     ldr r0, =FAWFUL_FLAGS + 1
     mov r1, pc
     bx r0
@@ -4353,7 +4375,9 @@
     mov r1, #0x0
     strb r1, [r0]
     .fawful_end:
-    pop { r0, pc }
+    pop r1
+    add r1, #0x1
+    bx r1
     .pool
 
 
@@ -4520,6 +4544,174 @@
 
 
 
+
+    .org SPANGLE_SUBR
+    push r1
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0xFF
+    bne .spangle_ram
+    ldr r0, =0x02008708
+    cmp r4, r0
+    beq .spangle_end
+    ldr r0, =0x0200490E
+    ldrb r0, [r0]
+    mov r1, #0x4
+    and r1, r0
+    cmp r1, #0x4
+    bne .spangle_clear
+    ldr r0, =0x0200434A
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    beq .spangle_end
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =SPANGLE_RAM
+    strb r2, [r0]
+    bl .spangle_end
+    .spangle_clear:
+    ldr r0, =0x0200434A
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    bne .spangle_end
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =SPANGLE_RAM
+    mov r1, #0x40
+    strb r1, [r0, #0x1]
+    bl .spangle_end
+    .spangle_ram:
+    ldr r0, =SPANGLE_RAM
+    ldrb r1, [r0]
+    ldr r2, =0x0200434A
+    ldrb r0, [r2]
+    bic r0, r1
+    strb r0, [r2]
+    ldr r0, =SPANGLE_RAM
+    ldrb r1, [r0, #0x1]
+    ldrb r0, [r2]
+    orr r0, r1
+    strb r0, [r2]
+    ldr r0, =SPANGLE_RAM
+    mov r1, #0x0
+    strb r1, [r0]
+    strb r1, [r0, #0x1]
+    .spangle_end:
+    pop r1
+    add r1, #0x1
+    bx r1
+    .pool
+
+
+
+
+
+    .org WINKLE_SUBR
+    push r1
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x9E
+    bne .winkle_ram
+    ldr r0, =0x0200490B
+    ldrb r0, [r0]
+    mov r1, #0x2
+    and r1, r0
+    cmp r1, #0x2
+    bne .winkle_clear
+    ldr r0, =0x0200430C
+    ldrb r1, [r0]
+    mov r2, #0x80
+    and r2, r1
+    cmp r2, #0x80
+    beq .winkle_end
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =WINKLE_RAM
+    strb r2, [r0]
+    bl .winkle_end
+    .winkle_clear:
+    ldr r0, =0x0200430C
+    ldrb r1, [r0]
+    mov r2, #0x80
+    and r2, r1
+    cmp r2, #0x80
+    bne .winkle_end
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =WINKLE_RAM
+    mov r1, #0x80
+    strb r1, [r0, #0x1]
+    bl .winkle_end
+    .winkle_ram:
+    ldr r0, =WINKLE_RAM
+    ldrb r1, [r0]
+    ldr r2, =0x0200430C
+    ldrb r0, [r2]
+    bic r0, r1
+    strb r0, [r2]
+    ldr r0, =WINKLE_RAM
+    ldrb r1, [r0, #0x1]
+    ldrb r0, [r2]
+    orr r0, r1
+    strb r0, [r2]
+    ldr r0, =WINKLE_RAM
+    mov r1, #0x0
+    strb r1, [r0]
+    strb r1, [r0, #0x1]
+    .winkle_end:
+    pop r1
+    add r1, #0x1
+    bx r1
+    .pool
+
+
+
+
+
+    .org CASTLE_GATES
+    push r1
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x36
+    bne .gates_ram
+    ldr r0, =0x02004303
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    beq .gates_end
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =GATES_RAM
+    mov r1, #0x40
+    strb r1, [r0]
+    bl .gates_end
+    .gates_ram:
+    ldr r0, =0x02004303
+    ldrb r1, [r0]
+    ldr r2, =GATES_RAM
+    ldrb r2, [r2]
+    bic r1, r2
+    strb r1, [r0]
+    ldr r2, =GATES_RAM
+    mov r1, #0x0
+    strb r1, [r2]
+    .gates_end:
+    pop r1
+    add r1, #0x1
+    bx r1
+    .pool
+
+
+
+
     .org KOOPA_BLOCK_SUBR
     push { r0, r1, r2, lr }
     ldr r0, =YOSHI_DISPLAY_RAM
@@ -4537,6 +4729,12 @@
     bic r1, r2
     strb r1, [r0, #0x1]
     .coral_skip:
+    ldr r0, =SPANGLE_SUBR + 1
+    mov r1, pc
+    bx r0
+    ldr r0, =WINKLE_SUBR + 1
+    mov r1, pc
+    bx r0
     bl PEACH_KIDNAPPED  
     bl JUMP_TUT
     bl EGG_CHECK
@@ -4546,7 +4744,12 @@
     bl OCEAN_BLOCK
     bl SCROLL_CHECK
     bl ROCK_BLOCK
-    bl FAWFUL_BLOCK
+    ldr r0, =FAWFUL_BLOCK + 1
+    mov r1, pc
+    bx r0
+    ldr r0, =CASTLE_GATES + 1
+    mov r1, pc
+    bx r0
     bl SEWER_BLOCK
     ldr r0, =PEACH_BUFFER
     ldrb r1, [r0]
@@ -4582,8 +4785,6 @@
     beq .membership_block2
     cmp r0, #0x36
     beq .membership_restore
-    cmp r0, #0x9E
-    beq .winkle_block2
     cmp r0, #0x87
     beq .barrel_block2
     cmp r0, #0xC3
@@ -4661,9 +4862,6 @@
     .barrel_block2:
     bl .barrel_block
 
-    .winkle_block2:
-    bl .winkle_block
-
     .coral_fix:
     ldr r0, =ROOM
     ldrb r0, [r0, #0x1]
@@ -4681,40 +4879,6 @@
     mov r1, #0x1
     strb r1, [r0]
     bne .koopa_norm
-
-    .winkle_block:
-    ldr r0, =ROOM
-    ldrb r0, [r0, #0x1]
-    cmp r0, #0x1
-    beq .koopa_norm
-    ldr r0, =CARD_RAM
-    ldr r0, [r0]
-    cmp r0, #0x0
-    bne .winkle_block_ram
-    ldr r0, =WINKLE
-    cmp r0, r4
-    bne .koopa_norm
-    ldr r0, =KEY_ITEM
-    ldrb r0, [r0, #0x1]
-    mov r1, #0x1
-    lsl r1, #0x1
-    and r0, r1
-    cmp r0, #0x0
-    beq .no_winkle
-    bl .koopa_norm
-    .no_winkle:
-    ldr r0, =CARD_RAM
-    mov r1, #0x1
-    str r1, [r0]
-    bl .koopa_norm
-    .winkle_block_ram:
-    ldr r0, =WINKLE
-    add r0, #0x54
-    mov r1, #0x0
-    str r1, [r0]
-    ldr r0, =CARD_RAM
-    str r1, [r0]
-    bl .koopa_norm
 
     .membership_block:
     ldr r0, =ROOM

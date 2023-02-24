@@ -1132,7 +1132,7 @@ namespace MLSSRandomizerForm
                 stream.Seek(0x21CC44, SeekOrigin.Begin);
                 while (true)
                 {
-                    if (stream.Position == 0x21CDDC)
+                    if (stream.Position == 0x21CDDC || stream.Position == 0x21CF1C)
                     {
                         stream.Seek(4, SeekOrigin.Current);
                         continue;
@@ -1147,7 +1147,7 @@ namespace MLSSRandomizerForm
                 stream.Seek(0x21CC44, SeekOrigin.Begin);
                 for (int i = sounds.Count - 1; i >= 0; i--)
                 {
-                    if (stream.Position == 0x21CDDC)
+                    if (stream.Position == 0x21CDDC || stream.Position == 0x21CF1C)
                     {
                         stream.Seek(4, SeekOrigin.Current);
                         i++;
