@@ -1484,7 +1484,7 @@ namespace MLSSRandomizerForm
                         break;
                     stream.Seek(-3, SeekOrigin.Current);
                     id = stream.ReadByte();
-                    if (id == 0x18 || id == 0x53 || id == 0x4B || (id >= 0x2D && id <= 0x30))
+                    if (id == 0x18 || id == 0x53 || id == 0x4B || (id >= 0x2D && id <= 0x30) || id == 0x3C)
                         type = 0x4;
                     if (enemyCount.Count == 0)
                         enemyCount.Add(new StatCount(id));

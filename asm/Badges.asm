@@ -4,9 +4,9 @@ SPECIAL equ 0x02004982
 BADGE_FLAGS equ 0x02004992
 PANTS_FLAGS equ 0x020049CA
 SPECIAL_FLAGS equ 0x02004A02
-BADGE_ADD equ 0x081DFA10
-PANTS_ADD equ 0x081E0450
-SPECIAL_ADD equ 0x081DFA60
+BADGE_ADD equ 0x08E01900
+PANTS_ADD equ 0x08E01A00
+SPECIAL_ADD equ 0x08E01B00
 BADGE_SHOP_HOOK equ 0x0812AE7C
 BADGE_SHOP_SUBR equ 0x081E0490
 BADGE_SHOP_INJECT_HOOK equ 0x0812AE90
@@ -17,10 +17,13 @@ BADGE_SHOP_TEXT_RAM_HOOK equ 0x0812E57E
 BADGE_SHOP_TEXT_RAM_SUBR equ 0x081DFF20
 BADGE_SHOP_TEXT_HOOK equ 0x0812E59C
 BADGE_SHOP_TEXT_SUBR equ 0x081DFF30
+BADGE_SHOP_TEXT_DATA equ 0x08E06A00
 BADGE_SHOP_DESC_HOOK equ 0x0812E2AC
 BADGE_SHOP_DESC_SUBR equ 0x081DFFD0
+BADGE_SHOP_DESC_DATA equ 0x08E06300
 PANTS_SHOP_DESC_HOOK equ 0x0812E2E2
 PANTS_SHOP_DESC_SUBR equ 0x081E0070
+PANTS_SHOP_DESC_DATA equ 0x08E06100
 BADGE_SHOP_DESC_RAM_HOOK equ 0x0812E296
 BADGE_SHOP_DESC_RAM_SUBR equ 0x081E01F0
 PANTS_SHOP_DESC_RAM_HOOK equ 0x0812E2D0
@@ -28,7 +31,8 @@ PANTS_SHOP_DESC_RAM_SUBR equ 0x081DFAC0
 BADGE_BUY_FIX equ 0x0812B76E
 BADGE_BUY_HOOK equ 0x0812b776
 BADGE_BUY_SUBR equ 0x081E0970
-ITEM_SHOP_ARRAY equ 0x081E0580
+BADGE_BUY_DATA equ 0x08E06500
+ITEM_SHOP_ARRAY equ 0x08E06600
 BADGE_DESC_RAM equ 0x02003043
 BADGE_BUY_BLOCK equ 0x0812B780
 BADGE_SHOP_RAM equ 0x02003042
@@ -39,7 +43,7 @@ BADGE_COUNT_FIX equ 0x0812adb8
 BADGE_COUNT_HOOK equ 0x0812adf2
 BADGE_COUNT_SUBR equ 0x081E0200
 PRICE_FIX_HOOK equ 0x0812aeac
-PRICE_FIX_SUBR equ 0x081E0230
+PRICE_FIX_SUBR equ 0x081E02B0
 PRICE_FIX_PANTS_HOOK equ 0x0812af0e
 PRICE_FIX_PANTS_SUBR equ 0x081E0250
 EQUIP_FIX_HOOK equ 0x0812c38a
@@ -165,29 +169,33 @@ pop { r1, pc }
 .pool
 
 .org PRICE_FIX_SUBR
-push lr
+push { r2, r4, lr }
 ldr r0, =PRICE_RAM
 mov r1, #0x1
 strb r1, [r0]
 ldr r1, =BSHOP_RAM
 ldrb r1, [r1]
 mov r3, #0x3
-bl PRICE_CALC
+ldr r4, =PRICE_CALC + 1
+mov r2, pc
+bx r4
 mov r0, r7
-pop pc
+pop { r2, r4, pc }
 .pool
 
 .org PRICE_FIX_PANTS_SUBR
-push lr
+push { r2, r4, lr }
 ldr r0, =PRICE_RAM
 mov r1, #0x1
 strb r1, [r0]
 ldr r1, =BSHOP_RAM
 ldrb r1, [r1]
 mov r3, #0x3
-bl PRICE_CALC
+ldr r4, =PRICE_CALC + 1
+mov r2, pc
+bx r4
 mov r0, r7
-pop pc
+pop { r2, r4, pc }
 .pool
 
 .org BADGE_COUNT_SUBR
@@ -209,8 +217,20 @@ strb r3, [r2, #0x2]
 pop { r2, r3, pc }
 .pool
 
+
+
+
+
 .org BADGE_BUY_SUBR
 push { r1-r4, lr }
+ldr r2, =BADGE_BUY_DATA + 1
+mov r1, pc
+bx r2
+pop { r1-r4, pc }
+.pool
+
+.org BADGE_BUY_DATA
+push r1-r4
 cmp r0, #0x30
 bge .pants_key
 sub r0, #0xA
@@ -255,22 +275,30 @@ bl .pants_buy_end
 sub r0, #0x9E
 cmp r0, #0x2C
 bge .pants_pants
-bl BADGE_ADD
+ldr r2, =BADGE_ADD + 1
+mov r1, pc
+bx r2
 bl .pants_buy_end
 .pants_pants:
 cmp r0, #0x5A
 bge .pants_special
-bl PANTS_ADD
+ldr r2, =PANTS + 1
+mov r1, pc
+bx r2
 bl .pants_buy_end
 .pants_special:
-bl SPECIAL_ADD
+ldr r2, =SPECIAL_ADD + 1
+mov r1, pc
+bx r2
 .pants_buy_end:
 mov r0, #0xFF
-pop { r1-r4, pc }
+pop r1-r4
+add r1, #0x1
+bx r1
 .pool
 
 .org BADGE_ADD
-push { r1, r2, r3, lr }
+push { r1-r3 }
 mov r3, #0x0
 ldr r1, =BADGE
 ldrb r2, [r1, r0]
@@ -292,11 +320,13 @@ bl .badge_flag
 .bflag_set:
 strb r0, [r1, r3]
 .badge_end:
-pop { r1, r2, r3, pc }
+pop { r1-r3 }
+add r1, #0x1
+bx r1
 .pool
 
 .org PANTS_ADD
-push { r0, r1, r2, r3, lr }
+push { r0-r3 }
 sub r0, #0x2C
 mov r3, #0x0
 ldr r1, =PANTS
@@ -322,11 +352,13 @@ bl .pants_flag
 .pflag_set:
 strb r0, [r1, r3]
 .pants_end:
-pop { r0, r1, r2, r3, pc }
+pop { r0-r3 }
+add r1, #0x1
+bx r1
 .pool
 
 .org SPECIAL_ADD
-push { r0, r1, r2, r3, lr }
+push { r0-r3 }
 sub r0, #0x5A
 mov r3, #0x0
 ldr r1, =SPECIAL
@@ -357,7 +389,9 @@ ldrb r2, [r1]
 mov r3, #0x4
 orr r2, r3
 strb r2, [r1]
-pop { r0, r1, r2, r3, pc }
+pop { r0-r3 }
+add r1, #0x1
+bx r1
 .pool
 
 .org BADGE_SHOP_SUBR
@@ -398,8 +432,18 @@ strb r2, [r5]
 pop { r5, pc }	
 .pool
 
+
+
 .org BADGE_SHOP_TEXT_SUBR
-push { r2, r3, r4, lr }
+push { r2-r4, lr }
+ldr r3, =BADGE_SHOP_TEXT_DATA + 1
+mov r2, pc
+bx r3
+pop { r2-r4, pc }
+.pool
+
+.org BADGE_SHOP_TEXT_DATA
+push r2-r4
 ldr r3, =BADGE_DESC_RAM
 ldrb r2, [r3]
 mov r4, #0x0
@@ -461,7 +505,9 @@ ldr r1, [r2, r3]
 .text_norm:
 ldr r1, [r1]
 ldr r1, [r1]
-pop { r2, r3, r4, pc }
+pop r2-r4
+add r2, #0x1
+bx r2
 .pool
 
 .org BADGE_SHOP_DESC_RAM_SUBR
@@ -473,8 +519,18 @@ and r2, r1
 pop { r3, pc }
 .pool
 
+
+
 .org BADGE_SHOP_DESC_SUBR
-push { r3, r4, r6, lr }
+push { r3-r4, r6, lr }
+ldr r3, =BADGE_SHOP_DESC_DATA + 1
+mov r4, pc
+bx r3
+pop { r3-r4, r6, pc }
+.pool
+
+.org BADGE_SHOP_DESC_DATA
+push { r3-r4, r6}
 ldr r3, =BADGE_DESC_RAM
 ldrb r3, [r3]
 cmp r3, #0x30
@@ -531,7 +587,9 @@ mov r4, #0x0
 strb r4, [r3]
 ldr r1, [r2]
 ldr r1, [r1, #0x4]
-pop { r3, r4, r5, pc }
+pop { r3-r4, r6 }
+add r4, #0x1
+bx r4
 .pool
 
 .org PANTS_SHOP_DESC_RAM_SUBR
@@ -543,8 +601,20 @@ and r2, r1
 pop { r3, pc }
 .pool
 
+
+
+
+
 .org PANTS_SHOP_DESC_SUBR
 push { r3, r4, r6, lr }
+ldr r3, =PANTS_SHOP_DESC_DATA + 1
+mov r4, pc
+bx r3
+pop { r3-r4, r6, pc}
+.pool
+
+.org PANTS_SHOP_DESC_DATA
+push { r3-r4, r6 }
 ldr r3, =BADGE_DESC_RAM
 ldrb r3, [r3]
 cmp r3, #0x30
@@ -601,5 +671,7 @@ mov r4, #0x0
 strb r4, [r3]
 ldr r1, [r2]
 ldr r1, [r1, #0x4]
-pop { r3, r4, r5, pc }
+pop { r3-r4, r5 }
+add r4, #0x1
+bx r4
 .pool
