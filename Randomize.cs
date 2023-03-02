@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Security.Cryptography;
 using System.Windows.Forms;
+using System.Diagnostics;
+using System.Reflection;
 
 
 public static class ListExtensions
@@ -38,6 +40,7 @@ namespace MLSSRandomizerForm
                 rom.Randomize();
                 rom.SpoilerFill();
                 rom.SpoilerGen();
+                rom.HintWrite();
                 rom.EnemyRandomize();
                 rom.RandomizeStats();
                 rom.MusicRandomize();
@@ -48,6 +51,8 @@ namespace MLSSRandomizerForm
                 rom.ColorSwap(Form1.lColor, 1, "");
                 rom.ColorSwap(Rom.GenColor(Form1.mPants, true), 0, "pants/");
                 rom.ColorSwap(Rom.GenColor(Form1.lPants, true), 1, "pants/");
+                rom.SeedInject();
+                rom.EntranceRandomize();
                 rom.stream.Close();
                 rom.Inject();
                 return (Environment.CurrentDirectory + "/asm/mlss_loop.gba", rom.hash);
@@ -73,10 +78,14 @@ namespace MLSSRandomizerForm
         //mlss var
         List<dynamic> freshLocationArray = new List<dynamic>();
         List<dynamic> validLocationArray = new List<dynamic>();
+        List<Room> freshRoomArray = new List<Room>();
+        List<Door> freshDoorArray = new List<Door>();
+        List<Door> oceanDoorArray = new List<Door>();
         List<dynamic> optionsArray = new List<dynamic>();
         List<dynamic> locationArray = new List<dynamic>();
         List<dynamic> validityArray = new List<dynamic>();
         List<dynamic> validLocations = new List<dynamic>();
+        List<Hint> hints = new List<Hint>();
         List<Spoiler> spoilerArray = new List<Spoiler>();
         List<SpoilerItem> spoilerItemArray = new List<SpoilerItem>();
         List<SpoilerLocation> spoilerLocationArray = new List<SpoilerLocation>();
@@ -84,8 +93,10 @@ namespace MLSSRandomizerForm
         public LocationData gameState = new LocationData(0);
         public int iterationCount = 0;
         public List<Enemy> enemies = new List<Enemy>();
+        public List<Enemy> spikedEnemies = new List<Enemy>();
         public List<int> groupSizes = new List<int>();
         public List<EnemyGroup> groups = new List<EnemyGroup>();
+        public List<EnemyGroup> stardustGroups = new List<EnemyGroup>();
         public List<EnemyGroup> bossGroups = new List<EnemyGroup>();
         public List<StatCount> enemyCount = new List<StatCount>();
 
@@ -102,7 +113,7 @@ namespace MLSSRandomizerForm
                 SeedInitialize(seed);
                 CheckOptions();
             }
-            if(gameId == 3)
+            if (gameId == 3)
             {
                 if (!File.Exists(Environment.CurrentDirectory + "/bis/bis.nds"))
                     File.Copy(path, Environment.CurrentDirectory + "/bis/bis.nds");
@@ -111,6 +122,46 @@ namespace MLSSRandomizerForm
                 SeedInitialize(seed);
                 CheckOptions();
             }
+        }
+
+
+
+        public struct Room
+        {
+            public Room(int id, List<Door> doors)
+            {
+                this.id = id;
+                this.doors = doors;
+                this.index = doors.Count;
+            }
+
+            public void DoorAdd(Door door)
+            {
+                doors.Add(door);
+                index = doors.Count;
+            }
+
+            public int id;
+            public List<Door> doors;
+            public int index;
+        }
+
+        public struct Door
+        {
+            public Door(int id, byte[] arr, int returnRoom, int returnIndex, LocationData logic)
+            {
+                this.id = id;
+                this.returnRoom = returnRoom;
+                this.returnIndex = returnIndex;
+                this.arr = arr;
+                this.logic = logic;
+            }
+
+            public int id;
+            public byte[] arr;
+            public int returnRoom;
+            public int returnIndex;
+            public LocationData logic;
         }
 
         public struct Color
@@ -194,6 +245,20 @@ namespace MLSSRandomizerForm
             }
             public string locationName;
             public string locationHex;
+            public string itemName;
+        }
+
+        public struct Hint
+        {
+            public Hint(byte id, string location, string itemName)
+            {
+                this.id = id;
+                this.location = location;
+                this.itemName = itemName;
+            }
+
+            public byte id;
+            public string location;
             public string itemName;
         }
 
@@ -339,7 +404,7 @@ namespace MLSSRandomizerForm
             {
                 this.location = location;
                 this.item = item;
-                   
+
             }
 
             public uint location;
@@ -361,6 +426,286 @@ namespace MLSSRandomizerForm
             public byte quantity;
             public int itemType;
         }
+
+
+
+        public void EntranceRandomize()
+        {
+            if (!Form1.doors)
+                return;
+            FillRoomArray();
+            NewShuffle();
+            OceanShuffle();
+           // RoomSort();
+        }
+
+
+
+        public void RoomSort()
+        {
+            List<Room> temp = new List<Room>();
+            Room tRoom = new Room();
+            int index = 0;
+            for (int i = freshRoomArray.Count - 1; i >= 0; i--)
+            {
+                for (int j = freshRoomArray.Count - 1; j >= 0; j--)
+                {
+
+                }
+            }
+        }
+
+
+
+
+        public void OceanShuffle()
+        {
+            List<Door> doorArray = new List<Door>(oceanDoorArray);
+            List<Door> insertArray = new List<Door>(oceanDoorArray);
+            doorArray.Shuffle(random);
+            for (int i = doorArray.Count - 1; i >= 0; i--)
+            {
+                stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
+                stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
+                Door temp = new Door();
+                Door tempInsert = new Door();
+                try
+                {
+                    temp = freshRoomArray.Where(c => c.id == insertArray[0].returnRoom).ToList()[0].doors[insertArray[0].returnIndex];
+                    tempInsert = freshRoomArray.Where(c => c.id == doorArray[i].returnRoom).ToList()[0].doors[doorArray[i].returnIndex];
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine((int)Math.Floor(GetRoomId(insertArray[0])));
+                    Console.WriteLine((int)Math.Floor(GetRoomId(doorArray[i])));
+                }
+                stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
+                stream.Write(temp.arr, 0, temp.arr.Length);
+                doorArray.RemoveAt(i);
+                doorArray.Remove(temp);
+                insertArray.RemoveAt(0);
+                insertArray.Remove(tempInsert);
+                if (i > doorArray.Count)
+                    i = doorArray.Count;
+                if (insertArray.Count == 0)
+                    break;
+            }
+        }
+
+
+        public bool CheckDoorValidity()
+        {
+            return true;
+        }
+
+
+
+        public int GetReturnIndex(Door door)
+        {
+            int i = 0;
+            foreach(Door d in freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(door))).ToList()[0].doors)
+            {
+
+                byte[] arr = new byte[4];
+                stream.Seek(d.logic.location, SeekOrigin.Begin);
+                stream.Read(arr, 0, 4);
+                if (door.arr[3] >= arr[0] && door.arr[3] <= arr[2] || door.arr[4] >= arr[1] && door.arr[4] <= arr[3])
+                    return i;
+                i++;
+            }
+            Console.WriteLine((int)Math.Floor(GetRoomId(door)));
+            return -1;
+        }
+
+
+
+        public float GetRoomId(Door door)
+        {
+            return ((float)(door.arr[1] * 0x100) + door.arr[0]) / 0x40;
+        }
+
+
+
+
+        public void NewShuffle()
+        {
+            List<Door> doorArray = new List<Door>(freshDoorArray);
+            List<Door> insertArray = new List<Door>();
+            doorArray.OrderBy(c => random.Next());
+            insertArray.Add(freshRoomArray.Where(c => c.id == 0x66).ToList()[0].doors[0]);
+            int availableDoors = 1;
+            for(int i = doorArray.Count - 1; i >= 0; i--)
+            {
+                Retry:
+                int index = (int)Math.Floor(GetRoomId(doorArray[i]));
+                if (availableDoors == 1 && freshRoomArray.Where(c => c.id == index).ToList()[0].index <= 1)
+                {
+                    doorArray.Shuffle(random);
+                    goto Retry;
+                }
+                stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
+                stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
+                int rIndex = freshRoomArray.FindIndex(c => c.id == index);
+                Room tempRoom = freshRoomArray[rIndex];
+                tempRoom.index -= 1;
+                freshRoomArray[rIndex] = tempRoom;
+                availableDoors += freshRoomArray[rIndex].index;
+                Door temp = new Door();
+                Door tempInsert = new Door();
+                try
+                {
+                    temp = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(insertArray[0]))).ToList()[0].doors[GetReturnIndex(insertArray[0])];
+                    tempInsert = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(doorArray[i]))).ToList()[0].doors[GetReturnIndex(doorArray[i])];
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine((int)Math.Floor(GetRoomId(insertArray[0])));
+                    Console.WriteLine((int)Math.Floor(GetRoomId(doorArray[i])));
+                }
+                stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
+                stream.Write(temp.arr, 0, temp.arr.Length);
+                doorArray.RemoveAt(i);
+                doorArray.Remove(temp);
+                insertArray.RemoveAt(0);
+                insertArray.AddRange(freshRoomArray[rIndex].doors);
+                insertArray.Remove(tempInsert);
+                if (i > doorArray.Count)
+                    i = doorArray.Count;
+                if (insertArray.Count == 0)
+                    break;
+            }
+
+        }
+
+
+        public void DoorShuffle()
+        {
+            Begin:
+            List<Door> doorArray = new List<Door>(freshDoorArray);
+            List<Door> insertArray = new List<Door>(freshDoorArray);
+            doorArray.Shuffle(random);
+            for(int i = doorArray.Count - 1; i >= 0; i--)
+            {
+                if (i < 10)
+                    Console.WriteLine("poop");
+                stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
+                stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
+                Door temp = new Door();
+                Door tempInsert = new Door();
+                try
+                {
+                    temp = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(insertArray[0]))).ToList()[0].doors[GetReturnIndex(insertArray[0])];
+                    tempInsert = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(doorArray[i]))).ToList()[0].doors[GetReturnIndex(doorArray[i])];
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine((int)Math.Floor(GetRoomId(insertArray[0])));
+                    Console.WriteLine((int)Math.Floor(GetRoomId(doorArray[i])));
+                }
+                stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
+                stream.Write(temp.arr, 0, temp.arr.Length);
+                doorArray.RemoveAt(i);
+                doorArray.Remove(temp);
+                insertArray.RemoveAt(0);
+                insertArray.Remove(tempInsert);
+                if (i > doorArray.Count)
+                    i = doorArray.Count;
+                if (insertArray.Count == 0)
+                    break;
+            }
+
+            if(!CheckDoorValidity())
+            {
+                goto Begin;
+            }
+        }
+
+        public void FillRoomArray()
+        {
+            string[] stream = StreamInitialize(Environment.CurrentDirectory + "/items/entrances/EntranceRandomizer.txt");
+            int roomIndex = 0;
+            for(int i = 0; i < stream.Length; i += 26)
+            {
+                roomIndex = Convert.ToInt32(stream[i], 16);
+                LocationData locationData = new LocationData(Convert.ToUInt32(stream[i + 1], 16),
+                                                           0,
+                                                           0,
+                                                           Convert.ToInt32(stream[i + 8], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 9], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 10], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 11], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 12], 16)),
+                                                           Convert.ToInt32(stream[i + 13], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 14], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 15], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 16], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 17], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 18], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 19], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 20], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 21], 16)),
+                                                           Convert.ToInt32(stream[i + 22], 16),
+                                                           Convert.ToInt32(stream[i + 23], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 24], 16)),
+                                                           Convert.ToInt32(stream[i + 25], 16));
+                Door door = new Door(roomIndex, new byte[] { (byte)Convert.ToInt32(stream[i + 2], 16), (byte)Convert.ToInt32(stream[i + 3], 16), (byte)Convert.ToInt32(stream[i + 4], 16), (byte)Convert.ToInt32(stream[i + 5], 16), (byte)Convert.ToInt32(stream[i + 6], 16), (byte)Convert.ToInt32(stream[i + 7], 16) }, 0, 0, locationData);
+                if (freshRoomArray.Where(c => c.id == roomIndex).ToList().Count == 0)
+                {
+                    freshRoomArray.Add(new Room(roomIndex, new List<Door>() { door }));
+                    freshDoorArray.Add(door);
+                }
+                else
+                {
+                    int index = freshRoomArray.FindIndex(c => c.id == roomIndex);
+                    Room temp = freshRoomArray[index];
+                    temp.DoorAdd(door);
+                    freshRoomArray[index] = temp;
+                    freshDoorArray.Add(door);
+                }
+            }
+            stream = StreamInitialize(Environment.CurrentDirectory + "/items/entrances/Ocean.txt");
+            for (int i = 0; i < stream.Length; i += 28)
+            {
+                roomIndex = Convert.ToInt32(stream[i], 16);
+                LocationData locationData = new LocationData(Convert.ToUInt32(stream[i + 1], 16),
+                                                           0,
+                                                           0,
+                                                           Convert.ToInt32(stream[i + 10], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 11], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 12], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 13], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 14], 16)),
+                                                           Convert.ToInt32(stream[i + 15], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 16], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 17], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 18], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 19], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 20], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 21], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 22], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 23], 16)),
+                                                           Convert.ToInt32(stream[i + 24], 16),
+                                                           Convert.ToInt32(stream[i + 25], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 26], 16)),
+                                                           Convert.ToInt32(stream[i + 27], 16));
+                Door door = new Door(roomIndex, new byte[] { (byte)Convert.ToInt32(stream[i + 2], 16), (byte)Convert.ToInt32(stream[i + 3], 16), (byte)Convert.ToInt32(stream[i + 4], 16), (byte)Convert.ToInt32(stream[i + 5], 16), (byte)Convert.ToInt32(stream[i + 6], 16), (byte)Convert.ToInt32(stream[i + 7], 16) }, Convert.ToInt32(stream[i + 8], 16), Convert.ToInt32(stream[i + 9], 16), locationData);
+                if (freshRoomArray.Where(c => c.id == roomIndex).ToList().Count == 0)
+                {
+                    freshRoomArray.Add(new Room(roomIndex, new List<Door>() { door }));
+                    oceanDoorArray.Add(door);
+                }
+                else
+                {
+                    int index = freshRoomArray.FindIndex(c => c.id == roomIndex);
+                    Room temp = freshRoomArray[index];
+                    temp.DoorAdd(door);
+                    freshRoomArray[index] = temp;
+                    oceanDoorArray.Add(door);
+                }
+            }
+        }
+
+
 
         public void UpdateState(byte item)
         {
@@ -536,7 +881,78 @@ namespace MLSSRandomizerForm
                     temp = stream.ReadByte();
                 if (temp >= 0x30 && temp <= 0x93 || (temp == 0xA7 || temp == 0xAB || temp == 0xAD) || (temp >= 0xF8 && temp <= 0xFE))
                 {
+                    hints.Add(new Hint((byte)temp, spoilerLocationArray.Find(x => x.location == data.location).name, spoilerItemArray.Find(x => x.item == temp).name));
                     spoilerArray.Add(new Spoiler(spoilerLocationArray.Find(x => x.location == data.location).name, spoilerItemArray.Find(x => x.item == temp).name, data.location.ToString("X")));
+                }
+            }
+        }
+
+        public void HintWrite()
+        {
+            List<(int, uint)> temp = new System.Collections.Generic.List<(int, uint)>();
+            string[] arr = StreamInitialize(Environment.CurrentDirectory + "/items/Hint.txt");
+            for(int i = 0; i < arr.Length; i += 2)
+            {
+                temp.Add((Convert.ToInt32(arr[i], 16), Convert.ToUInt32(arr[i + 1], 16)));
+            }
+
+            foreach(Hint hint in hints)
+            {
+                int hammers = 0;
+                if (temp.Where(c => c.Item1 == hint.id).ToList()[0].Item2 != 0)
+                {
+                    stream.Seek(temp.Where(c => c.Item1 == hint.id).ToList()[0].Item2, SeekOrigin.Begin);
+                    if(hint.id == 0x38)
+                    {
+                        int tempInt = stream.ReadByte();
+                        if (tempInt != 0)
+                        {
+                            stream.Seek(0x4F, SeekOrigin.Current);
+                            tempInt = stream.ReadByte();
+                            if (tempInt != 0)
+                            {
+                                stream.Seek(0x4F, SeekOrigin.Current);
+                                hammers = 2;
+                            }
+                            else
+                            {
+                                stream.Seek(-1, SeekOrigin.Current);
+                                hammers = 1;
+                            }
+                        }
+                        else
+                            stream.Seek(-1, SeekOrigin.Current);
+                    }
+                    byte[] writeArr = new byte[] { 0x16, 0xA, 0xFF, 0xB, 0x1 };
+                    byte[] tempArr = ASCIIToHex("The ");
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = new byte[] { 0xFF, 0x2B };
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    if(hammers == 1)
+                    {
+                        tempArr = ASCIIToHex("Super ");
+                        writeArr = writeArr.Concat(tempArr).ToArray();
+                    }
+                    if (hammers == 2)
+                    {
+                        tempArr = ASCIIToHex("Ultra ");
+                        writeArr = writeArr.Concat(tempArr).ToArray();
+                    }
+                    tempArr = ASCIIToHex(hint.itemName);
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = new byte[] { 0xFF, 0x20 };
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = ASCIIToHex(" is in ");
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = new byte[] { 0xFF, 0x0, 0xFF, 0x2B };
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = ASCIIToHex(hint.location);
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = new byte[] { 0xFF, 0x20 };
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    tempArr = new byte[] { 0x2E, 0xFF, 0x11, 0x1, 0xFF, 0xA };
+                    writeArr = writeArr.Concat(tempArr).ToArray();
+                    stream.Write(writeArr, 0, writeArr.Length);
                 }
             }
         }
@@ -1209,6 +1625,20 @@ namespace MLSSRandomizerForm
             }
         }
 
+        public void SeedInject()
+        {
+            stream.Seek(0x400c5d, SeekOrigin.Begin);
+            byte[] arr = ASCIIToHex("Version: " + FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion);
+            stream.Write(arr, 0, arr.Length);
+            arr = new byte[] { 0xff, 0x0 };
+            stream.Write(arr, 0, 2);
+            stream.Write(arr, 0, 2);
+            arr = ASCIIToHex("Seed: " + hash);
+            stream.Write(arr, 0, arr.Length);
+            arr = new byte[] { 0xFF, 0x11, 0x1, 0xFF, 0xA, 0x00, 0x00 };
+            stream.Write(arr, 0, arr.Length);
+        }
+
         public void EnemyRandomize()
         {
             if (!Form1.enemy)
@@ -1231,6 +1661,7 @@ namespace MLSSRandomizerForm
             if (Form1.bosses != 2)
                 groups.AddRange(bossGroups);
             groups.Shuffle(random);
+            groups = stardustGroups.Concat(groups).ToList();
             string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
             string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
             if(Form1.bosses == 3)
@@ -1339,6 +1770,7 @@ namespace MLSSRandomizerForm
         public void GenerateGroups()
         {
             enemies.Shuffle(random);
+            spikedEnemies.Shuffle(random);
             foreach (int size in groupSizes)
             {
                 int tempsize;
@@ -1430,7 +1862,15 @@ namespace MLSSRandomizerForm
                         }
                     }
                 }
-                groups.Add(new EnemyGroup(id, type, size, script, special));
+                if(stardustGroups.Count < 3)
+                    stardustGroups.Add(new EnemyGroup(id, type, size, script, special));
+                else
+                    groups.Add(new EnemyGroup(id, type, size, script, special));
+                if (stardustGroups.Count == 3)
+                {
+                    enemies = enemies.Concat(spikedEnemies).ToList();
+                    enemies.Shuffle(random);
+                }
             }
         }
 
@@ -1507,7 +1947,11 @@ namespace MLSSRandomizerForm
                     }
                     if (id == 0xF && type == 0x3)
                         goto skipAdd;
-                    enemies.Add(new Enemy((byte)id, type));
+
+                    if (id == 0x16 || id == 0x1E || id == 0x20 || id == 0x34 || id == 0x35 || id == 0x36 || id == 0x37 || id == 0x38 || id == 0x46)
+                        spikedEnemies.Add(new Enemy((byte)id, type));
+                    else
+                        enemies.Add(new Enemy((byte)id, type));
                     count++;
                     skipAdd:
                     i++;
@@ -1653,7 +2097,7 @@ namespace MLSSRandomizerForm
             string[] lines = str.Split(new char[] { ',' });
             for (int i = 0; i < lines.Length; i++)
             {
-                lines[i] = lines[i].Trim('\n', '\r');
+                lines[i] = lines[i].Trim('\n', '\r', ' ');
             }
             return lines;
         }

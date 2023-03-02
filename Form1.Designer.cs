@@ -79,6 +79,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox39 = new System.Windows.Forms.CheckBox();
             this.checkBox38 = new System.Windows.Forms.CheckBox();
             this.checkBox37 = new System.Windows.Forms.CheckBox();
             this.checkBox36 = new System.Windows.Forms.CheckBox();
@@ -724,6 +725,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBox39);
             this.tabPage5.Controls.Add(this.checkBox38);
             this.tabPage5.Controls.Add(this.checkBox37);
             this.tabPage5.Controls.Add(this.checkBox36);
@@ -744,6 +746,20 @@ namespace MLSSRandomizerForm
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBox39
+            // 
+            this.checkBox39.AutoSize = true;
+            this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox39.Enabled = false;
+            this.checkBox39.Location = new System.Drawing.Point(61, 153);
+            this.checkBox39.Name = "checkBox39";
+            this.checkBox39.Size = new System.Drawing.Size(116, 17);
+            this.checkBox39.TabIndex = 43;
+            this.checkBox39.Text = "Randomize Doors?";
+            this.checkBox39.UseVisualStyleBackColor = true;
+            this.checkBox39.Visible = false;
+            this.checkBox39.CheckedChanged += new System.EventHandler(this.checkBox39_CheckedChanged);
             // 
             // checkBox38
             // 
@@ -1524,6 +1540,7 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox33;
         private CheckBox checkBox37;
         private CheckBox checkBox38;
+        private CheckBox checkBox39;
     }
 }
 

@@ -56,6 +56,7 @@ namespace MLSSRandomizerForm
         public static bool minigame = false;
         public static bool mDisable = false;
         public static bool sounds = false;
+        public static bool doors = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -800,6 +801,11 @@ namespace MLSSRandomizerForm
         private void label6_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void checkBox39_CheckedChanged(object sender, EventArgs e)
+        {
+            doors = checkBox39.Checked;
         }
     }
 }

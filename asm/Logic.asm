@@ -4,6 +4,7 @@
     .include "Arrays.asm"
     .include "Variables.asm"
     .include "Badges.asm"
+    .include "Hint.asm"
 
     .org 0x082754C8
         db 0x22, 0xB0
