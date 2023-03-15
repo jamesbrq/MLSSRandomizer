@@ -66,6 +66,41 @@ PIECETWO_HINT_HOOK equ 0x08E075F0
 PIECETHREE_HINT_HOOK equ 0x08E075F4
 PIECEFOUR_HINT_HOOK equ 0x08E075F8
 RETURN_SCRIPT equ 0x08252A15
+COIN_TEXT equ 0x083F462E
+COIN_COUNT equ 0x0825283A
+COIN_TAKE equ 0x08252847
+HINT_TOKEN_INJECT equ 0x08252833
+TOKEN_FIX_HOOK equ 0x080EA3E4
+TOKEN_FIX_SUBR equ 0x081DFD30
+TAKE_FIX_HOOK equ 0x080EA2AC
+TAKE_FIX_SUBR equ 0x081DFD60
+TAKE_FIX_TWO_HOOK equ 0x080EA2C8
+TAKE_FIX_TWO_SUBR equ 0x081DFD90
+NOT_ENOUGH equ 0x0847F56E
+
+.org TAKE_FIX_TWO_HOOK
+	bl TAKE_FIX_TWO_SUBR
+
+.org TAKE_FIX_HOOK
+	bl TAKE_FIX_SUBR
+
+.org TOKEN_FIX_HOOK
+	bl TOKEN_FIX_SUBR
+
+.org COIN_TEXT
+	db 0x34, 0x0, 0x20, 0x54, 0X6F, 0X6B, 0X65, 0X6E, 0X73
+
+.org NOT_ENOUGH
+	db 0x54, 0X6F, 0X6B, 0X65, 0X6E, 0X73
+
+.org COIN_COUNT
+	db 0x13, 0x80
+
+.org COIN_TAKE
+	db 0x91, 0x86, 0x85, 0x0
+
+.org HINT_TOKEN_INJECT
+	db 0x89, 0x80
 
 .org HAMMER_HINT_HOOK
 	dw HAMMER_HINT
@@ -222,6 +257,55 @@ RETURN_SCRIPT equ 0x08252A15
 	db 0xFF, 0x6E, 0x42, 0X73, 0X74, 0X61, 0X72, 0X20, 0X50, 0X69, 0X65, 0X63, 0X65, 0X20, 0X33, 0x20, 0x20, 0xFF, 0x35, 0xFF, 0x3, 0xFF, 0x4
 	db 0xFF, 0x6E, 0x42, 0X73, 0X74, 0X61, 0X72, 0X20, 0X50, 0X69, 0X65, 0X63, 0X65, 0X20, 0X34, 0XFF, 0x00, 0xFF, 0x20, 0xFF, 0x35, 0xFF, 0x3, 0xFF, 0x4
 	db 0xFF, 0x6E, 0x50, 0X72, 0X65, 0X76, 0X69, 0X6F, 0X75, 0X73, 0X20, 0X4D, 0X65, 0X6E, 0X75, 0XFF, 0x11, 0x01, 0xFF, 0xA
+
+
+
+
+
+	.org TOKEN_FIX_SUBR
+	push { r1, lr }
+	add r0, #0x8A
+	ldr r1, =HINT_TOKENS
+	cmp r0, r1
+	bne .token_norm
+	ldrh r4, [r0]
+	bl .token_end
+	.token_norm:
+	ldrb r4, [r0]
+	.token_end:
+	pop { r1, pc }
+	.pool
+
+
+
+
+	.org TAKE_FIX_SUBR
+	push r3, lr
+	ldr r4, =0x02004AE0
+	ldr r4, [r4]
+	ldr r3, =0x08252844
+	cmp r3, r4
+	bne .take_skip
+	ldr r0, =0x02004908
+	.take_skip:
+	ldrh r0, [r0]
+	sub r0, r1
+	pop r3, pc
+	.pool
+
+	.org TAKE_FIX_TWO_SUBR
+	push { r2-r3, lr }
+	add r0, #0x88
+	ldr r2, =0x02004AE0
+	ldr r2, [r2]
+	ldr r3, =0x08252844
+	cmp r3, r2
+	bne .take_skip2
+	ldr r0, =0x02004908
+	.take_skip2:
+	strh r4, [r0]
+	pop { r2-r3, pc }
+	.pool
 
 
 

@@ -12,7 +12,7 @@ namespace MLSSRandomizerForm
     public partial class Form1 : Form
     {
         public int gameId;
-        readonly string progVersion; // ProductVersion on AssemblyInfo.cs, [AssemblyInformationalVersion(...)]
+        public static string progVersion; // ProductVersion on AssemblyInfo.cs, [AssemblyInformationalVersion(...)]
         string filePath;
         string seed;
 
@@ -806,6 +806,16 @@ namespace MLSSRandomizerForm
         private void checkBox39_CheckedChanged(object sender, EventArgs e)
         {
             doors = checkBox39.Checked;
+            if(checkBox1.Enabled)
+            {
+                checkBox1.Enabled = false;
+                checkBox1.Checked = true;
+            }
+            else
+            {
+                checkBox1.Enabled = true;
+                checkBox1.Checked = false;
+            }
         }
     }
 }

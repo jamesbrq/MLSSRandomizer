@@ -126,13 +126,14 @@ namespace MLSSRandomizerForm
 
 
 
-        public struct Room
+        public class Room
         {
-            public Room(int id, List<Door> doors)
+            public Room(int id, List<Door> doors, bool used)
             {
                 this.id = id;
                 this.doors = doors;
                 this.index = doors.Count;
+                this.used = used;
             }
 
             public void DoorAdd(Door door)
@@ -144,6 +145,7 @@ namespace MLSSRandomizerForm
             public int id;
             public List<Door> doors;
             public int index;
+            public bool used;
         }
 
         public struct Door
@@ -436,26 +438,7 @@ namespace MLSSRandomizerForm
             FillRoomArray();
             NewShuffle();
             OceanShuffle();
-           // RoomSort();
         }
-
-
-
-        public void RoomSort()
-        {
-            List<Room> temp = new List<Room>();
-            Room tRoom = new Room();
-            int index = 0;
-            for (int i = freshRoomArray.Count - 1; i >= 0; i--)
-            {
-                for (int j = freshRoomArray.Count - 1; j >= 0; j--)
-                {
-
-                }
-            }
-        }
-
-
 
 
         public void OceanShuffle()
@@ -530,128 +513,94 @@ namespace MLSSRandomizerForm
         public void NewShuffle()
         {
             List<Door> doorArray = new List<Door>(freshDoorArray);
+            List<Room> roomArray = new List<Room>(freshRoomArray);
             List<Door> insertArray = new List<Door>();
             doorArray.OrderBy(c => random.Next());
-            insertArray.Add(freshRoomArray.Where(c => c.id == 0x66).ToList()[0].doors[0]);
-            int availableDoors = 1;
+            doorArray.Shuffle(random);
+            insertArray.Add(roomArray.Where(c => c.id == 0x66).ToList()[0].doors[0]);
+            int availableDoors;
             for(int i = doorArray.Count - 1; i >= 0; i--)
             {
+                int retryCount = 0;
+                availableDoors = insertArray.Count;
                 Retry:
-                int index = (int)Math.Floor(GetRoomId(doorArray[i]));
-                if (availableDoors == 1 && freshRoomArray.Where(c => c.id == index).ToList()[0].index <= 1)
+                if ((availableDoors == 1 && roomArray.Where(c => c.id == doorArray[i].returnRoom).ToList()[0].index <= 1) || (availableDoors > 10 && roomArray[roomArray.FindIndex(c => c.id == doorArray[i].returnRoom)].index != 1))
                 {
+                    retryCount++;
+                    if (availableDoors < 20 && retryCount > 100)
+                        break;
                     doorArray.Shuffle(random);
                     goto Retry;
                 }
                 stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
                 stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
-                int rIndex = freshRoomArray.FindIndex(c => c.id == index);
-                Room tempRoom = freshRoomArray[rIndex];
-                tempRoom.index -= 1;
-                freshRoomArray[rIndex] = tempRoom;
-                availableDoors += freshRoomArray[rIndex].index;
+                int rIndex = roomArray.FindIndex(c => c.id == doorArray[i].returnRoom);
+                roomArray[rIndex].index -= 1;
                 Door temp = new Door();
                 Door tempInsert = new Door();
                 try
                 {
-                    temp = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(insertArray[0]))).ToList()[0].doors[GetReturnIndex(insertArray[0])];
-                    tempInsert = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(doorArray[i]))).ToList()[0].doors[GetReturnIndex(doorArray[i])];
+                    temp = roomArray.Where(c => c.id == insertArray[0].returnRoom).ToList()[0].doors[insertArray[0].returnIndex];
+                    tempInsert = roomArray.Where(c => c.id == doorArray[i].returnRoom).ToList()[0].doors[doorArray[i].returnIndex];
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine((int)Math.Floor(GetRoomId(insertArray[0])));
-                    Console.WriteLine((int)Math.Floor(GetRoomId(doorArray[i])));
+                    Console.WriteLine(insertArray[0].returnRoom);
+                    Console.WriteLine(doorArray[i].returnRoom);
                 }
                 stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
                 stream.Write(temp.arr, 0, temp.arr.Length);
                 doorArray.RemoveAt(i);
                 doorArray.Remove(temp);
                 insertArray.RemoveAt(0);
-                insertArray.AddRange(freshRoomArray[rIndex].doors);
-                insertArray.Remove(tempInsert);
+                if (!roomArray[rIndex].used)
+                {
+                    insertArray.AddRange(roomArray[rIndex].doors);
+                    insertArray.Remove(tempInsert);
+                    roomArray[rIndex].used = true;
+                }
+                else
+                    insertArray.Remove(tempInsert);
                 if (i > doorArray.Count)
                     i = doorArray.Count;
                 if (insertArray.Count == 0)
                     break;
             }
 
-        }
-
-
-        public void DoorShuffle()
-        {
-            Begin:
-            List<Door> doorArray = new List<Door>(freshDoorArray);
-            List<Door> insertArray = new List<Door>(freshDoorArray);
-            doorArray.Shuffle(random);
-            for(int i = doorArray.Count - 1; i >= 0; i--)
-            {
-                if (i < 10)
-                    Console.WriteLine("poop");
-                stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
-                stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
-                Door temp = new Door();
-                Door tempInsert = new Door();
-                try
-                {
-                    temp = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(insertArray[0]))).ToList()[0].doors[GetReturnIndex(insertArray[0])];
-                    tempInsert = freshRoomArray.Where(c => c.id == (int)Math.Floor(GetRoomId(doorArray[i]))).ToList()[0].doors[GetReturnIndex(doorArray[i])];
-                }
-                catch(Exception e)
-                {
-                    Console.WriteLine((int)Math.Floor(GetRoomId(insertArray[0])));
-                    Console.WriteLine((int)Math.Floor(GetRoomId(doorArray[i])));
-                }
-                stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
-                stream.Write(temp.arr, 0, temp.arr.Length);
-                doorArray.RemoveAt(i);
-                doorArray.Remove(temp);
-                insertArray.RemoveAt(0);
-                insertArray.Remove(tempInsert);
-                if (i > doorArray.Count)
-                    i = doorArray.Count;
-                if (insertArray.Count == 0)
-                    break;
-            }
-
-            if(!CheckDoorValidity())
-            {
-                goto Begin;
-            }
         }
 
         public void FillRoomArray()
         {
             string[] stream = StreamInitialize(Environment.CurrentDirectory + "/items/entrances/EntranceRandomizer.txt");
             int roomIndex = 0;
-            for(int i = 0; i < stream.Length; i += 26)
+            for(int i = 0; i < stream.Length; i += 28)
             {
                 roomIndex = Convert.ToInt32(stream[i], 16);
                 LocationData locationData = new LocationData(Convert.ToUInt32(stream[i + 1], 16),
                                                            0,
                                                            0,
-                                                           Convert.ToInt32(stream[i + 8], 16),
-                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 9], 16)),
-                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 10], 16)),
+                                                           Convert.ToInt32(stream[i + 10], 16),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 11], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 12], 16)),
-                                                           Convert.ToInt32(stream[i + 13], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 13], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 14], 16)),
-                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 15], 16)),
+                                                           Convert.ToInt32(stream[i + 15], 16),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 16], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 17], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 18], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 19], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 20], 16)),
                                                            Convert.ToBoolean(Convert.ToInt32(stream[i + 21], 16)),
-                                                           Convert.ToInt32(stream[i + 22], 16),
-                                                           Convert.ToInt32(stream[i + 23], 16),
-                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 24], 16)),
-                                                           Convert.ToInt32(stream[i + 25], 16));
-                Door door = new Door(roomIndex, new byte[] { (byte)Convert.ToInt32(stream[i + 2], 16), (byte)Convert.ToInt32(stream[i + 3], 16), (byte)Convert.ToInt32(stream[i + 4], 16), (byte)Convert.ToInt32(stream[i + 5], 16), (byte)Convert.ToInt32(stream[i + 6], 16), (byte)Convert.ToInt32(stream[i + 7], 16) }, 0, 0, locationData);
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 22], 16)),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 23], 16)),
+                                                           Convert.ToInt32(stream[i + 24], 16),
+                                                           Convert.ToInt32(stream[i + 25], 16),
+                                                           Convert.ToBoolean(Convert.ToInt32(stream[i + 26], 16)),
+                                                           Convert.ToInt32(stream[i + 27], 16));
+                Door door = new Door(roomIndex, new byte[] { (byte)Convert.ToInt32(stream[i + 2], 16), (byte)Convert.ToInt32(stream[i + 3], 16), (byte)Convert.ToInt32(stream[i + 4], 16), (byte)Convert.ToInt32(stream[i + 5], 16), (byte)Convert.ToInt32(stream[i + 6], 16), (byte)Convert.ToInt32(stream[i + 7], 16) }, Convert.ToInt32(stream[i + 8], 16), Convert.ToInt32(stream[i + 9], 16), locationData);
                 if (freshRoomArray.Where(c => c.id == roomIndex).ToList().Count == 0)
                 {
-                    freshRoomArray.Add(new Room(roomIndex, new List<Door>() { door }));
+                    freshRoomArray.Add(new Room(roomIndex, new List<Door>() { door }, false));
                     freshDoorArray.Add(door);
                 }
                 else
@@ -691,7 +640,7 @@ namespace MLSSRandomizerForm
                 Door door = new Door(roomIndex, new byte[] { (byte)Convert.ToInt32(stream[i + 2], 16), (byte)Convert.ToInt32(stream[i + 3], 16), (byte)Convert.ToInt32(stream[i + 4], 16), (byte)Convert.ToInt32(stream[i + 5], 16), (byte)Convert.ToInt32(stream[i + 6], 16), (byte)Convert.ToInt32(stream[i + 7], 16) }, Convert.ToInt32(stream[i + 8], 16), Convert.ToInt32(stream[i + 9], 16), locationData);
                 if (freshRoomArray.Where(c => c.id == roomIndex).ToList().Count == 0)
                 {
-                    freshRoomArray.Add(new Room(roomIndex, new List<Door>() { door }));
+                    freshRoomArray.Add(new Room(roomIndex, new List<Door>() { door }, false));
                     oceanDoorArray.Add(door);
                 }
                 else
@@ -978,6 +927,7 @@ namespace MLSSRandomizerForm
         {
             if (gameId == 1)
             {
+                list.Add("Randomizer Version: " + Form1.progVersion);
                 list.Add("Seed Type: " + Form1.seedType);
                 list.Add("Chuckle: " + Form1.chuckle);
                 list.Add("Rose: " + Form1.rose);
@@ -1128,7 +1078,7 @@ namespace MLSSRandomizerForm
                         else
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
-                            stream.Seek(0x1e9412, SeekOrigin.Begin);
+                            stream.Seek(0x1e9413, SeekOrigin.Begin);
                             stream.WriteByte(0x1);
                         }
                     }
@@ -1190,7 +1140,7 @@ namespace MLSSRandomizerForm
                         else
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
-                            stream.Seek(0x1e9413, SeekOrigin.Begin);
+                            stream.Seek(0x1e9414, SeekOrigin.Begin);
                             stream.WriteByte(0x1);
                         }
                     }
@@ -1641,16 +1591,18 @@ namespace MLSSRandomizerForm
 
         public void EnemyRandomize()
         {
-            if (!Form1.enemy)
-                return;
+            if (Form1.enemy)
             //Write byte for stat scale execution
             if (Form1.scale)
             {
                 stream.Seek(0x1E9418, SeekOrigin.Begin);
                 stream.WriteByte(0x1);
             }
-            PopulateEnemyArray();
-            GenerateGroups();
+            if (Form1.enemy)
+            {
+                PopulateEnemyArray();
+                GenerateGroups();
+            }
             if(Form1.bosses != 1)
                 GenerateBossGroups();
             InsertGroups();
@@ -1670,48 +1622,51 @@ namespace MLSSRandomizerForm
             int count = 0;
             foreach (string str in location)
             {
-                count++;
-                EnemyGroup tempgroup = groups[0];
-                groups.RemoveAt(0);
-                stream.Seek(Convert.ToUInt32(str, 16), SeekOrigin.Begin);
-                stream.WriteByte(tempgroup.groupType);
-                for (int i = 0; i < 6; i++)
+                if (groups.Count > 0)
                 {
-                    if (i < tempgroup.id.Count)
+                    count++;
+                    EnemyGroup tempgroup = groups[0];
+                    groups.RemoveAt(0);
+                    stream.Seek(Convert.ToUInt32(str, 16), SeekOrigin.Begin);
+                    stream.WriteByte(tempgroup.groupType);
+                    for (int i = 0; i < 6; i++)
                     {
-                        for (int j = 0; j < enemyCount.Count; j++)
+                        if (i < tempgroup.id.Count)
                         {
-                            if (tempgroup.id[i] == enemyCount[j].id)
+                            for (int j = 0; j < enemyCount.Count; j++)
                             {
-                                StatCount temp = enemyCount[j];
-                                temp.total += count;
-                                enemyCount[j] = temp;
-                                break;
+                                if (tempgroup.id[i] == enemyCount[j].id)
+                                {
+                                    StatCount temp = enemyCount[j];
+                                    temp.total += count;
+                                    enemyCount[j] = temp;
+                                    break;
+                                }
                             }
+                            stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
+                            stream.WriteByte(tempgroup.id[i]);
+                            stream.Seek(1, SeekOrigin.Current);
+                            stream.WriteByte(tempgroup.type[i]);
+                            stream.Seek(Convert.ToUInt32(str, 16) + 1, SeekOrigin.Begin);
+                            stream.WriteByte((byte)tempgroup.position);
                         }
-                        stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
-                        stream.WriteByte(tempgroup.id[i]);
-                        stream.Seek(1, SeekOrigin.Current);
-                        stream.WriteByte(tempgroup.type[i]);
-                        stream.Seek(Convert.ToUInt32(str, 16) + 1, SeekOrigin.Begin);
-                        stream.WriteByte((byte)tempgroup.position);
+                        else
+                        {
+                            stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
+                            stream.WriteByte(0);
+                            stream.Seek(1, SeekOrigin.Current);
+                            stream.WriteByte(7);
+                        }
                     }
-                    else
+
+                    stream.Seek(Convert.ToUInt32(str, 16) + 2, SeekOrigin.Begin);
+                    stream.WriteByte((byte)tempgroup.boss);
+
+                    if (tempgroup.data.Length > 0)
                     {
-                        stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
-                        stream.WriteByte(0);
-                        stream.Seek(1, SeekOrigin.Current);
-                        stream.WriteByte(7);
+                        stream.Seek(Convert.ToUInt32(str, 16) + 4, SeekOrigin.Begin);
+                        stream.Write(tempgroup.data, 0, 4);
                     }
-                }
-
-                stream.Seek(Convert.ToUInt32(str, 16) + 2, SeekOrigin.Begin);
-                stream.WriteByte((byte)tempgroup.boss);
-
-                if (tempgroup.data.Length > 0)
-                {
-                    stream.Seek(Convert.ToUInt32(str, 16) + 4, SeekOrigin.Begin);
-                    stream.Write(tempgroup.data, 0, 4);
                 }
             }
 

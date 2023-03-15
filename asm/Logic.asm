@@ -6,6 +6,15 @@
     .include "Badges.asm"
     .include "Hint.asm"
 
+    .org DRESS_TEXT_E
+        db 0x45
+
+    .org DRESS_TEXT_D
+        db 0x44
+
+    .org BEANSTAR_TEXT_F
+        db 0x46
+
     .org 0x082754C8
         db 0x22, 0xB0
 
@@ -575,6 +584,24 @@
     .org YOSHI_TEXT_FIX_HOOK
         bl YOSHI_TEXT_FIX_SUBR
 
+    .org ORANGE_FIX_HOOK
+        bl ORANGE_FIX_SUBR
+
+
+
+
+    .org ORANGE_FIX_SUBR
+    push { r0, lr }
+    ldrb r1, [r2]
+    mov r4, #0x1
+    mov r0, #0x80
+    cmp r1, r0
+    bne .orange_end
+    mov r1, #0x1
+    .orange_end:
+    pop { r0, pc }
+    .pool
+
 
 
 
@@ -743,7 +770,7 @@
     .org YOSHI_DISPLAY_SUBR
     push { r0-r2, lr }
     ldr r0, =YOSHI_DISPLAY_DATA + 1
-    mov r1, pc
+    mov r2, pc
     bx r0
     pop { r0-r2, pc }
     .pool
@@ -864,8 +891,8 @@
     mov r3, #0xD4
     lsl r3, #0x2
     pop r0-r2
-    add r1, #0x1
-    bx r1
+    add r2, #0x1
+    bx r2
     .pool
 
 
@@ -888,10 +915,14 @@
 
     .org MINIGAME_SPOILER
     push r1
+    ldr r1, =YOSHI_DISPLAY_RAM
+    ldrb r1, [r1]
     ldr r2, =MINIGAME_ENABLE
     ldrb r2, [r2]
     cmp r2, #0x0
     beq .minigame_skip
+    ldr r0, =ROOM
+    ldrh r0, [r0]
     ldr r2, =0x1D1
     cmp r0, r2
     beq .scroll
@@ -2213,7 +2244,7 @@
     ldrb r0, [r0]
     cmp r0, #0x36
     beq .castle_door
-    cmp r0, #0x79
+    cmp r0, #0x90
     beq .dress_door
     cmp r0, #0x5A
     beq .ruins_door
@@ -2232,17 +2263,17 @@
     bne .end2
     ldr r0, =DRESS_DOOR
     cmp r1, r0
-    beq .end2
+    bne .end2
     ldr r0, =KEY_ITEM
     ldrb r0, [r0, #0x1]
     mov r6, #0xC
     and r0, r6
     cmp r0, #0xC
-    beq .end2
+    bne .bstar_skip
     ldr r0, =BEANSTAR_OPTION
     ldrb r0, [r0]
     cmp r0, #0x1
-    bne .bstar_skip
+    bne .end2
     ldr r0, =0x0200490E
     ldrb r0, [r0]
     mov r6, #0x2
@@ -2405,11 +2436,11 @@
 
 
     .org ABILITY_BLOCK_SUBR
-    push { r3-r4, lr }
+    push { r3-r4, r7, lr }
     ldr r3, =ABILITY_BLOCK_DATA + 1
-    mov r4, pc
+    mov r7, pc
     bx r3
-    pop { r3-r4, pc }
+    pop { r3-r4, r7, pc }
     .pool
 
 
@@ -2418,7 +2449,7 @@
 
 
     .org ABILITY_BLOCK_DATA
-    push { r0-r4 }
+    push { r0-r4, r7 }
     ldr r2, =HAMMER
     cmp r2, r5
     bne .scroll_check
@@ -2573,9 +2604,9 @@
     ldr r2, =BEAN_RAM
     mov r3, #0x0
     strb r3, [r2]
-    pop { r2-r4 }
-    add r4, #0x1
-    bx r4
+    pop { r2-r4, r7 }
+    add r7, #0x1
+    bx r7
     .pool
 
 
@@ -3054,6 +3085,11 @@
     ldr r1, =0x084F230C
     cmp r7, r1
     bne .badge_check3
+    ldr r1, =ROOM
+    ldrh r1, [r1]
+    ldr r2, =0x1CD
+    cmp r1, r2
+    beq .badge_check3
     ldr r1, =0x081E9435
     ldrb r2, [r1]
     ldr r1, =TEXT_VAR
@@ -3538,6 +3574,15 @@
     str r1, [r0]
     mov r0, 0x18
     .kib_end:
+    ldr r1, =HINT_TOKENS
+    ldrh r2, [r1]
+    ldr r3, =0xFFFF
+    cmp r2, r3
+    bne .fresh_skip
+    mov r2, #0x0
+    .fresh_skip:
+    add r2, #0x1
+    strh r2, [r1]
     pop r1-r5
     add r1, #0x1
     bx r1
@@ -5260,18 +5305,31 @@
     bl .koopa_norm
 
     .barrel_block:
-    ldr r0, =BARREL2
-    cmp r0, r4
-    bne .koopa_norm
     ldr r0, =BROS_OPTIONS
     ldrb r0, [r0]
     cmp r0, #0x1
     beq .koopa_norm
-    ldr r0, =BARREL
-    add r0, #0x54
-    str r1, [r0]
+    ldr r0, =0x020042FD
+    ldrb r1, [r0]
+    mov r2, #0x4
+    orr r1, r2
+    strb r1, [r0]
 
-    .koopa_norm:    
+    .koopa_norm:
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x87
+    beq .barrel_skip
+    ldr r0, =BROS_OPTIONS
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    beq .barrel_skip
+    ldr r0, =0x020042FD
+    ldrb r1, [r0]
+    mov r2, #0x4
+    bic r1, r2
+    strb r1, [r0]
+    .barrel_skip:
     pop r0-r2
     add r1, #0x1
     bx r1
