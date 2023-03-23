@@ -262,7 +262,14 @@ lsl r4, r1
 orr r3, r4
 strb r3, [r2, r0]
 bl .pants_buy_end
+.pants_bro:
+ldr r1, =0x020048FB
+mov r2, #0x1
+strb r2, [r1]
+bl .pants_buy_end
 .pants_hand:
+cmp r1, #0xB
+beq .pants_bro
 sub r1, #0x9
 mov r2, #0x1
 lsl r2, r1
@@ -484,12 +491,24 @@ ldr r3, =KEY_ITEM_SHOP_ARRAY
 ldr r1, [r3, r2]
 bl .text_norm
 .text_bros:
-sub r3, #0x8
-cmp r3, #0x0
+cmp r3, #0x8
 bgt .text_hands
 ; Hammer Code Here
 bl .text_norm
+.text_bro:
+ldr r3, =0x08DF0000
+ldrb r3, [r3]
+cmp r3, #0x1
+beq .text_luigi
+ldr r1, =0x08E008C0
+bl .text_norm
+.text_luigi:
+ldr r1, =0x08E008C4
+bl .text_norm
 .text_hands:
+cmp r3, #0xB
+beq .text_bro
+sub r3, #0x8
 ldr r2, =BROS_ITEM_SHOP_ARRAY
 add r3, #0x2
 mov r4, #0x4
@@ -565,12 +584,24 @@ ldr r4, =KEY_ITEM_SHOP_ARRAY
 ldr r2, [r4, r3]
 bl .desc_norm
 .desc_bros:
-sub r4, #0x8
-cmp r4, #0x0
+cmp r4, #0x8
 bgt .desc_hands
 ; Hammer Code Here
 bl .desc_norm
+.desc_bro:
+ldr r4, =0x8DF0000
+ldrb r4, [r4]
+cmp r4, #0x1
+ldr r2, =0x08E008C0
+beq .desc_luigi
+ldr r2, =0x08E008C4
+bl .desc_norm
+.desc_luigi:
+bl .desc_norm
 .desc_hands:
+cmp r4, #0xB
+beq .desc_bro
+sub r4, #0x8
 ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
 lsl r4, #0x2
@@ -649,12 +680,24 @@ ldr r4, =KEY_ITEM_SHOP_ARRAY
 ldr r2, [r4, r3]
 bl .desc_norm2
 .desc_bros2:
-sub r4, #0x8
-cmp r4, #0x0
+cmp r4, #0x8
 bgt .desc_hands2
 ; Hammer Code Here
 bl .desc_norm2
+.desc_bro2:
+ldr r4, =0x08DF0000
+ldrb r4, [r4]
+cmp r4, #0x1
+ldr r2, =0x08E008C0
+beq .desc_luigi2
+ldr r2, =0x08E008C4
+bl .desc_norm2
+.desc_luigi2:
+bl .desc_norm2
 .desc_hands2:
+cmp r4, #0xB
+beq .desc_bro2
+sub r4, #0x8
 ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
 lsl r4, #0x2

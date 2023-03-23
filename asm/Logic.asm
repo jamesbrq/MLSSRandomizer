@@ -5,6 +5,7 @@
     .include "Variables.asm"
     .include "Badges.asm"
     .include "Hint.asm"
+    .include "Cutscenes.asm"
 
     .org DRESS_TEXT_E
         db 0x45
@@ -492,7 +493,7 @@
         bl TREE_BLOCK_SUBR
 
     .org ABILITY_BLOCK_HOOK
-       bl ABILITY_BLOCK_SUBR
+        bl ABILITY_BLOCK_SUBR
 
     .org KEY_ITEM_FIX_HOOK
         bl KEY_ITEM_FIX_SUBR
@@ -586,6 +587,38 @@
 
     .org ORANGE_FIX_HOOK
         bl ORANGE_FIX_SUBR
+
+    .org POW_SCALE_HOOK
+        bl POW_SCALE_SUBR
+
+
+
+    .org POW_SCALE_SUBR
+    push r1, pc
+    ldr r1, =ERANDOM
+    ldrb r1, [r1, #0x1]
+    cmp r1, #0x1
+    bne .pow_norm
+    ldr r1, =0x030024B8
+    ldrb r1, [r1]
+    cmp r1, #0x6
+    blt .pow_norm
+    sub r1, #0x6
+    add r1, #0x14
+    mov r0, r1
+    bl .pow_end
+    .pow_norm:
+    ldrh r0, [r0, #0xC]
+    .pow_end:
+    mov r12, r0
+    pop r1, pc
+    .pool
+
+
+
+
+
+
 
 
 
@@ -863,7 +896,19 @@
     ldr r3, [r3, r2]
     add r3, #0x1
     bl .yd_display
+    .yd_bro:
+    ldr r2, =C_OPTION
+    ldrb r2, [r2]
+    cmp r2, #0x1
+    beq .yd_luigi
+    ldr r3, =MARIO_TEXT
+    bl .yd_display
+    .yd_luigi:
+    ldr r3, =LUIGI_TEXT
+    bl .yd_display
     .yd_bros:
+    cmp r2, #0xB
+    beq .yd_bro
     sub r2, #0x8
     cmp r2, #0x0
     bgt .yd_hand
@@ -1675,6 +1720,10 @@
     mov r2, #0x80
     orr r4, r2
     strb r4, [r3]
+    mov r3, #0x8
+    and r3, r4
+    cmp r3, #0x0
+    beq .green_check
     ldr r3, =0x0200489C
     ldrb r4, [r3]
     mov r2, #0x1
@@ -1697,6 +1746,10 @@
     mov r2, #0x40
     orr r4, r2
     strb r4, [r3]
+    mov r3, #0x8
+    and r3, r4
+    cmp r3, #0x0
+    beq .pearl_check
     ldr r3, =0x02004860
     ldrb r4, [r3]
     mov r2, #0x1
@@ -1729,6 +1782,10 @@
     mov r2, #0x4
     orr r4, r2
     strb r4, [r3, #0x1]
+    mov r3, #0x1
+    and r3, r4
+    cmp r3, #0x0
+    beq .green_pearl_check
     ldr r3, =0x02004860
     ldrb r4, [r3]
     mov r2, #0x40
@@ -1756,6 +1813,10 @@
     mov r2, #0x8
     orr r4, r2
     strb r4, [r3, #0x1]
+    mov r3, #0x2
+    and r3, r4
+    cmp r3, #0x0
+    beq .moves_end
     ldr r3, =0x0200489C
     ldrb r4, [r3]
     mov r2, #0x40
@@ -1773,10 +1834,26 @@
 
     .org INTRO_SKIP_SUBR
     push { r1, r2, r3, lr }
+    ldr r1, =C_OPTION
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    beq .cut_skip
+    ldr r1, =CUTSCENE_RAM
+    mov r2, #0x1
+    strb r2, [r1]
+    ldr r1, =0x02004AC4
+    strb r2, [r1]
+    .cut_skip:
     ldr r1, =INTRO_DISABLE
     ldrb r2, [r1]
     cmp r2, #0x1
     beq .skip_norm
+    ldr r1, =0x020048FB
+    mov r2, #0x0
+    strb r2, [r1]
+    ldr r1, =CUTSCENE_RAM
+    mov r2, #0x1
+    strb r2, [r1]
     ldr r1, =ROOM
     ldrb r2, [r1]
     cmp r2, #0x60
@@ -1841,6 +1918,10 @@
     ldr r2, =SAVE_BLOCK + 1
     mov r1, pc
     bx r2
+    bl CUTSCENE_FIX
+    bl SHADOWREALM
+    bl CHUCKOLATOR
+    bl BRO_HANDLER
     ldr r1, =0x03000375
     ldrb r1, [r1]
     mov r2, #0x3
@@ -2159,6 +2240,8 @@
     ldr r3, =ULTRA_HAMMER_TEXT
     bl .rose_end
     .rose_hand:
+    cmp r1, #0xB
+    beq .rose_bro
     sub r1, #0x8
     ldr r0, =HAMMER
     ldrb r2, [r0, #0x1]
@@ -2189,6 +2272,19 @@
     ldr r1, =KEY_ITEM_NORM_ARRAY
     lsl r0, #0x2
     ldr r3, [r1, r0]
+    bl .rose_end
+    .rose_bro:
+    ldr r1, =BRO_ITEM
+    mov r0, #0x1
+    strb r0, [r1]
+    ldr r1, =C_OPTION
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    beq .rose_luigi
+    ldr r3, =MARIO_TEXT
+    bl .rose_end
+    .rose_luigi:
+    ldr r3, =LUIGI_TEXT
     bl .rose_end
     .rose_espresso:
     sub r0, #0x1C
@@ -2559,15 +2655,21 @@
     str r2, [r3]
     cmp r0, #0x2C
     bge .ability_pants
-    bl BADGE_ADD
+    ldr r2, =BADGE_ADD + 1
+    mov r1, pc
+    bx r2
     bl .ability_norm
     .ability_pants:
     cmp r0, #0x5A
     bge .ability_special
-    bl PANTS_ADD
+    ldr r2, =PANTS_ADD + 1
+    mov r1, pc
+    bx r2
     bl .ability_norm
     .ability_special:
-    bl SPECIAL_ADD
+    ldr r2, =SPECIAL_ADD + 1
+    mov r1, pc
+    bx r2
     bl .ability_norm
     .ability_key_norm:
     mov r4, #0x1
@@ -3271,6 +3373,8 @@
     beq .fire_drop
     cmp r1, #0x3
     beq .thunder_drop
+    cmp r1, #0x4
+    beq .bro_drop2
     bl .bros_end
 
     .hammer_drop:
@@ -3359,6 +3463,9 @@
     str r1, [r0]
     bl .bros_item_textbox
 
+    .bro_drop2:
+    bl .bro_drop
+
     .fire_drop:
     ldr r0, =HAMMER
     ldrb r1, [r0, #0x1]
@@ -3404,6 +3511,43 @@
     ldr r0, =BROS_ITEM_BUFFER
     ldr r1, =BROS_TEXTBOX_ARRAY
     ldr r1, [r1, #0x10]
+    str r1, [r0]
+    bl .bros_item_textbox
+
+    .bro_drop:
+    ldr r0, =BRO_ITEM
+    mov r1, #0x1
+    strb r1, [r0]
+    ldr r0, =BROS_RAM
+    ldrb r0, [r0]
+    mov r1, #0xF0
+    and r1, r0
+    cmp r1, #0x10
+    bne .bro_scene
+    bl BRO_RESTORE
+    ldr r0, =C_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    beq .bro_luigi
+    ldr r1, =MARIO_TEXT
+    bl .inject_bro
+    .bro_luigi:
+    ldr r1, =LUIGI_TEXT
+    .inject_bro:
+    ldr r0, =BROS_ITEM_BUFFER
+    str r1, [r0]
+    bl .bros_item_textbox
+    .bro_scene:
+    ldr r0, =C_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    beq .bro_luigi2
+    ldr r1, =MARIO_EVENT_TEXT
+    bl .inject_bro2
+    .bro_luigi2:
+    ldr r1, =LUIGI_EVENT_TEXT
+    .inject_bro2:
+    ldr r0, =BROS_ITEM_BUFFER
     str r1, [r0]
 
     .bros_item_textbox:
@@ -4392,11 +4536,10 @@
     ldr r0, =SWING
     ldrb r1, [r0]
     mov r2, #0x8
-    and r1, r2
-    cmp r1, #0x8
-    bne .cyclone_check
-    ldrb r1, [r0]
-    sub r1, #0x8
+    and r2, r1
+    cmp r2, #0x0
+    beq .cyclone_check
+    bic r1, r2
     strb r1, [r0]
     bl .cyclone_check
     .swing_enable:
@@ -4415,14 +4558,19 @@
     ldr r0, =CYCLONE
     ldrb r1, [r0]
     mov r2, #0x2
-    and r1, r2
-    cmp r1, #0x2
-    bne .scroll_end
-    ldrb r1, [r0]
-    sub r1, #0x2
+    and r2, r1
+    cmp r2, #0x0
+    beq .scroll_end
+    bic r1, r2
     strb r1, [r0]
     bl .scroll_end
     .cyclone_enable:
+    ldr r0, =HAMMER
+    ldrb r0, [r0]
+    mov r1, #0x8
+    and r1, r0
+    cmp r1, #0x0
+    beq .scroll_end
     mov r1, #0x2
     ldr r0, =CYCLONE
     ldrb r2, [r0]

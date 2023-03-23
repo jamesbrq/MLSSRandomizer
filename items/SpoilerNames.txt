@@ -9,6 +9,7 @@
 0x38,Hammers,
 0x39,Fire Hand,
 0x3A,Thunder Hand,
+0x3B,Random Bro,
 0x40,Membership Card,
 0x41,Winkle Card,
 0x42,Extra Dress,

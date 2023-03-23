@@ -62,6 +62,9 @@ namespace MLSSRandomizerForm
         public static string lColor = "Green";
         public static string mPants = "Vanilla";
         public static string lPants = "Vanilla";
+        public static bool pow = false;
+        public static bool mario = false;
+        public static bool luigi = false;
         public static int r = 0;
         public static int g = 0;
         public static int b = 0;
@@ -816,6 +819,27 @@ namespace MLSSRandomizerForm
                 checkBox1.Enabled = true;
                 checkBox1.Checked = false;
             }
+        }
+
+        private void checkBox40_CheckedChanged(object sender, EventArgs e)
+        {
+            pow = checkBox40.Checked;
+        }
+
+        private void checkBox41_CheckedChanged(object sender, EventArgs e)
+        {
+            mario = checkBox41.Checked;
+            checkBox42.Enabled = !checkBox41.Checked;
+            checkBox1.Checked = checkBox41.Checked;
+            checkBox1.Enabled = !checkBox41.Checked;
+        }
+
+        private void checkBox42_CheckedChanged(object sender, EventArgs e)
+        {
+            luigi = checkBox42.Checked;
+            checkBox41.Enabled = !checkBox42.Checked;
+            checkBox1.Checked = checkBox42.Checked;
+            checkBox1.Enabled = !checkBox42.Checked;
         }
     }
 }

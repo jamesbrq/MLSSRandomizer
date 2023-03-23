@@ -130,9 +130,12 @@ namespace MLSSRandomizerForm
             this.button7 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
+            this.checkBox40 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.checkBox41 = new System.Windows.Forms.CheckBox();
+            this.checkBox42 = new System.Windows.Forms.CheckBox();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -228,7 +231,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox1.Location = new System.Drawing.Point(100, 107);
+            this.checkBox1.Location = new System.Drawing.Point(100, 100);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(77, 17);
             this.checkBox1.TabIndex = 8;
@@ -725,6 +728,8 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.checkBox42);
+            this.tabPage5.Controls.Add(this.checkBox41);
             this.tabPage5.Controls.Add(this.checkBox39);
             this.tabPage5.Controls.Add(this.checkBox38);
             this.tabPage5.Controls.Add(this.checkBox37);
@@ -752,7 +757,7 @@ namespace MLSSRandomizerForm
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox39.Enabled = false;
-            this.checkBox39.Location = new System.Drawing.Point(61, 153);
+            this.checkBox39.Location = new System.Drawing.Point(61, 169);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
             this.checkBox39.TabIndex = 43;
@@ -789,7 +794,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox36.AutoSize = true;
             this.checkBox36.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox36.Location = new System.Drawing.Point(213, 84);
+            this.checkBox36.Location = new System.Drawing.Point(214, 84);
             this.checkBox36.Name = "checkBox36";
             this.checkBox36.Size = new System.Drawing.Size(153, 17);
             this.checkBox36.TabIndex = 40;
@@ -801,7 +806,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox32.AutoSize = true;
             this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Location = new System.Drawing.Point(18, 61);
+            this.checkBox32.Location = new System.Drawing.Point(18, 54);
             this.checkBox32.Name = "checkBox32";
             this.checkBox32.Size = new System.Drawing.Size(159, 17);
             this.checkBox32.TabIndex = 39;
@@ -872,7 +877,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox24.AutoSize = true;
             this.checkBox24.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox24.Location = new System.Drawing.Point(47, 84);
+            this.checkBox24.Location = new System.Drawing.Point(47, 77);
             this.checkBox24.Name = "checkBox24";
             this.checkBox24.Size = new System.Drawing.Size(130, 17);
             this.checkBox24.TabIndex = 28;
@@ -884,7 +889,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox23.AutoSize = true;
             this.checkBox23.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox23.Location = new System.Drawing.Point(40, 39);
+            this.checkBox23.Location = new System.Drawing.Point(40, 31);
             this.checkBox23.Name = "checkBox23";
             this.checkBox23.Size = new System.Drawing.Size(137, 17);
             this.checkBox23.TabIndex = 27;
@@ -896,7 +901,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox20.AutoSize = true;
             this.checkBox20.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox20.Location = new System.Drawing.Point(47, 16);
+            this.checkBox20.Location = new System.Drawing.Point(47, 8);
             this.checkBox20.Name = "checkBox20";
             this.checkBox20.Size = new System.Drawing.Size(130, 17);
             this.checkBox20.TabIndex = 26;
@@ -1219,6 +1224,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage9
             // 
+            this.tabPage9.Controls.Add(this.checkBox40);
             this.tabPage9.Controls.Add(this.label14);
             this.tabPage9.Controls.Add(this.radioButton6);
             this.tabPage9.Controls.Add(this.radioButton7);
@@ -1293,11 +1299,11 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox31.AutoSize = true;
             this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox31.Location = new System.Drawing.Point(46, 69);
+            this.checkBox31.Location = new System.Drawing.Point(15, 81);
             this.checkBox31.Name = "checkBox31";
-            this.checkBox31.Size = new System.Drawing.Size(118, 17);
+            this.checkBox31.Size = new System.Drawing.Size(149, 17);
             this.checkBox31.TabIndex = 38;
-            this.checkBox31.Text = "Scale enemy stats?";
+            this.checkBox31.Text = "Scale enemy HP and XP?";
             this.checkBox31.UseVisualStyleBackColor = true;
             this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
             // 
@@ -1377,6 +1383,18 @@ namespace MLSSRandomizerForm
             this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
             this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
+            // checkBox40
+            // 
+            this.checkBox40.AutoSize = true;
+            this.checkBox40.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox40.Location = new System.Drawing.Point(42, 104);
+            this.checkBox40.Name = "checkBox40";
+            this.checkBox40.Size = new System.Drawing.Size(122, 17);
+            this.checkBox40.TabIndex = 43;
+            this.checkBox40.Text = "Scale enemy POW?";
+            this.checkBox40.UseVisualStyleBackColor = true;
+            this.checkBox40.CheckedChanged += new System.EventHandler(this.checkBox40_CheckedChanged);
+            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -1388,6 +1406,30 @@ namespace MLSSRandomizerForm
             // romBindingSource
             // 
             this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
+            // 
+            // checkBox41
+            // 
+            this.checkBox41.AutoSize = true;
+            this.checkBox41.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox41.Location = new System.Drawing.Point(63, 123);
+            this.checkBox41.Name = "checkBox41";
+            this.checkBox41.Size = new System.Drawing.Size(114, 17);
+            this.checkBox41.TabIndex = 44;
+            this.checkBox41.Text = "Randomize Mario?";
+            this.checkBox41.UseVisualStyleBackColor = true;
+            this.checkBox41.CheckedChanged += new System.EventHandler(this.checkBox41_CheckedChanged);
+            // 
+            // checkBox42
+            // 
+            this.checkBox42.AutoSize = true;
+            this.checkBox42.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox42.Location = new System.Drawing.Point(67, 146);
+            this.checkBox42.Name = "checkBox42";
+            this.checkBox42.Size = new System.Drawing.Size(110, 17);
+            this.checkBox42.TabIndex = 45;
+            this.checkBox42.Text = "Randomize Luigi?";
+            this.checkBox42.UseVisualStyleBackColor = true;
+            this.checkBox42.CheckedChanged += new System.EventHandler(this.checkBox42_CheckedChanged);
             // 
             // Form1
             // 
@@ -1541,6 +1583,9 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox37;
         private CheckBox checkBox38;
         private CheckBox checkBox39;
+        private CheckBox checkBox40;
+        private CheckBox checkBox42;
+        private CheckBox checkBox41;
     }
 }
 
