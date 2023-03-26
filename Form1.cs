@@ -832,6 +832,8 @@ namespace MLSSRandomizerForm
             checkBox42.Enabled = !checkBox41.Checked;
             checkBox1.Checked = checkBox41.Checked;
             checkBox1.Enabled = !checkBox41.Checked;
+           // checkBox32.Checked = checkBox41.Checked;
+           // checkBox32.Enabled = !checkBox41.Checked;
         }
 
         private void checkBox42_CheckedChanged(object sender, EventArgs e)
@@ -840,6 +842,8 @@ namespace MLSSRandomizerForm
             checkBox41.Enabled = !checkBox42.Checked;
             checkBox1.Checked = checkBox42.Checked;
             checkBox1.Enabled = !checkBox42.Checked;
+           // checkBox32.Checked = checkBox42.Checked;
+            //checkBox32.Enabled = !checkBox42.Checked;
         }
     }
 }

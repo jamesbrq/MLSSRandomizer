@@ -266,6 +266,7 @@ bl .pants_buy_end
 ldr r1, =0x020048FB
 mov r2, #0x1
 strb r2, [r1]
+bl 0x08E10300
 bl .pants_buy_end
 .pants_hand:
 cmp r1, #0xB
@@ -592,11 +593,11 @@ bl .desc_norm
 ldr r4, =0x8DF0000
 ldrb r4, [r4]
 cmp r4, #0x1
-ldr r2, =0x08E008C0
 beq .desc_luigi
-ldr r2, =0x08E008C4
+ldr r2, =0x08E008C0
 bl .desc_norm
 .desc_luigi:
+ldr r2, =0x08E008C4
 bl .desc_norm
 .desc_hands:
 cmp r4, #0xB
@@ -688,11 +689,11 @@ bl .desc_norm2
 ldr r4, =0x08DF0000
 ldrb r4, [r4]
 cmp r4, #0x1
-ldr r2, =0x08E008C0
 beq .desc_luigi2
-ldr r2, =0x08E008C4
+ldr r2, =0x08E008C0
 bl .desc_norm2
 .desc_luigi2:
+ldr r2, =0x08E008C4
 bl .desc_norm2
 .desc_hands2:
 cmp r4, #0xB

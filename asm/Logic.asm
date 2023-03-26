@@ -902,9 +902,11 @@
     cmp r2, #0x1
     beq .yd_luigi
     ldr r3, =MARIO_TEXT
+    sub r3, #0x1
     bl .yd_display
     .yd_luigi:
     ldr r3, =LUIGI_TEXT
+    sub r3, #0x1
     bl .yd_display
     .yd_bros:
     cmp r2, #0xB
@@ -1276,12 +1278,20 @@
     strb r4, [r2, r1]
     bl .shop_inject_skip
     .shop_bros:
-    sub r2, #0x8
-    cmp r2, #0x1
-    bge .shop_hands
+    cmp r2, #0x8
+    bgt .shop_hands
     ; Insert hammer code here
     bl .shop_inject_skip 
+    .shop_bro:
+    ldr r2, =0x020048FB
+    mov r1, #0x1
+    strb r1, [r2]
+    bl BRO_RESTORE
+    bl .shop_inject_skip 
     .shop_hands:
+    cmp r2, #0xB
+    beq .shop_bro
+    sub r2, #0x8
     ldr r1, =HAMMER
     ldrb r4, [r1, #0x1]
     orr r4, r2
@@ -1390,12 +1400,24 @@
     ldr r1, [r3, r2]
     bl .shop_text_norm
     .shop_text_bros:
-    sub r3, #0x8
-    cmp r3, #0x1
-    bge .shop_text_hand
+    cmp r3, #0x8
+    bgt .shop_text_hand
     ;Insert hammer code here
     bl .shop_text_norm
+    .shop_text_bro:
+    ldr r3, =0x08DF0000
+    ldrb r3, [r3]
+    cmp r3, #0x1
+    beq .shop_text_luigi
+    ldr r1, =0x08E008C0
+    bl .shop_text_norm
+    .shop_text_luigi:
+    ldr r1, =0x08E008C4
+    bl .shop_text_norm
     .shop_text_hand:
+    cmp r3, #0xB
+    beq .shop_text_bro
+    sub r3, #0x8
     add r3, #0x2
     mov r2, #0x4
     mul r3, r2
@@ -1467,12 +1489,24 @@
     ldr r1, [r3, r2]
     bl .shop_desc_norm
     .shop_desc_bros:
-    sub r3, #0x8
     cmp r3, #0x1
     bge .shop_desc_hand
     ;Insert hammer code here
     bl .shop_desc_norm
+    .shop_desc_bro:
+    ldr r3, =0x8DF0000
+    ldrb r3, [r3]
+    cmp r3, #0x1
+    beq .shop_desc_luigi
+    ldr r1, =0x08E008C0
+    bl .shop_desc_norm
+    .shop_desc_luigi:
+    ldr r1, =0x08E008C4
+    bl .shop_desc_norm
     .shop_desc_hand:
+    cmp r3, #0xB
+    beq .shop_desc_bro
+    sub r3, #0x8
     add r3, #0x2
     mov r2, #0x4
     mul r3, r2
@@ -1664,6 +1698,17 @@
     strb r2, [r1]
     ldr r1, =0x02004889
     strb r2, [r1]
+    ldr r1, =C_OPTION
+    ldrb r1, [r1]
+    cmp r1, #0x2
+    bne .badge_end2
+    ldr r1, =0x02004889
+    mov r2, #0xFF
+    strb r2, [r1]
+    ldr r1, =0x020048C5
+    mov r2, #0x1
+    strb r2, [r1]
+    .badge_end2:
     pop { r1-r3, pc }
     .pool
 
@@ -1834,16 +1879,15 @@
 
     .org INTRO_SKIP_SUBR
     push { r1, r2, r3, lr }
-    ldr r1, =C_OPTION
-    ldrb r1, [r1]
-    cmp r1, #0x0
-    beq .cut_skip
-    ldr r1, =CUTSCENE_RAM
-    mov r2, #0x1
+    ldr r1, =TIME
+    ldr r1, [r1]
+    ldr r2, =TIME_RAM
+    str r1, [r2]
+    ldr r1, =WATER
+    ldrb r2, [r1]
+    mov r3, #0x4
+    bic r2, r3
     strb r2, [r1]
-    ldr r1, =0x02004AC4
-    strb r2, [r1]
-    .cut_skip:
     ldr r1, =INTRO_DISABLE
     ldrb r2, [r1]
     cmp r2, #0x1
@@ -2282,9 +2326,11 @@
     cmp r1, #0x1
     beq .rose_luigi
     ldr r3, =MARIO_TEXT
+    sub r3, #0x1
     bl .rose_end
     .rose_luigi:
     ldr r3, =LUIGI_TEXT
+    sub r3, #0x1
     bl .rose_end
     .rose_espresso:
     sub r0, #0x1C
@@ -3530,9 +3576,11 @@
     cmp r0, #0x1
     beq .bro_luigi
     ldr r1, =MARIO_TEXT
+    sub r1, #0x1
     bl .inject_bro
     .bro_luigi:
     ldr r1, =LUIGI_TEXT
+    sub r1, #0x1
     .inject_bro:
     ldr r0, =BROS_ITEM_BUFFER
     str r1, [r0]
