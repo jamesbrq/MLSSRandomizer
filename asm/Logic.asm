@@ -1883,18 +1883,33 @@
     ldr r1, [r1]
     ldr r2, =TIME_RAM
     str r1, [r2]
+    ldr r1, =BRO_ITEM
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    bne .water_skip
     ldr r1, =WATER
     ldrb r2, [r1]
     mov r3, #0x4
     bic r2, r3
     strb r2, [r1]
+    .water_skip:
     ldr r1, =INTRO_DISABLE
     ldrb r2, [r1]
     cmp r2, #0x1
     beq .skip_norm
+    ldr r1, =C_OPTION
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    beq .no_bro
     ldr r1, =0x020048FB
     mov r2, #0x0
     strb r2, [r1]
+    bl .item_skip
+    .no_bro:
+    ldr r1, =0x020048FB
+    mov r2, #0x1
+    strb r2, [r1]
+    .item_skip:
     ldr r1, =CUTSCENE_RAM
     mov r2, #0x1
     strb r2, [r1]
@@ -2525,7 +2540,18 @@
     mov r1, #0x48
     and r1, r0
     cmp r1, #0x48
+    bne .lock
+    ldr r0, =C_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x0
     beq .unblock
+    ldr r0, =SOLO_VALUE
+    ldrb r0, [r0]
+    mov r1, #0x10
+    and r1, r0
+    cmp r1, #0x0
+    bne .unblock
+    .lock:
     mov r0, #0x00
     bl .end
 

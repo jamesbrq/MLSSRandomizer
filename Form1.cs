@@ -152,6 +152,9 @@ namespace MLSSRandomizerForm
                     radioButton8.Checked = true;
                     break;
             }
+            config.TryGetValue("seed", out temp);
+            seed = temp;
+
             config.TryGetValue("rose", out temp);
             rose = Convert.ToBoolean(temp);
             checkBox2.Checked = Convert.ToBoolean(temp);
@@ -256,6 +259,7 @@ namespace MLSSRandomizerForm
         public void SaveConfig()
         {
             List<string> strings = new List<string>();
+            strings.Add("seed," + seed + ",");
             strings.Add("seedtype," + seedType + ",");
             strings.Add("pieces," + Convert.ToInt32(pieces) + ",");
             strings.Add("chuckle," + chuckle + ",");

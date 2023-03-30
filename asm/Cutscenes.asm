@@ -319,7 +319,7 @@ pop { r0-r3, pc }
 
 
 .org 0x08DF0000
-	 db 0x1
+	; db 0x1
 
 
 
@@ -339,6 +339,10 @@ pop r0-r2, pc
 
 .org SHADOWREALM
 push { r0-r2, lr }
+ldr r0, =C_OPTION
+ldrb r0, [r0]
+cmp r0, #0x0
+beq .realm_end
 ldr r0, =BRO_ITEM
 ldrb r0, [r0]
 cmp r0, #0x0
@@ -494,7 +498,7 @@ pop { r0-r2, pc }
 	 bl DOOR_FIX_SUBR
 
 .org DOOR_FIX_SUBR
-push r2, lr
+push r2-r3, lr
 ldr r2, =C_OPTION
 ldrb r2, [r2]
 cmp r2, #0x0
@@ -503,6 +507,11 @@ ldr r2, =BRO_ITEM
 ldrb r2, [r2]
 cmp r2, #0x0
 bne .door_norm
+ldr r2, =0x082574AA
+ldr r3, =0x02004A24
+ldr r3, [r3]
+cmp r3, r2
+beq .door_skip
 ldr r2, =CUTSCENE_ACTIVE_TWO
 ldrb r2, [r2]
 cmp r2, #0x5
@@ -520,7 +529,7 @@ beq .door_skip
 orr r0, r4
 .door_skip:
 strb r0, [r1]
-pop r2, pc
+pop r2-r3, pc
 .pool
 
 
