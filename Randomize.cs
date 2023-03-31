@@ -2152,8 +2152,6 @@ namespace MLSSRandomizerForm
                 if (!CheckValidity())
                 {
                     validLocations = new List<dynamic>();
-                    if (iterationCount >= 290)
-                        Console.WriteLine("aa");
                     Console.WriteLine(++iterationCount);
                     goto rBegin;
                 }

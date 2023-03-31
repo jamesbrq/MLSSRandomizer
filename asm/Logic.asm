@@ -7,17 +7,26 @@
     .include "Hint.asm"
     .include "Cutscenes.asm"
 
-    .org DRESS_TEXT_E
+    .org 0x0821E4FE ;Espresso reward sprites + possibly other sprites??
+        db 0x0
+
+    .org 0x08170932 ;Default barrel minigame to yes instead of explain
+        db 0x0
+
+    .org 0x08169FDC ;Default winkle minigame to yes instead of explain
+        db 0x0
+
+    .org DRESS_TEXT_E ; Extra Dress Text Capitalization
         db 0x45
 
     .org DRESS_TEXT_D
         db 0x44
 
-    .org BEANSTAR_TEXT_F
+    .org BEANSTAR_TEXT_F ;Fake Beanstar text capitalization
         db 0x46
 
     .org 0x082754C8
-        db 0x22, 0xB0
+        db 0x22, 0xB0 ;Surf reward fix???
 
     .org 0x0827547D
         db 0x22, 0xB0
@@ -26,16 +35,16 @@
         db 0x22, 0xB0
 
     .org 0x082000A4
-        db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA
+        db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA ;Bros move advance
 
     .org GUFAWHA_SKIP_ETR
-        db 0x81, 0x52, 0x0, 0x6, 0x12, 0x8, 0x1
+        db 0x81, 0x52, 0x0, 0x6, 0x12, 0x8, 0x1 ;Removes 1 room in gufawha ruins
 
     .org GUFAWHA_SKIP_EXIT
         db 0x9, 0x52, 0x0, 0x4, 0xD, 0x8, 0x1
 
     .org GRASS_FIX
-        db 0x24, 0x40
+        db 0x24, 0x40 ; Crabbie Grass
 
     .org SHOP_FIX
         db 0xFF
@@ -44,7 +53,7 @@
         db 0xFF
 
     .org 0x082209BA
-        db 0x20, 0xA0
+        db 0x20, 0xA0 ;Intro item defaults
 
     .org 0x08220A96
         db 0x20, 0xB0
@@ -53,10 +62,10 @@
         db 0x21, 0x60
 
     .org OVERRIDE
-       ; db 0x0, 0x0, 0x0, 0x0
+       ; db 0x0, 0x0, 0x0, 0x0 ; Intro skip enable 
 
     .org HIGH_JUMP
-        db 0xAA
+        db 0xAA ;Set text to yes by default in high/spin jump tutorial
 
     .org SPIN_JUMP
         db 0xAA
@@ -3264,6 +3273,9 @@
     ldr r2, =0x1CD
     cmp r1, r2
     beq .badge_check3
+    mov r2, #0x33
+    cmp r1, r2
+    beq .badge_check3
     ldr r1, =0x081E9435
     ldrb r2, [r1]
     ldr r1, =TEXT_VAR
@@ -5314,6 +5326,30 @@
 
 
 
+
+    .org ESCORT_CUTSCENE
+    push lr
+    ldr r0, =0x0200430A
+    ldrb r1, [r0]
+    mov r2, #0x1
+    and r2, r1
+    cmp r2, #0x1
+    beq .escort_end2
+    ldrb r1, [r0, #0x1]
+    mov r2, #0x10
+    and r2, r1
+    cmp r2, #0x0
+    beq .escort_end2
+    mov r2, #0x8
+    bic r1, r2
+    strb r1, [r0, #0x1]
+    .escort_end2:
+    pop pc
+    .pool
+
+
+
+
     .org KOOPA_BLOCK_DATA
     push r0-r2
     ldr r0, =YOSHI_DISPLAY_RAM
@@ -5376,6 +5412,7 @@
     ldr r0, =SEWER_BLOCK + 1
     mov r1, pc
     bx r0
+    bl ESCORT_CUTSCENE
     ldr r0, =FAWFUL_STONE
     ldrb r0, [r0]
     mov r1, #0x1

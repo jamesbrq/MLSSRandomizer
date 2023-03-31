@@ -153,8 +153,8 @@ namespace MLSSRandomizerForm
                     break;
             }
             config.TryGetValue("seed", out temp);
-            seed = temp;
-
+            seed = Convert.ToString(temp);
+            SeedTextbox.Text = seed;
             config.TryGetValue("rose", out temp);
             rose = Convert.ToBoolean(temp);
             checkBox2.Checked = Convert.ToBoolean(temp);
