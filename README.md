@@ -50,6 +50,7 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 **Randomize Mario/Luigi:** Enabling this will turn Luigi or Mario into an item! Until you find them, you can play the game as a solo brother and adventure with a new twist!
 
+**Text Turbo:** At any point in the game, you can hold L/R + A to turbo through text. Note that this only works for text and nothing else.
 
 # Discord
 
