@@ -30,6 +30,8 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 **Skip intro:** Enabling this will put you right after the border Jump Minigame, skipping the intro sequence.
 
+**Castle Start:** Enabling this will have you start in Beanbean Castle Town rather than stardust fields.
+
 **Skip Bowsers** Castle: Enabling this will let you skip all of bowsers castle and go straight to Bowletta once you go through the first door.
 
 **Skip minecart minigame:** Enabling this will allow you to get to and from beanbean outskirts without needing to ride the minecarts everytime.
