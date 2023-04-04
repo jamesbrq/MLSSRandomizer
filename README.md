@@ -52,6 +52,9 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 **Text Turbo:** At any point in the game, you can hold L/R + A to turbo through text. Note that this only works for text and nothing else.
 
+**Teleport Anywhere Anytime:** At any point in the game, you can hold L + R and press SELECT to open up the Pipe Menu to teleport to any pipe youve accessed before.
+(Note that when you press this button combination you must pick a pipe, you cannot go back to the room you were just in.)
+
 # Discord
 
 [Discord](https://discord.gg/MVZ3hDyAuY) if you have any questions, concerns, and the like. We also hold races sometimes.
