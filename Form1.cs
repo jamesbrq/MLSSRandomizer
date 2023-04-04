@@ -57,6 +57,7 @@ namespace MLSSRandomizerForm
         public static bool mDisable = false;
         public static bool sounds = false;
         public static bool doors = false;
+        public static bool castletown = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -408,6 +409,9 @@ namespace MLSSRandomizerForm
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             intro = checkBox1.Checked;
+            castletown = false;
+            checkBox43.Checked = false;
+            checkBox43.Enabled = !checkBox1.Checked;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -848,6 +852,13 @@ namespace MLSSRandomizerForm
             checkBox1.Enabled = !checkBox42.Checked;
            // checkBox32.Checked = checkBox42.Checked;
             //checkBox32.Enabled = !checkBox42.Checked;
+        }
+
+        private void checkBox43_CheckedChanged(object sender, EventArgs e)
+        {
+            castletown = checkBox43.Checked;
+            checkBox1.Checked = false;
+            checkBox1.Enabled = !checkBox43.Checked;
         }
     }
 }

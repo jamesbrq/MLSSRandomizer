@@ -521,9 +521,6 @@
 
     .org INTRO_SKIP_HOOK
         bl INTRO_SKIP_SUBR
-        
-    .org INTRO_FIX_HOOK
-        bl INTRO_FIX_SUBR
 
     .org SHOP_RAM_HOOK
         bl SHOP_RAM_SUBR
@@ -1594,105 +1591,6 @@
     .pool
 
 
-
-
-    .org INTRO_FIX_SUBR
-    push { r1, r2, lr }
-    ldr r2, =INTRO_FIX_DATA + 1
-    mov r1, pc
-    bx r2
-    pop r1-r2
-    mov r1, r8
-    add r1, #0x54
-    pop pc
-    .pool
-
-
-
-
-
-        
-    .org INTRO_FIX_DATA
-    push r1-r2
-    ldr r1, =ROOM
-    ldrb r1, [r1, #0x1]
-    cmp r1, #0x1
-    beq .test_norm
-    ldr r1, =0x02004AE0
-    ldr r1, [r1]
-    cmp r1, #0x0
-    beq .test_skip
-    ldr r1, =INTRO_RAM
-    mov r2, #0x0
-    strb r2, [r1]
-    .test_skip:
-    ldr r1, =INTRO_RAM
-    ldrb r1, [r1]
-    cmp r1, #0x1
-    bne .test_norm
-    ldr r1, =0x03002486
-    ldrb r2, [r1]
-    cmp r2, #0x0
-    beq .test_norm
-    ldr r1, =0x02006C19
-    ldrb r2, [r1]
-    cmp r2, #0x0
-    beq .test_norm
-    mov r2, #0xD0
-    strb r2, [r1]
-    ldr r1, =0x02006C21
-    mov r2, #0x20
-    strb r2, [r1]
-    ldr r1, =0x0200433C
-    ldrb r1, [r1]
-    mov r2, #0x10
-    orr r2, r1
-    ldr r1, =0x0200433C
-    strb r2, [r1]
-    ldr r1, =0x0200433E
-    ldrb r1, [r1]
-    mov r2, #0x18
-    orr r2, r1
-    ldr r1, =0x0200433E
-    strb r2, [r1]
-    ldr r1, =0x03002488
-    mov r2, #0x50
-    strb r2, [r1]
-    ldr r1, =0x02006FB5
-    ldr r1, [r1]
-    cmp r1, #0x0
-    beq .test_norm
-    mov r2, #0xA0
-    ldr r1, =0x02006FB5
-    strb r2, [r1]
-    ldr r1, =0x02006FBD
-    mov r2, #0x20
-    strb r2, [r1]
-    ldr r1, =0x02006FB2
-    mov r2, #0x0
-    strb r2, [r1]
-    ldr r1, =0x02006FB1
-    mov r2, #0xC7
-    strb r2, [r1]
-    ldr r1, =0x02006C21
-    cmp r1, #0x0
-    bne .test_norm
-    ldr r1, =0x02006C16
-    mov r2, #0x0
-    strb r2, [r1]
-    ldr r1, =0x02006C15
-    mov r2, #0xCF
-    strb r2, [r1]
-    ldr r1, =INTRO_RAM
-    mov r2, #0x0
-    strb r2, [r1]
-    .test_norm:
-    pop r1-r2
-    add r1, #0x1
-    bx r1
-    .pool
-
-
     .org BADGE_HANDLER
     push { r1-r3, lr }
     ldr r1, =0x0200433C
@@ -1922,34 +1820,47 @@
     ldr r1, =CUTSCENE_RAM
     mov r2, #0x1
     strb r2, [r1]
-    ldr r1, =ROOM
-    ldrb r2, [r1]
-    cmp r2, #0x60
-    beq .skip2
-    cmp r2, #0x66
-    bne .disable
-    .skip2:
     bl BADGE_HANDLER
-    ldrb r2, [r1, #0x1]
-    cmp r2, #0x1
-    beq .skip_norm
-    ldr r1, =0x08244F64
-    ldrb r1, [r1]
-    cmp r1, #0x0
-    bne .skip_norm
-    ldrb r3, [r0]
-    cmp r3, #0x60
-    bne .skip_norm
-    mov r3, #0x66
-    strb r3, [r0]
     ldr r1, =INTRO_RAM
     mov r2, #0x1
     strb r2, [r1]
+    ldr r2, =0x0200433C
+    ldrb r3, [r2]
+    mov r1, #0x30
+    orr r3, r1
+    strb r3, [r2]
+    ldr r2, =0x08244D12
+    ldrb r2, [r2]
+    cmp r2, #0x3
+    beq .pipe1
+    cmp r2, #0x41
+    bne .skip_norm
+    ldr r2, =0x02004359
+    ldrb r3, [r2]
+    mov r1, #0x80
+    orr r3, r1
+    strb r3, [r2]
+    ldr r2, =0x020042FC
+    ldrb r3, [r2]
+    mov r1, #0x1
+    orr r3, r1
+    strb r3, [r2]
+    ldr r2, =0x020042FA
+    ldrb r3, [r2]
+    mov r1, #0x8
+    orr r3, r1
+    strb r3, [r2]
+    ldrb r3, [r2, #0x1]
+    mov r1, #0x80
+    orr r3, r1
+    strb r3, [r2, #0x1]
     bl .skip_norm
-    .disable:
-    ldr r1, =INTRO_DISABLE
-    mov r2, #0x1
-    strb r2, [r1]
+    .pipe1:
+    ldr r2, =0x0200435A
+    ldrb r3, [r2]
+    mov r1, #0x2
+    orr r3, r1
+    strb r3, [r2]
     .skip_norm:
     ldr r1, =0x02004338
     mov r2, #0x6
@@ -1996,6 +1907,48 @@
     and r2, r1
     cmp r2, #0x1
     blt .button_norm
+    cmp r2, #0x3
+    bne .pipe_skip2
+    ldr r1, =0x02004359
+    ldrb r2, [r1, #0x1]
+    cmp r2, #0x0
+    bne .have_pipe
+    ldrb r1, [r1]
+    mov r2, #0x80
+    and r2, r1
+    cmp r2, #0x0
+    beq .pipe_skip2
+    .have_pipe:
+    ldr r1, =0x03000374
+    ldrb r1, [r1]
+    mov r2, #0x4
+    and r2, r1
+    cmp r2, #0x4
+    bne .pipe_skip2
+    ldr r1, =CUTSCENE_ACTIVE_ONE
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    bne .pipe_skip2
+    ldr r1, =CUTSCENE_ACTIVE_TWO
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    bne .pipe_skip2
+    ldr r1, =0x02004A24
+    ldr r2, =0x08270AE5
+    str r2, [r1]
+    ldr r1, =CUTSCENE_ACTIVE_ONE
+    mov r2, #0x1
+    str r2, [r1]
+    ldr r1, =0x03002452
+    mov r2, #0x40
+    strb r2, [r1]
+    ldr r1, =0x03002418
+    mov r2, #0x0
+    strb r2, [r1]
+    ldr r1, =0x03002430
+    mov r2, #0x0
+    strb r2, [r1]
+    .pipe_skip2:
     ldr r1, =0x03000374
     ldrb r1, [r1]
     mov r2, #0x1

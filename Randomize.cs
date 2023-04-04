@@ -850,6 +850,7 @@ namespace MLSSRandomizerForm
                     spoilerArray.Add(new Spoiler(spoilerLocationArray.Find(x => x.location == data.location).name, spoilerItemArray.Find(x => x.item == temp).name, data.location.ToString("X")));
                 }
             }
+            spoilerArray.Sort((x, y) => string.Compare(x.itemName, y.itemName));
         }
 
         public void HintWrite()
@@ -2157,11 +2158,13 @@ namespace MLSSRandomizerForm
                 }
                 if (Form1.intro)
                 {
-                    stream.Seek(0x244F64, SeekOrigin.Begin);
-                    stream.WriteByte(0x0);
-                    stream.WriteByte(0x0);
-                    stream.WriteByte(0x0);
-                    stream.WriteByte(0x0);
+                    stream.Seek(0x244D08, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x88, 0x0, 0x19, 0x91, 0x1, 0x20, 0x58, 0x1, 0xF, 0xA0, 0x3, 0x15, 0x27, 0x8 }, 0, 14);
+                }
+                if(Form1.castletown)
+                {
+                    stream.Seek(0x244D08, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x88, 0x0, 0xD, 0x51, 0x3, 0xA0, 0x68, 0x0, 0xF, 0xA0, 0x41, 0x15, 0x27, 0x8 }, 0, 14);
                 }
                 if (Form1.mario || Form1.luigi)
                 {
