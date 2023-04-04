@@ -30,6 +30,8 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 **Skip intro:** Enabling this will put you right after the border Jump Minigame, skipping the intro sequence.
 
+**Castle Start:** Enabling this will have you start in Beanbean Castle Town rather than stardust fields.
+
 **Skip Bowsers** Castle: Enabling this will let you skip all of bowsers castle and go straight to Bowletta once you go through the first door.
 
 **Skip minecart minigame:** Enabling this will allow you to get to and from beanbean outskirts without needing to ride the minecarts everytime.
@@ -50,6 +52,10 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 **Randomize Mario/Luigi:** Enabling this will turn Luigi or Mario into an item! Until you find them, you can play the game as a solo brother and adventure with a new twist!
 
+**Text Turbo:** At any point in the game, you can hold L/R + A to turbo through text. Note that this only works for text and nothing else.
+
+**Teleport Anywhere Anytime:** At any point in the game, you can hold L + R and press SELECT to open up the Pipe Menu to teleport to any pipe youve accessed before.
+(Note that when you press this button combination you must pick a pipe, you cannot go back to the room you were just in.)
 
 # Discord
 
