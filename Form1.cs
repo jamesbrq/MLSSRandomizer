@@ -58,6 +58,9 @@ namespace MLSSRandomizerForm
         public static bool sounds = false;
         public static bool doors = false;
         public static bool castletown = false;
+        public static bool visible = false;
+        public static bool invisible = false;
+        public static bool removeHidden = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -327,7 +330,7 @@ namespace MLSSRandomizerForm
                 {
                     saveFileDialog1.FileName = $"MLSSRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.gba";
                     saveFileDialog1.ShowDialog();
-                    if (File.Exists(saveFileDialog1.FileName))
+                    if (File.Exists(saveFileDialog1.FileName) && File.Exists(newFile))
                         File.Delete(saveFileDialog1.FileName);
                     if (saveFileDialog1.FileName != "")
                     {
@@ -838,27 +841,48 @@ namespace MLSSRandomizerForm
         {
             mario = checkBox41.Checked;
             checkBox42.Enabled = !checkBox41.Checked;
-            checkBox1.Checked = checkBox41.Checked;
-            checkBox1.Enabled = !checkBox41.Checked;
-           // checkBox32.Checked = checkBox41.Checked;
-           // checkBox32.Enabled = !checkBox41.Checked;
         }
 
         private void checkBox42_CheckedChanged(object sender, EventArgs e)
         {
             luigi = checkBox42.Checked;
             checkBox41.Enabled = !checkBox42.Checked;
-            checkBox1.Checked = checkBox42.Checked;
-            checkBox1.Enabled = !checkBox42.Checked;
-           // checkBox32.Checked = checkBox42.Checked;
-            //checkBox32.Enabled = !checkBox42.Checked;
         }
 
         private void checkBox43_CheckedChanged(object sender, EventArgs e)
         {
             castletown = checkBox43.Checked;
-            checkBox1.Checked = false;
             checkBox1.Enabled = !checkBox43.Checked;
+        }
+
+        private void checkBox44_CheckedChanged(object sender, EventArgs e)
+        {
+            visible = checkBox44.Checked;
+        }
+
+        private void checkBox45_CheckedChanged(object sender, EventArgs e)
+        {
+            invisible = checkBox45.Checked;
+        }
+
+        private void checkBox46_CheckedChanged(object sender, EventArgs e)
+        {
+            removeHidden = checkBox46.Checked;
+        }
+
+        private void radioButton3_MouseHover(object sender, EventArgs e)
+        {
+         //   toolTip1.Show("All Chuckle Beans are added to the item pool", radioButton1);
+        }
+
+        private void radioButton2_MouseHover(object sender, EventArgs e)
+        {
+           // toolTip1.Show("Removes Invisible Chuckle Beans from the item pool", radioButton1);
+        }
+
+        private void radioButton1_MouseHover(object sender, EventArgs e)
+        {
+           // toolTip1.Show("Removes All Chuckle Beans from the item pool", radioButton1);
         }
     }
 }

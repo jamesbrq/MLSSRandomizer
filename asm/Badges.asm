@@ -290,7 +290,7 @@ bl .pants_buy_end
 .pants_pants:
 cmp r0, #0x5A
 bge .pants_special
-ldr r2, =PANTS + 1
+ldr r2, =PANTS_ADD + 1
 mov r1, pc
 bx r2
 bl .pants_buy_end

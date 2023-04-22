@@ -42,6 +42,12 @@
 
     .org GUFAWHA_SKIP_EXIT
         db 0x9, 0x52, 0x0, 0x4, 0xD, 0x8, 0x1
+    
+    .org ROSE_WARNING
+        db "Peasley's Rose Required"
+
+    .org CHUCKLISSA_WARNING
+        db "Beanstar, Fake Beanstar, and", 0xFF, 0x0, "Peach's Extra Dress Required"
 
     .org GRASS_FIX
         db 0x24, 0x40 ; Crabbie Grass
@@ -60,9 +66,6 @@
 
     .org 0x0822075A
         db 0x21, 0x60
-
-    .org OVERRIDE
-       ; db 0x0, 0x0, 0x0, 0x0 ; Intro skip enable 
 
     .org HIGH_JUMP
         db 0xAA ;Set text to yes by default in high/spin jump tutorial
@@ -817,6 +820,89 @@
 
 
 
+    .org SPOIL_TEXT
+    push lr
+    cmp r2, #0x30
+    bge .yd_key
+    cmp r2, #0x2B
+    bge .yd_bean
+    cmp r2, #0x1C
+    bge .yd_espresso
+    sub r2, #0xA
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_NORM_ARRAY
+    ldr r3, [r3, r2]
+    bl .spoil_text_end
+    .yd_bean:
+    sub r2, #0x2B
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_BEAN_ARRAY
+    ldr r3, [r3, r2]
+    bl .spoil_text_end
+    .yd_espresso:
+    sub r2, #0x1C
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_ESPRESSO_ARRAY
+    ldr r3, [r3, r2]
+    bl .spoil_text_end
+    .yd_key:
+    cmp r2, #0x9E
+    bge .yd_badge
+    sub r2, #0x30
+    mov r0, r2
+    lsr r0, #0x4
+    lsl r2, #0x1C
+    lsr r2, #0x1C
+    cmp r2, #0x8
+    bge .yd_bros
+    lsl r0, #0x3
+    add r2, r0
+    lsl r2, #0x2
+    ldr r3, =KEY_ITEM_TEXT_ARRAY
+    ldr r3, [r3, r2]
+    add r3, #0x1
+    bl .spoil_text_end
+    .yd_bro:
+    ldr r2, =C_OPTION
+    ldrb r2, [r2]
+    cmp r2, #0x1
+    beq .yd_luigi
+    ldr r3, =MARIO_TEXT
+    sub r3, #0x1
+    bl .spoil_text_end
+    .yd_luigi:
+    ldr r3, =LUIGI_TEXT
+    sub r3, #0x1
+    bl .spoil_text_end
+    .yd_bros:
+    cmp r2, #0xB
+    beq .yd_bro
+    sub r2, #0x8
+    cmp r2, #0x0
+    bgt .yd_hand
+    ldr r3, =HAMMER_TEXT
+    bl .spoil_text_end
+    .yd_hand:
+    cmp r2, #0x1
+    bgt .yd_thunder
+    ldr r3, =FIRE_TEXT
+    bl .spoil_text_end
+    .yd_thunder:
+    ldr r3, =THUNDER_TEXT
+    bl .spoil_text_end
+    .yd_badge:
+    sub r2, #0x9E
+    lsl r2, #0x2
+    ldr r3, =BADGE_BOX_ARRAY
+    ldr r3, [r3, r2]
+    add r3, #0x1
+    .spoil_text_end:
+    pop pc
+    .pool
+
+
+
+
     .org YOSHI_DISPLAY_DATA
     push r0-r2
     ldr r0, =YOSHI_DISPLAY_RAM
@@ -862,80 +948,7 @@
     lsr r1, #0x18
     add r2, r3, r1
     .yd_item:
-    cmp r2, #0x30
-    bge .yd_key
-    cmp r2, #0x2B
-    bge .yd_bean
-    cmp r2, #0x1C
-    bge .yd_espresso
-    sub r2, #0xA
-    lsl r2, #0x2
-    ldr r3, =KEY_ITEM_NORM_ARRAY
-    ldr r3, [r3, r2]
-    bl .yd_display
-    .yd_bean:
-    sub r2, #0x2B
-    lsl r2, #0x2
-    ldr r3, =KEY_ITEM_BEAN_ARRAY
-    ldr r3, [r3, r2]
-    bl .yd_display
-    .yd_espresso:
-    sub r2, #0x1C
-    lsl r2, #0x2
-    ldr r3, =KEY_ITEM_ESPRESSO_ARRAY
-    ldr r3, [r3, r2]
-    bl .yd_display
-    .yd_key:
-    cmp r2, #0x9E
-    bge .yd_badge
-    sub r2, #0x30
-    mov r0, r2
-    lsr r0, #0x4
-    lsl r2, #0x1C
-    lsr r2, #0x1C
-    cmp r2, #0x8
-    bge .yd_bros
-    lsl r0, #0x3
-    add r2, r0
-    lsl r2, #0x2
-    ldr r3, =KEY_ITEM_TEXT_ARRAY
-    ldr r3, [r3, r2]
-    add r3, #0x1
-    bl .yd_display
-    .yd_bro:
-    ldr r2, =C_OPTION
-    ldrb r2, [r2]
-    cmp r2, #0x1
-    beq .yd_luigi
-    ldr r3, =MARIO_TEXT
-    sub r3, #0x1
-    bl .yd_display
-    .yd_luigi:
-    ldr r3, =LUIGI_TEXT
-    sub r3, #0x1
-    bl .yd_display
-    .yd_bros:
-    cmp r2, #0xB
-    beq .yd_bro
-    sub r2, #0x8
-    cmp r2, #0x0
-    bgt .yd_hand
-    ldr r3, =HAMMER_TEXT
-    bl .yd_display
-    .yd_hand:
-    cmp r2, #0x1
-    bgt .yd_thunder
-    ldr r3, =FIRE_TEXT
-    bl .yd_display
-    .yd_thunder:
-    ldr r3, =THUNDER_TEXT
-    bl .yd_display
-    .yd_badge:
-    sub r2, #0x9E
-    lsl r2, #0x2
-    ldr r3, =BADGE_BOX_ARRAY
-    ldr r3, [r3, r2]
-    add r3, #0x1
+    bl SPOIL_TEXT
     .yd_display:
     ldr r0, =DISPLAY_TEXTBOX + 1
     mov r1, pc
@@ -991,10 +1004,24 @@
     ldr r2, =0x176
     cmp r0, r2
     beq .surf
+    ldr r2, =0xB0
+    cmp r0, r2
+    beq .hand
+    ldr r2, =0xB4
+    cmp r0, r2
+    beq .hand
     ldr r2, =0x191
     cmp r0, r2
     beq .harhall
     bl .minigame_skip
+    .hand:
+    cmp r1, #0x3
+    bne .minigame_skip
+    sub r2, #0xB0
+    lsr r2, #0x2
+    ldr r0, =0x081E9408
+    ldrb r2, [r0, r2]
+    bl .minigame_end
     .scroll:
     cmp r1, #0x2
     bne .minigame_skip
@@ -1555,18 +1582,36 @@
     str r1, [r0]
     ldr r1, =0xFF41FF35
     str r1, [r0, #0x4]
+    ldr r1, =ROOM
+    ldrh r1, [r1]
+    ldr r2, =0x190
+    cmp r1, r2
+    bne .display_norm
+    mov r1, #0x2C
+    bl .display_skip
+    .display_norm:
     mov r1, #0x25
+    .display_skip:
     strb r1, [r0, #0x8]
     mov r2, #0x9
     mov r4, #0x0
     .display_write_loop:
     ldrb r1, [r3, r4]
     cmp r1, #0x0
-    beq .display_end
+    beq .display_end_check
+    .display_cont2:
     strb r1, [r0, r2]
     add r4, #0x1
     add r2, #0x1
     bl .display_write_loop
+    .display_end_check:
+    add r4, #0x1
+    ldrb r1, [r3, r4]
+    cmp r1, #0x0
+    beq .display_end
+    sub r4, #0x1
+    ldrb r1, [r3, r4]
+    bl .display_cont2
     .display_end:
     mov r1, #0xFF
     strb r1, [r0, r2]
@@ -1583,7 +1628,7 @@
     add r2, #0x1
     strb r1, [r0, r2]
     ldr r0, =TEXTBOX_STARTUP
-    mov r1, #0x84
+    mov r1, #0x86
     strb r1, [r0]
     pop { r0-r2, r4 }
     add r1, #0x1
@@ -1821,7 +1866,7 @@
     mov r2, #0x1
     strb r2, [r1]
     bl BADGE_HANDLER
-    ldr r1, =INTRO_RAM
+    ldr r1, =INTRO_DISABLE
     mov r2, #0x1
     strb r2, [r1]
     ldr r2, =0x0200433C
@@ -1831,9 +1876,9 @@
     strb r3, [r2]
     ldr r2, =0x08244D12
     ldrb r2, [r2]
-    cmp r2, #0x3
-    beq .pipe1
     cmp r2, #0x41
+    beq .pipe3
+    cmp r2, #0x3
     bne .skip_norm
     ldr r2, =0x02004359
     ldrb r3, [r2]
@@ -1855,7 +1900,7 @@
     orr r3, r1
     strb r3, [r2, #0x1]
     bl .skip_norm
-    .pipe1:
+    .pipe3:
     ldr r2, =0x0200435A
     ldrb r3, [r2]
     mov r1, #0x2
@@ -1901,6 +1946,8 @@
     bl SHADOWREALM
     bl CHUCKOLATOR
     bl BRO_HANDLER
+    bl PEARL_SPOILER
+    bl WARNING
     ldr r1, =0x03000375
     ldrb r1, [r1]
     mov r2, #0x3
@@ -1909,6 +1956,10 @@
     blt .button_norm
     cmp r2, #0x3
     bne .pipe_skip2
+    ldr r1, =0x020048FB
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    beq .pipe_skip2
     ldr r1, =0x02004359
     ldrb r2, [r1, #0x1]
     cmp r2, #0x0
@@ -1919,6 +1970,21 @@
     cmp r2, #0x0
     beq .pipe_skip2
     .have_pipe:
+    ldr r1, =0x02004F10
+    ldrb r2, [r1]
+    cmp r2, #0x0
+    bne .pipe_ram_skip
+    ldr r2, =0x08244D12
+    ldrb r2, [r2]
+    cmp r2, #0x41
+    bne .pipe1_enable
+    mov r2, #0x3
+    strb r2, [r1]
+    bl .pipe_ram_skip
+    .pipe1_enable:
+    mov r2, #0x1
+    strb r2, [r1]
+    .pipe_ram_skip:
     ldr r1, =0x03000374
     ldrb r1, [r1]
     mov r2, #0x4
@@ -1933,6 +1999,21 @@
     ldrb r1, [r1]
     cmp r1, #0x0
     bne .pipe_skip2
+    ldr r1, =ROOM
+    ldrh r1, [r1]
+    ldr r2, =0x1D5
+    cmp r1, r2
+    blt .pipe_cont
+    ldr r2, =0x1DD
+    ble .pipe_skip2
+    .pipe_cont:
+    cmp r1, #0xFD
+    beq .pipe_skip2
+    cmp r1, #0xB8
+    blt .pipe_cont2
+    cmp r1, #0xBF
+    ble .pipe_skip2
+    .pipe_cont2:
     ldr r1, =0x02004A24
     ldr r2, =0x08270AE5
     str r2, [r1]
@@ -1966,6 +2047,161 @@
     pop r1
     add r1, #0x1
     bx r1
+    .pool
+
+
+
+
+
+    .org PEARL_SPOILER
+    push { r0-r3, lr }
+    ldr r0, =MINIGAME_ENABLE
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    bne .pearl_spoil_end
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0xFD
+    bne .pearl_spoil_end
+    ldr r0, =FRONT_BRO
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    bne .luigi_spoil
+    ldr r0, =MARIO_VALUE
+    bl .position
+    .luigi_spoil:
+    ldr r0, =LUIGI_VALUE
+    .position:
+    ldrb r1, [r0, #0x5]
+    cmp r1, #0xFC
+    bne .pearl_spoil_end
+    ldr r1, [r0]
+    ldr r2, =0x21800
+    cmp r1, r2
+    blt .pearl_spoil_end
+    ldr r2, =0x24800
+    cmp r1, r2
+    blt .green_spoil
+    ldr r2, =0x26800
+    cmp r1, r2
+    blt .pearl_spoil_end
+    ldr r2, =0x29800
+    cmp r1, r2
+    bgt .pearl_spoil_end
+    ;Red Spoil
+    ldr r0, =PEARL_SPOIL_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    beq .pearl_spoil_end
+    mov r1, #0x1
+    strb r1, [r0]
+    ldr r0, =0x08235C1C
+    bl .pearl_text
+    .green_spoil:
+    ldr r0, =PEARL_SPOIL_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x2
+    beq .pearl_spoil_end
+    mov r1, #0x2
+    strb r1, [r0]
+    ldr r0, =0x08235A5B
+    .pearl_text:
+    ldrb r2, [r0, #0x1]
+    lsr r2, #0x4
+    ldrb r1, [r0]
+    lsl r1, #0x1C
+    lsr r1, #0x18
+    add r2, r1
+    bl SPOIL_TEXT
+    ldr r0, =DISPLAY_TEXTBOX + 1
+    mov r1, pc
+    bx r0
+    .pearl_spoil_end:
+    pop { r0-r3, pc }
+    .pool
+
+
+
+
+    .org WARNING
+    push { r0-r3, lr }
+    ldr r0, =MARIO_VALUE
+    ldr r0, [r0, #0x4]
+    ldr r1, =0x8000
+    cmp r0, r1
+    beq .warning_end
+    ldr r0, =ROOM
+    ldrh r1, [r0, #0x2]
+    ldrh r0, [r0]
+    cmp r0, r1
+    bne .warning_end
+    cmp r0, #0x36
+    beq .warning_rose_flag
+    ldr r1, =0x190
+    cmp r0, r1
+    bne .warning_end
+    ;Warning Chucklissa
+    mov r0, #0x2
+    bl .warning_front
+    .warning_rose_flag:
+    mov r0, #0x1
+    .warning_front:
+    ldr r1, =FRONT_BRO
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    beq .warning_luigi
+    ldr r1, =MARIO_VALUE
+    bl .warning_position
+    .warning_luigi:
+    ldr r1, =LUIGI_VALUE
+    .warning_position:
+    cmp r0, #0x1
+    beq .warning_rose
+    cmp r0, #0x2
+    bne .warning_end
+    ldr r2, [r1]
+    ldr r0, =0x1D800
+    cmp r2, r0
+    blt .warning_end
+    ldr r0, =0x0200490B
+    ldrb r1, [r0]
+    mov r2, #0xC
+    and r2, r1
+    cmp r2, #0xC
+    bne .chucklissa
+    ldr r0, =0x0200490E
+    ldrb r1, [r0]
+    mov r2, #0x2
+    and r2, r1
+    cmp r2, #0x2
+    beq .warning_end
+    .chucklissa:
+    ldr r3, =CHUCKLISSA_WARNING
+    bl .warning_ram
+    .warning_rose:
+    ldr r2, [r1, #0x4]
+    ldr r0, =0x8700
+    cmp r2, r0
+    bgt .warning_end
+    ldr r0, =0x0200490A
+    ldrb r1, [r0]
+    mov r2, #0x2
+    and r2, r1
+    cmp r2, #0x2
+    beq .warning_end
+    ldr r3, =ROSE_WARNING
+    .warning_ram:
+    ldr r0, =PEARL_SPOIL_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    beq .warning_end
+    mov r1, #0x1
+    strb r1, [r0]
+    ldr r0, =DISPLAY_TEXTBOX + 1
+    mov r1, pc
+    bx r0
+    .warning_end:
+    pop { r0-r3, pc }
     .pool
 
 
@@ -4699,7 +4935,7 @@
     .shop_skip:
     ldr r0, =0x0200452D ;teehee valley super rock
     ldrb r1, [r0]
-    mov r2, #0x10
+    mov r2, #0x14
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork
@@ -5293,9 +5529,17 @@
     and r2, r1
     cmp r2, #0x0
     beq .escort_end2
-    mov r2, #0x8
+    mov r2, #0x18
     bic r1, r2
     strb r1, [r0, #0x1]
+    ldr r0, =0x02004342
+    ldrb r1, [r0]
+    mov r2, #0x20
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =0x020046F6
+    mov r1, #0x0
+    strb r1, [r0]
     .escort_end2:
     pop pc
     .pool
@@ -5305,6 +5549,9 @@
 
     .org KOOPA_BLOCK_DATA
     push r0-r2
+    ldr r0, =PEARL_SPOIL_RAM
+    mov r1, #0x0
+    strb r1, [r0]
     ldr r0, =YOSHI_DISPLAY_RAM
     mov r1, #0x0
     strb r1, [r0]
@@ -5374,13 +5621,16 @@
     ldr r1, =FAWFUL_STONE
     strb r0, [r1]
     ldr r0, =ROOM
-    ldrb r0, [r0]
-    cmp r0, #0xFC
-    bne .restore_skip
+    ldrh r0, [r0]
+    ldr r1, =0x1D5
+    cmp r0, r1
+    bge .restore_skip
     ldr r2, =PEARL_RESTORE + 1
     mov r1, pc
     bx r2
     .restore_skip:
+    ldr r0, =ROOM
+    ldrb r0, [r0]
     cmp r0, #0xFD
     bne .save_skip
     ldr r1, =ROOM

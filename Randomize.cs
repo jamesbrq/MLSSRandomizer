@@ -801,7 +801,7 @@ namespace MLSSRandomizerForm
                 {
                     if (i <= validityArray.Count - 1)
                     {
-                        if (Form1.pieces && validityArray[i].pieces != 0)
+                        if (Form1.pieces && validityArray[i].pieces != 0 && !validityArray[i].dress)
                         {
                             if (gameState.pieces == 4 && gameState.brooch && gameState.rose && gameState.fruitState == 3 && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi))
                             {
@@ -811,10 +811,21 @@ namespace MLSSRandomizerForm
                         }
                         else if (gameState.hammerState >= validityArray[i].hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(validityArray[i].rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(validityArray[i].brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(validityArray[i].fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(validityArray[i].thunder) && gameState.fruitState >= validityArray[i].fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(validityArray[i].membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(validityArray[i].winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(validityArray[i].beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(validityArray[i].dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(validityArray[i].mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(validityArray[i].under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(validityArray[i].dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(validityArray[i].crash) && gameState.neon >= validityArray[i].neon && gameState.currentBeanfruit >= validityArray[i].totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(validityArray[i].spangle) && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi))
                         {
-                            if (validityArray[i].totalBeanfruit >= 1)
-                                gameState.currentBeanfruit -= 1;
-                            validLocations.Add(validityArray[i]);
-                            validityArray = validityArray.Where(x => x.location != validityArray[i].location).ToList();
+                            if(Form1.pieces && validityArray[i].pieces != 0)
+                            {
+                                if (gameState.pieces == 4 && gameState.brooch && gameState.rose && gameState.fruitState == 3 && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi))
+                                {
+                                    validLocations.Add(validityArray[i]);
+                                    validityArray = validityArray.Where(x => x.location != validityArray[i].location).ToList();
+                                }
+                            }
+                            else
+                            {
+                                if (validityArray[i].totalBeanfruit >= 1)
+                                    gameState.currentBeanfruit -= 1;
+                                validLocations.Add(validityArray[i]);
+                                validityArray = validityArray.Where(x => x.location != validityArray[i].location).ToList();
+                            }
                         }
                     }
                 }
@@ -947,6 +958,9 @@ namespace MLSSRandomizerForm
                 list.Add("Randomizer Version: " + Form1.progVersion);
                 list.Add("Seed Type: " + Form1.seedType);
                 list.Add("Chuckle: " + Form1.chuckle);
+                list.Add("Hidden Blocks Visible: " + Form1.visible);
+                list.Add("Item Blocks Invisible: " + Form1.invisible);
+                list.Add("Remove Hidden Blocks: " + Form1.removeHidden);
                 list.Add("Rose: " + Form1.rose);
                 list.Add("Brooch: " + Form1.brooch);
                 list.Add("Chuckola Fruit: " + Form1.chuckola);
@@ -979,7 +993,14 @@ namespace MLSSRandomizerForm
                 list.Add("Skip Minecart: " + Form1.minecart);
                 list.Add("Skip Bowsers: " + Form1.castle);
                 list.Add("Skip intro: " + Form1.intro);
+                list.Add("Start Castle: " + Form1.castletown);
                 list.Add("Minigame Spoilers: " + Form1.minigame);
+                list.Add("Random Mario: " + Form1.mario);
+                list.Add("Random Luigi: " + Form1.luigi);
+                list.Add("Random Enemies: " + Form1.enemy);
+                list.Add("Random Bosses: " + Form1.bosses);
+                list.Add("Scale HP: " + Form1.scale);
+                list.Add("Random POW: " + Form1.pow);
                 list.Add(" ");
             }
         }
@@ -1092,6 +1113,34 @@ namespace MLSSRandomizerForm
                         }
                     }
 
+                    if(Form1.removeHidden)
+                    {
+                        if(data.itemType == 0)
+                        {
+                            stream.Seek(data.location - 6, SeekOrigin.Begin);
+                            if (stream.ReadByte() == 0x10)
+                            {
+                                ItemInject(data.location, data.itemType, (byte)data.item);
+                                if(Form1.visible)
+                                {
+                                    stream.Seek(-1, SeekOrigin.Current);
+                                    stream.WriteByte(0x0);
+                                }
+                                continue;
+                            }
+                            else
+                            {
+                                ValidArrayAdd(data);
+                                if (Form1.visible)
+                                {
+                                    stream.Seek(-1, SeekOrigin.Current);
+                                    stream.WriteByte(0x0);
+                                }
+                                continue;
+                            }
+                        }
+                    }
+
                     if (data.item == 0xA && (Form1.mario || Form1.luigi))
                     {
                         if (!placedBro)
@@ -1135,6 +1184,19 @@ namespace MLSSRandomizerForm
                             ValidArrayAdd(tempData);
                         else
                             ValidArrayAdd(data);
+                    }
+
+                    if (Form1.invisible)
+                    {
+                        if (data.itemType == 0)
+                        {
+                            stream.Seek(data.location - 6, SeekOrigin.Begin);
+                            if (stream.ReadByte() == 0x0)
+                            {
+                                stream.Seek(-1, SeekOrigin.Current);
+                                stream.WriteByte(0x10);
+                            }
+                        }
                     }
                 }
                 optionsArray = new List<dynamic>();
@@ -1673,6 +1735,8 @@ namespace MLSSRandomizerForm
             {
                 if (groups.Count > 0)
                 {
+                    if (Form1.castle && Convert.ToUInt32(str, 16) > 0x50402C && Convert.ToUInt32(str, 16) < 0x50434C)
+                        continue;
                     count++;
                     EnemyGroup tempgroup = groups[0];
                     groups.RemoveAt(0);
@@ -1682,16 +1746,6 @@ namespace MLSSRandomizerForm
                     {
                         if (i < tempgroup.id.Count)
                         {
-                            for (int j = 0; j < enemyCount.Count; j++)
-                            {
-                                if (tempgroup.id[i] == enemyCount[j].id)
-                                {
-                                    StatCount temp = enemyCount[j];
-                                    temp.total += count;
-                                    enemyCount[j] = temp;
-                                    break;
-                                }
-                            }
                             stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
                             stream.WriteByte(tempgroup.id[i]);
                             stream.Seek(1, SeekOrigin.Current);
@@ -1723,6 +1777,8 @@ namespace MLSSRandomizerForm
             {
                 foreach (string str in boss)
                 {
+                    if (Form1.castle && Convert.ToUInt32(str, 16) > 0x50402C && Convert.ToUInt32(str, 16) < 0x50434C)
+                        continue;
                     bossGroups.Shuffle(random);
                     count++;
                     EnemyGroup tempgroup = bossGroups[0];
@@ -1773,6 +1829,7 @@ namespace MLSSRandomizerForm
 
         public void GenerateGroups()
         {
+            bool noSpike = false;
             enemies.Shuffle(random);
             spikedEnemies.Shuffle(random);
             foreach (int size in groupSizes)
@@ -1782,6 +1839,8 @@ namespace MLSSRandomizerForm
                     tempsize = 4;
                 else
                     tempsize = size;
+                if (tempsize == 0)
+                    continue;
                 List<byte> id = new List<byte>();
                 List<byte> type = new List<byte>();
                 List<Enemy> pestnuts = new List<Enemy>();
@@ -1870,10 +1929,11 @@ namespace MLSSRandomizerForm
                     stardustGroups.Add(new EnemyGroup(id, type, size, script, special));
                 else
                     groups.Add(new EnemyGroup(id, type, size, script, special));
-                if (stardustGroups.Count == 3)
+                if (stardustGroups.Count == 3 && !noSpike)
                 {
                     enemies = enemies.Concat(spikedEnemies).ToList();
                     enemies.Shuffle(random);
+                    noSpike = true;
                 }
             }
         }
@@ -1884,6 +1944,8 @@ namespace MLSSRandomizerForm
 
             foreach (string str in groupStr)
             {
+                if (Convert.ToUInt32(str, 16) > 0x50402C && Convert.ToUInt32(str, 16) < 0x50434C && Form1.castle)
+                    continue;
                 stream.Seek(Convert.ToUInt32(str, 16) + 2, SeekOrigin.Begin);
                 int boss = stream.ReadByte();
                 stream.Seek(Convert.ToUInt32(str, 16) + 4, SeekOrigin.Begin);
@@ -1914,11 +1976,12 @@ namespace MLSSRandomizerForm
             string[] tempString = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
             foreach (string str in tempString)
             {
-                bool iterate = true;
                 int i = 0;
                 int count = 0;
-                while (iterate)
+                while (true)
                 {
+                    if(Convert.ToUInt32(str, 16) > 0x50402C && Convert.ToUInt32(str, 16) < 0x50434C && Form1.castle)
+                        break;
                     stream.Seek(Convert.ToUInt32(str, 16) + 10 + (i * 4), SeekOrigin.Begin);
                     byte type = (byte)stream.ReadByte();
                     if (type == 0x0)
@@ -1964,7 +2027,8 @@ namespace MLSSRandomizerForm
                 }
                 if (count > 4)
                     count = 4;
-                groupSizes.Add(count);
+                if(count != 0)
+                    groupSizes.Add(count);
             }
         }
 
@@ -2173,13 +2237,11 @@ namespace MLSSRandomizerForm
                         stream.WriteByte(0x1);
                     else
                         stream.WriteByte(0x2);
-                }
-                {
-                    stream.Seek(0x244F64, SeekOrigin.Begin);
-                    stream.WriteByte(0x0);
-                    stream.WriteByte(0x0);
-                    stream.WriteByte(0x0);
-                    stream.WriteByte(0x0);
+                    if(!Form1.intro && !Form1.castletown)
+                    {
+                        stream.Seek(0x244D08, SeekOrigin.Begin);
+                        stream.Write(new byte[] { 0x88, 0x0, 0x19, 0x91, 0x1, 0x20, 0x58, 0x1, 0xF, 0xA0, 0x3, 0x15, 0x27, 0x8 }, 0, 14);
+                    }
                 }
                 if (Form1.castle)
                 {
@@ -2232,7 +2294,6 @@ namespace MLSSRandomizerForm
                     Console.WriteLine(++iterationCount);
                     goto rBegin;
                 }
-                //BISRead();
             }
         }
 
@@ -2490,9 +2551,9 @@ namespace MLSSRandomizerForm
 
         public void Inject()
         {
-            System.Diagnostics.Process process = new System.Diagnostics.Process();
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+            Process process = new Process();
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             string domain = @Environment.CurrentDirectory + @"/asm/";
             startInfo.WorkingDirectory = domain;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

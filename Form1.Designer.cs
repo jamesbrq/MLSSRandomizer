@@ -45,6 +45,9 @@ namespace MLSSRandomizerForm
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.Colors = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.checkBox46 = new System.Windows.Forms.CheckBox();
+            this.checkBox45 = new System.Windows.Forms.CheckBox();
+            this.checkBox44 = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
@@ -79,6 +82,7 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.checkBox43 = new System.Windows.Forms.CheckBox();
             this.checkBox42 = new System.Windows.Forms.CheckBox();
             this.checkBox41 = new System.Windows.Forms.CheckBox();
             this.checkBox39 = new System.Windows.Forms.CheckBox();
@@ -133,10 +137,10 @@ namespace MLSSRandomizerForm
             this.button7 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
-            this.checkBox43 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -259,6 +263,9 @@ namespace MLSSRandomizerForm
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.checkBox46);
+            this.tabPage1.Controls.Add(this.checkBox45);
+            this.tabPage1.Controls.Add(this.checkBox44);
             this.tabPage1.Controls.Add(this.label3);
             this.tabPage1.Controls.Add(this.radioButton3);
             this.tabPage1.Controls.Add(this.radioButton2);
@@ -273,10 +280,46 @@ namespace MLSSRandomizerForm
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click);
             // 
+            // checkBox46
+            // 
+            this.checkBox46.AutoSize = true;
+            this.checkBox46.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox46.Location = new System.Drawing.Point(125, 65);
+            this.checkBox46.Name = "checkBox46";
+            this.checkBox46.Size = new System.Drawing.Size(214, 17);
+            this.checkBox46.TabIndex = 26;
+            this.checkBox46.Text = "Remove Hidden Blocks from Item Pool?";
+            this.checkBox46.UseVisualStyleBackColor = true;
+            this.checkBox46.CheckedChanged += new System.EventHandler(this.checkBox46_CheckedChanged);
+            // 
+            // checkBox45
+            // 
+            this.checkBox45.AutoSize = true;
+            this.checkBox45.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox45.Location = new System.Drawing.Point(122, 42);
+            this.checkBox45.Name = "checkBox45";
+            this.checkBox45.Size = new System.Drawing.Size(217, 17);
+            this.checkBox45.TabIndex = 25;
+            this.checkBox45.Text = "Turn all Item Blocks into Hidden Blocks?";
+            this.checkBox45.UseVisualStyleBackColor = true;
+            this.checkBox45.CheckedChanged += new System.EventHandler(this.checkBox45_CheckedChanged);
+            // 
+            // checkBox44
+            // 
+            this.checkBox44.AutoSize = true;
+            this.checkBox44.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox44.Location = new System.Drawing.Point(167, 18);
+            this.checkBox44.Name = "checkBox44";
+            this.checkBox44.Size = new System.Drawing.Size(172, 17);
+            this.checkBox44.TabIndex = 24;
+            this.checkBox44.Text = "Turn all Hidden Blocks Visible?";
+            this.checkBox44.UseVisualStyleBackColor = true;
+            this.checkBox44.CheckedChanged += new System.EventHandler(this.checkBox44_CheckedChanged);
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 3);
+            this.label3.Location = new System.Drawing.Point(20, 19);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(85, 13);
             this.label3.TabIndex = 3;
@@ -287,7 +330,7 @@ namespace MLSSRandomizerForm
             // 
             this.radioButton3.AutoSize = true;
             this.radioButton3.Checked = true;
-            this.radioButton3.Location = new System.Drawing.Point(8, 65);
+            this.radioButton3.Location = new System.Drawing.Point(23, 83);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(36, 17);
             this.radioButton3.TabIndex = 2;
@@ -295,28 +338,31 @@ namespace MLSSRandomizerForm
             this.radioButton3.Text = "All";
             this.radioButton3.UseVisualStyleBackColor = true;
             this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
+            this.radioButton3.MouseHover += new System.EventHandler(this.radioButton3_MouseHover);
             // 
             // radioButton2
             // 
             this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(8, 42);
+            this.radioButton2.Location = new System.Drawing.Point(23, 60);
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(79, 17);
             this.radioButton2.TabIndex = 1;
             this.radioButton2.Text = "Only Visible";
             this.radioButton2.UseVisualStyleBackColor = true;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            this.radioButton2.MouseHover += new System.EventHandler(this.radioButton2_MouseHover);
             // 
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(8, 19);
+            this.radioButton1.Location = new System.Drawing.Point(23, 37);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(51, 17);
             this.radioButton1.TabIndex = 0;
             this.radioButton1.Text = "None";
             this.radioButton1.UseVisualStyleBackColor = true;
             this.radioButton1.CheckedChanged += new System.EventHandler(this.radioButton1_CheckedChanged);
+            this.radioButton1.MouseHover += new System.EventHandler(this.radioButton1_MouseHover);
             // 
             // tabPage2
             // 
@@ -753,6 +799,18 @@ namespace MLSSRandomizerForm
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // checkBox43
+            // 
+            this.checkBox43.AutoSize = true;
+            this.checkBox43.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox43.Location = new System.Drawing.Point(50, 123);
+            this.checkBox43.Name = "checkBox43";
+            this.checkBox43.Size = new System.Drawing.Size(127, 17);
+            this.checkBox43.TabIndex = 46;
+            this.checkBox43.Text = "Start in Castle Town?";
+            this.checkBox43.UseVisualStyleBackColor = true;
+            this.checkBox43.CheckedChanged += new System.EventHandler(this.checkBox43_CheckedChanged);
             // 
             // checkBox42
             // 
@@ -1421,18 +1479,6 @@ namespace MLSSRandomizerForm
             this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
             this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
-            // checkBox43
-            // 
-            this.checkBox43.AutoSize = true;
-            this.checkBox43.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox43.Location = new System.Drawing.Point(50, 123);
-            this.checkBox43.Name = "checkBox43";
-            this.checkBox43.Size = new System.Drawing.Size(127, 17);
-            this.checkBox43.TabIndex = 46;
-            this.checkBox43.Text = "Start in Castle Town?";
-            this.checkBox43.UseVisualStyleBackColor = true;
-            this.checkBox43.CheckedChanged += new System.EventHandler(this.checkBox43_CheckedChanged);
-            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -1601,6 +1647,10 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox42;
         private CheckBox checkBox41;
         private CheckBox checkBox43;
+        private CheckBox checkBox45;
+        private CheckBox checkBox44;
+        private CheckBox checkBox46;
+        private ToolTip toolTip1;
     }
 }
 
