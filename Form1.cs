@@ -156,9 +156,6 @@ namespace MLSSRandomizerForm
                     radioButton8.Checked = true;
                     break;
             }
-            config.TryGetValue("seed", out temp);
-            seed = Convert.ToString(temp);
-            SeedTextbox.Text = seed;
             config.TryGetValue("rose", out temp);
             rose = Convert.ToBoolean(temp);
             checkBox2.Checked = Convert.ToBoolean(temp);
@@ -258,12 +255,21 @@ namespace MLSSRandomizerForm
             config.TryGetValue("pieces", out temp);
             pieces = Convert.ToBoolean(temp);
             checkBox33.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("mario", out temp);
+            mario = Convert.ToBoolean(temp);
+            checkBox41.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("luigi", out temp);
+            luigi = Convert.ToBoolean(temp);
+            checkBox42.Checked = Convert.ToBoolean(temp);
         }
 
         public void SaveConfig()
         {
             List<string> strings = new List<string>();
-            strings.Add("seed," + seed + ",");
+            if(seed == null)
+                strings.Add("seed,0,"); 
+            else
+                strings.Add("seed," + seed + ",");
             strings.Add("seedtype," + seedType + ",");
             strings.Add("pieces," + Convert.ToInt32(pieces) + ",");
             strings.Add("chuckle," + chuckle + ",");
@@ -297,6 +303,8 @@ namespace MLSSRandomizerForm
             strings.Add("mush," + Convert.ToInt32(mush) + ",");
             strings.Add("surf," + Convert.ToInt32(surf) + ",");
             strings.Add("minigame," + Convert.ToInt32(minigame) + ",");
+            strings.Add("mario," + Convert.ToInt32(mario) + ",");
+            strings.Add("luigi," + Convert.ToInt32(luigi) + ",");
             strings.Add("scale," + Convert.ToInt32(scale) + ",");
             strings.Add("enemy," + Convert.ToInt32(enemy) + ",");
             strings.Add("bosses," + bosses);
@@ -765,7 +773,15 @@ namespace MLSSRandomizerForm
                     config[str[i]] = Convert.ToInt32(str[i + 1], 16);
                 }
                 else
-                    config.Add(str[i], Convert.ToInt32(str[i + 1], 16));
+                {
+                    if (str[i] == "seed")
+                    {
+                        seed = str[i + 1];
+                        SeedTextbox.Text = seed;
+                    }
+                    else
+                        config.Add(str[i], Convert.ToInt32(str[i + 1], 16));
+                }
             }
             SetConfig();
         }

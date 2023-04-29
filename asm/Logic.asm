@@ -42,6 +42,9 @@
 
     .org GUFAWHA_SKIP_EXIT
         db 0x9, 0x52, 0x0, 0x4, 0xD, 0x8, 0x1
+
+    .org PIRANHA_BEAN_PATCH
+        db 0x2, 0x20, 0x91, 0xD1, 0x22, 0x8
     
     .org ROSE_WARNING
         db "Peasley's Rose Required"
@@ -1013,6 +1016,9 @@
     ldr r2, =0x191
     cmp r0, r2
     beq .harhall
+    ldr r2, =0x120
+    cmp r0, r2
+    beq .piranha
     bl .minigame_skip
     .hand:
     cmp r1, #0x3
@@ -1067,6 +1073,12 @@
     cmp r1, #0x2
     bne .minigame_skip
     ldr r0, =0x081E9441
+    ldrb r2, [r0]
+    bl .minigame_end
+    .piranha:
+    cmp r1, #0xB
+    bne .minigame_skip
+    ldr r0, =0x081E9431
     ldrb r2, [r0]
     bl .minigame_end
     .minigame_skip:
@@ -1973,7 +1985,10 @@
     ldr r1, =0x02004F10
     ldrb r2, [r1]
     cmp r2, #0x0
-    bne .pipe_ram_skip
+    beq .pipe_ram_fix
+    cmp r2, #0x9
+    ble .pipe_ram_skip
+    .pipe_ram_fix:
     ldr r2, =0x08244D12
     ldrb r2, [r2]
     cmp r2, #0x41
@@ -5541,7 +5556,42 @@
     mov r1, #0x0
     strb r1, [r0]
     .escort_end2:
+    ldr r0, =0x02004348
+    ldrb r0, [r0]
+    mov r1, #0x20
+    and r1, r0
+    cmp r1, #0x20
+    bne .escort_end3
+    ldr r0, =0x02004364
+    ldrb r1, [r0]
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    mov r2, #0xFF
+    strb r2, [r0, #0x1]
+    strb r2, [r0, #0x2]
+    .escort_end3:
     pop pc
+    .pool
+
+
+
+
+    .org BLABLANADON
+    push { r0-r2, lr }
+    ldr r0, =0x0200430B
+    ldrb r0, [r0]
+    mov r1, #0x40
+    and r1, r0
+    cmp r1, #0x40
+    bne .blablanadon_end
+    ldr r0, =0x020042F9
+    ldrb r1, [r1]
+    mov r2, #0x2
+    orr r1, r2
+    strb r1, [r0]
+    .blablanadon_end:
+    pop { r0-r2, pc }
     .pool
 
 
@@ -5613,6 +5663,7 @@
     mov r1, pc
     bx r0
     bl ESCORT_CUTSCENE
+    bl BLABLANADON
     ldr r0, =FAWFUL_STONE
     ldrb r0, [r0]
     mov r1, #0x1

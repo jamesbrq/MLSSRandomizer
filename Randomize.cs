@@ -1005,7 +1005,7 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public bool CheckValidity()
+        public bool CheckValidity(List<dynamic> data)
         {
             if (gameId == 1)
             {
@@ -1035,14 +1035,24 @@ namespace MLSSRandomizerForm
                     {
                         if (i <= validLocations.Count - 1)
                         {
-                            stream.Seek(Convert.ToUInt32(validLocations[i].location), SeekOrigin.Begin);
-                            if (validLocations[i].itemType == 1 || validLocations[i].itemType == 5)
-                                temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
+                            if (data.Where(c => c.location == validLocations[i].location).ToList().Count != 0)
+                            {
+                                dynamic tempData = data.Where(c => c.location == validLocations[i].location).ToList()[0];
+                                if (validLocations[i].location > 0x3C0000 && tempData.item == 0x38)
+                                    return false;
+                                UpdateState((byte)tempData.item);
+                            }
                             else
-                                temp = (byte)stream.ReadByte();
-                            if (validLocations[i].location > 0x3C0000 && temp == 0x38)
-                                return false;
-                            UpdateState(temp);
+                            {
+                                stream.Seek(Convert.ToUInt32(validLocations[i].location), SeekOrigin.Begin);
+                                if (validLocations[i].itemType == 1 || validLocations[i].itemType == 5)
+                                    temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
+                                else
+                                    temp = (byte)stream.ReadByte();
+                                if (validLocations[i].location > 0x3C0000 && temp == 0x38)
+                                    return false;
+                                UpdateState(temp);
+                            }
                             validLocations.RemoveAll(d => d.location == validLocations[i].location);
                         }
                     }
@@ -2184,7 +2194,6 @@ namespace MLSSRandomizerForm
             else
                 hash = Guid.NewGuid().GetHashCode();
             random = new Random(hash);
-
         }
 
         public void Randomize()
@@ -2192,12 +2201,13 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 List<dynamic> itemArray = new List<dynamic>(freshItemArray);
-                itemArray.Reverse();
                 locationArray = new List<dynamic>(validLocationArray);
+                locationArray.Reverse();
                 rBegin:
-                locationArray = locationArray.OrderBy(c => random.Next()).ToList();
+                itemArray = itemArray.OrderBy(c => random.Next()).ToList();
                 List<dynamic> tempItemArray = new List<dynamic>(itemArray);
                 List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
+                List<dynamic> fakeLocationsArray = new List<dynamic>();
                 for (int i = freshItemArray.Count - 1; i >= 0; i--)
                 {
                     int retryCount = 0;
@@ -2210,15 +2220,22 @@ namespace MLSSRandomizerForm
                         tempLocationArray.Shuffle(random);
                         goto reInsert;
                     }
-                    ItemInject(tempLocationArray[i].location, tempLocationArray[i].itemType, tempItemArray[i]);
+                    LocationData temp = tempLocationArray[i];
+                    temp.item = itemArray[i];
+                    fakeLocationsArray.Add(temp);
                     tempLocationArray.RemoveAt(i);
+                    tempItemArray.RemoveAt(i);
                 }
                 gameState = new LocationData(0);
-                if (!CheckValidity())
+                if (!CheckValidity(fakeLocationsArray))
                 {
                     validLocations = new List<dynamic>();
                     Console.WriteLine(++iterationCount);
                     goto rBegin;
+                }
+                foreach(dynamic data in fakeLocationsArray)
+                {
+                    ItemInject(data.location, data.itemType, (byte)data.item);
                 }
                 if (Form1.intro)
                 {
@@ -2288,12 +2305,12 @@ namespace MLSSRandomizerForm
                     itemArray.RemoveAt(i);
                 }
                 gameState = new LocationData(0);
-                if (!CheckValidity())
+               /* if (!CheckValidity())
                 {
                     validLocations = new List<dynamic>();
                     Console.WriteLine(++iterationCount);
                     goto rBegin;
-                }
+                } */
             }
         }
 
