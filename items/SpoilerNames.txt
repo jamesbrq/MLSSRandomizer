@@ -63,4 +63,4 @@
 0xFB,Great Force,
 0xFC,Power Grip,
 0xFD,Cobalt Necktie,
-0xFE,Gameboy Horrer SP
+0xFE,Gameboy Horror SP

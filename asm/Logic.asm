@@ -1579,7 +1579,7 @@
 
 
     .org DISPLAY_TEXTBOX
-    push { r0-r2, r4 }
+    push { r0-r2, r4-r5 }
     mov r2, #0x0
     ldr r0, =TEXT_WRITING
     .display_loop:
@@ -1617,6 +1617,11 @@
     add r2, #0x1
     bl .display_write_loop
     .display_end_check:
+    ldr r1, =ROOM
+    ldrh r1, [r1]
+    ldr r5, =0x190
+    cmp r1, r5
+    bne .display_end
     add r4, #0x1
     ldrb r1, [r3, r4]
     cmp r1, #0x0
@@ -1642,7 +1647,7 @@
     ldr r0, =TEXTBOX_STARTUP
     mov r1, #0x86
     strb r1, [r0]
-    pop { r0-r2, r4 }
+    pop { r0-r2, r4-r5 }
     add r1, #0x1
     bx r1
     .pool
@@ -2000,6 +2005,35 @@
     mov r2, #0x1
     strb r2, [r1]
     .pipe_ram_skip:
+    ldr r1, =0x02004F10
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    bne .pipe_flag2
+    bl .pipe_flag_skip
+    .pipe_flag2:
+    mov r2, #0x1
+    sub r1, #0x2
+    lsl r2, r1
+    ldr r1, =0x0200435A
+    ldrb r1, [r1]
+    and r2, r1
+    cmp r2, #0x0
+    bne .pipe_flag_skip
+    ldr r1, =0x0200435A
+    ldrb r1, [r1]
+    mov r2, #0x2
+    and r2, r1
+    cmp r2, #0x0
+    bne .pipe_flag_castle
+    mov r2, #0x1
+    ldr r1, =0x02004F10
+    strb r2, [r1] 
+    bl .pipe_flag_skip
+    .pipe_flag_castle:
+    mov r2, #0x3
+    ldr r1, =0x02004F10
+    strb r2, [r1] 
+    .pipe_flag_skip:
     ldr r1, =0x03000374
     ldrb r1, [r1]
     mov r2, #0x4
@@ -2023,6 +2057,8 @@
     ble .pipe_skip2
     .pipe_cont:
     cmp r1, #0xFD
+    beq .pipe_skip2
+    cmp r1, #0x40
     beq .pipe_skip2
     cmp r1, #0xB8
     blt .pipe_cont2
@@ -2377,20 +2413,26 @@
     push r2-r3
     asr r0, r0, #0x10
     and r0, r1
-    cmp r0, #0x0
-    bne .key_end
     ldr r2, =0x0200490A
     cmp r6, r2
     bne .key_cont
     cmp r4, #0x2
-    bne .key_stop
+    beq .key_rose
+    cmp r0, #0x0
+    bne .key_end
+    bl .key_stop
+    .key_rose:
     push r1
     ldr r2, =ROSE_FIX + 1
     mov r1, pc
     bx r2
     pop r1
+    cmp r0, #0x0
+    bne .key_end
     bl .key_stop
     .key_cont:
+    cmp r0, #0x0
+    bne .key_end
     ldr r2, =0x0200490D
     cmp r6, r2
     beq .key_bean1
@@ -2731,7 +2773,7 @@
 
     push { r1, r3 }
     ldr r1, =ROOM
-    ldrb r1, [r1]
+    ldrh r1, [r1]
     cmp r1, #0x36
     beq .castle_block
     cmp r1, #0x88
@@ -2745,27 +2787,7 @@
     b .unblock
 
     .chuckle_block:
-    ldr r0, =0x082FBEC2
-    cmp r0, r2
-    bne .unblock
-    ldr r0, =HAMMER
-    ldrb r0, [r0]
-    mov r1, #0x48
-    and r1, r0
-    cmp r1, #0x48
-    bne .lock
-    ldr r0, =C_OPTION
-    ldrb r0, [r0]
-    cmp r0, #0x0
-    beq .unblock
-    ldr r0, =SOLO_VALUE
-    ldrb r0, [r0]
-    mov r1, #0x10
-    and r1, r0
-    cmp r1, #0x0
-    bne .unblock
-    .lock:
-    mov r0, #0x00
+    mov r0, #0x0
     bl .end
 
     .chalice_block:
@@ -2781,10 +2803,6 @@
     bl .end
 
     .castle_block:
-    ldr r1, =ROOM
-    ldrb r1, [r1, #0x1]
-    cmp r1, #0x1
-    beq .unblock
     ldr r1, =0x082FC170
     cmp r2, r1
     beq .cblock
@@ -4695,7 +4713,7 @@
     .org TUTOR_BLOCK
     push r1
     ldr r0, =ROOM
-    ldrb r0, [r0]
+    ldrh r0, [r0]
     cmp r0, #0xFD
     bne .tutor_end
     ldr r0, =PEARL_BLOCK + 1
@@ -5056,6 +5074,25 @@
     ldr r0, =0x02004347 ; Yoshi theater cutscene flag
     ldrb r1, [r0]
     mov r2, #0x8
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004340 ; Post-oasis peasley cutscene flag
+    ldrb r1, [r0]
+    mov r2, #0x4
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004410 ; Checkleroot Grandaughter Gate Flag
+    ldrb r1, [r0]
+    mov r2, #0x7
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004374
+    ldrb r1, [r0]
+    mov r2, #0xFC
+    orr r1, r2
+    strb r1, [r0]
+    ldrb r1, [r0, #0x1]
+    mov r2, #0x1
     orr r1, r2
     strb r1, [r0]
     pop r1

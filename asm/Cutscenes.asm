@@ -196,6 +196,9 @@ beq .talk_skip
 ldr r1, =0x0825AC17
 cmp r0, r1
 beq .talk_skip
+ldr r1, =0x08228BEE
+cmp r0, r1
+beq .talk_skip
 ldr r0, =TIME_RAM
 ldr r0, [r0]
 ldr r1, =TIME

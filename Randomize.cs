@@ -442,9 +442,43 @@ namespace MLSSRandomizerForm
                 return;
             FillRoomArray();
             NewShuffle();
-            OceanShuffle();
+           // OceanShuffle();
         }
 
+        public byte[] ScriptDoorArr(byte[] arr)
+        {
+            List<byte> list = new List<byte>();
+            list.Add(arr[1]);
+            byte temp = arr[0];
+            temp = (byte)(temp & 0xE);
+            temp = (byte)(temp << 1);
+            byte temp3 = (byte)(temp >> 4);
+            byte temp2 = (byte)(arr[0] & 0xF0);
+            temp2 |= 0x10;
+            temp2 += temp3;
+            list.Add(temp2);
+            temp3 <<= 4;
+            temp = (byte)(temp - temp3);
+            temp3 = (byte)(arr[5] & 0x8);
+            temp <<= 4;
+            uint _uint;
+            if (temp3 == 8)
+                _uint = (uint)(arr[3] + 1);
+            else
+                _uint = arr[3];
+            _uint <<= 2;
+            uint _uint2 = _uint >> 4;
+            _uint2 += temp;
+            _uint &= 0xF;
+            _uint <<= 4;
+            list.Add((byte)_uint2);
+            _uint2 = arr[4];
+            _uint2 <<= 3;
+            var bytes2 = BitConverter.GetBytes(_uint2);
+            list.Add((byte)(_uint + bytes2[1]));
+            list.Add(bytes2[0]);
+            return list.ToArray();
+        }
 
         public void OceanShuffle()
         {
@@ -537,6 +571,7 @@ namespace MLSSRandomizerForm
                     doorArray.Shuffle(random);
                     goto Retry;
                 }
+                ScriptDoorArr(doorArray[i].arr);
                 stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
                 stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
                 int rIndex = roomArray.FindIndex(c => c.id == doorArray[i].returnRoom);
@@ -620,7 +655,7 @@ namespace MLSSRandomizerForm
                 }
             }
             stream = StreamInitialize(Environment.CurrentDirectory + "/items/entrances/Ocean.txt");
-            for (int i = 0; i < stream.Length; i += 28)
+            for (int i = 0; i < stream.Length; i += 30)
             {
                 roomIndex = Convert.ToInt32(stream[i], 16);
                 LocationData locationData = new LocationData(Convert.ToUInt32(stream[i + 1], 16),
@@ -849,6 +884,8 @@ namespace MLSSRandomizerForm
             SpoilerArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/LocationNames.txt"));
             foreach (LocationData data in freshLocationArray.Where(d => d.itemType != 4 && d.itemType != 5).ToList())
             {
+                if (data.location == 0x39e2bf)
+                    Console.WriteLine("poop");
                 int temp = 0;
                 stream.Seek(data.location, SeekOrigin.Begin);
                 if (data.itemType == 1)
@@ -2235,6 +2272,8 @@ namespace MLSSRandomizerForm
                 }
                 foreach(dynamic data in fakeLocationsArray)
                 {
+                    if(data.location == 0x39e2bf)
+                        Console.WriteLine("poop");
                     ItemInject(data.location, data.itemType, (byte)data.item);
                 }
                 if (Form1.intro)
