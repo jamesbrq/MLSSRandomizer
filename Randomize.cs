@@ -165,6 +165,34 @@ namespace MLSSRandomizerForm
             public LocationData logic;
         }
 
+        public struct SpriteLocation
+        {
+            public SpriteLocation(uint location, uint sprite, uint palette)
+            {
+                this.location = location;
+                this.sprite = sprite;
+                this.palette = palette;
+            }
+
+            public uint location;
+            public uint sprite;
+            public uint palette;
+        }
+
+        public struct SpriteData
+        {
+            public SpriteData(uint id, byte[] sprite, byte[] palette)
+            {
+                this.id = id;
+                this.sprite = sprite;
+                this.palette = palette;
+            }
+
+            public uint id;
+            public byte[] sprite;
+            public byte[] palette;
+        }
+
         public struct Color
         {
             public Color(uint location, byte byte1, byte byte2, int bro)
@@ -432,6 +460,44 @@ namespace MLSSRandomizerForm
             public byte byte2;
             public byte quantity;
             public int itemType;
+        }
+
+
+
+
+        public void SpriteReplace()
+        {
+            List<SpriteLocation> locations = new List<SpriteLocation>();
+            string[] arr = StreamInitialize(Environment.CurrentDirectory + "/items/sprites/SpriteLocations.txt");
+            for(int i = 0; i < stream.Length; i += 3)
+            {
+                locations.Add(new SpriteLocation(Convert.ToUInt32(arr[i], 16), Convert.ToUInt32(arr[i +1], 16), Convert.ToUInt32(arr[i + 2], 16)));
+            }
+
+            List<SpriteData> data = new List<SpriteData>();
+            arr = StreamInitialize(Environment.CurrentDirectory + "/items/sprites/SpriteData.txt");
+            for (int i = 0; i < arr.Length; i += 5)
+            {
+                data.Add(new SpriteData(Convert.ToUInt32(arr[i], 16), new byte[] { Convert.ToByte(arr[i + 1], 16), Convert.ToByte(arr[i + 2], 16) }, new byte[] { Convert.ToByte(arr[i + 3], 16), Convert.ToByte(arr[i + 4], 16) }));
+            }
+
+            foreach(SpriteLocation location in locations)
+            {
+                byte[] sprite = new byte[2];
+                byte[] palette = new byte[2];
+                stream.Seek(location.location, SeekOrigin.Begin);
+                byte[] temp = new byte[2];
+                stream.Read(temp, 0, 2);
+                int temp2 = ItemConvert(temp[0], temp[1]);
+                if (temp2 >= 0x1C && temp2 < 0x2B)
+                    temp2 += 4;
+                sprite = data.Where(c => c.id == temp2).ToList()[0].sprite;
+                palette = data.Where(c => c.id == temp2).ToList()[0].palette;
+                stream.Seek(location.sprite, SeekOrigin.Begin);
+                stream.Write(sprite, 0, sprite.Length);
+                stream.Seek(location.palette, SeekOrigin.Begin);
+                stream.Write(palette, 0, palette.Length);
+            }
         }
 
 
@@ -884,8 +950,6 @@ namespace MLSSRandomizerForm
             SpoilerArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/LocationNames.txt"));
             foreach (LocationData data in freshLocationArray.Where(d => d.itemType != 4 && d.itemType != 5).ToList())
             {
-                if (data.location == 0x39e2bf)
-                    Console.WriteLine("poop");
                 int temp = 0;
                 stream.Seek(data.location, SeekOrigin.Begin);
                 if (data.itemType == 1)
@@ -2272,8 +2336,6 @@ namespace MLSSRandomizerForm
                 }
                 foreach(dynamic data in fakeLocationsArray)
                 {
-                    if(data.location == 0x39e2bf)
-                        Console.WriteLine("poop");
                     ItemInject(data.location, data.itemType, (byte)data.item);
                 }
                 if (Form1.intro)

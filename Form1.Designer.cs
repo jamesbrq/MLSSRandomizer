@@ -840,14 +840,12 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox39.Enabled = false;
             this.checkBox39.Location = new System.Drawing.Point(251, 53);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
             this.checkBox39.TabIndex = 43;
             this.checkBox39.Text = "Randomize Doors?";
             this.checkBox39.UseVisualStyleBackColor = true;
-            this.checkBox39.Visible = false;
             this.checkBox39.CheckedChanged += new System.EventHandler(this.checkBox39_CheckedChanged);
             // 
             // checkBox38

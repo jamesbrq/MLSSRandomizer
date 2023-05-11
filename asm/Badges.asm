@@ -51,6 +51,19 @@ EQUIP_FIX_SUBR equ 0x081E05F0
 PANTS_TEXT_FIX equ 0x0812e52a
 BSHOP_RAM equ 0x0200302D
 BUY_RAM equ 0x0200302E
+PANTS_SPRITE_HOOK equ 0x0812D87E
+PANTS_SPRITE_SUBR equ 0x081E0800
+
+
+
+.org 0x0812D876 ;Pants sprite fix
+	db 0xE6
+
+.org 0x0812D7D6 ;Pants sprite fix 2
+	db 0xFF
+
+.org 0x0812D7E9 ;Pants sprite fix 2
+	db 0xDA
 
 .org BADGE_BUY_BLOCK
 	mov r0, r0
@@ -135,6 +148,68 @@ BUY_RAM equ 0x0200302E
 .org EQUIP_FIX_HOOK
 	bl EQUIP_FIX_SUBR
 
+.org PANTS_SPRITE_HOOK
+	bl PANTS_SPRITE_SUBR
+
+
+
+
+.org PANTS_SPRITE_SUBR
+push { r2, lr }
+cmp r2, #0x30
+bge .sprite_key
+sub r2, #0xA
+cmp r2, #0xB
+bgt .sprite_extra
+lsr r2, #0x2
+mov r0, r2
+bl .pants_sprite_norm
+.sprite_extra:
+sub r2, #0x9
+cmp r2, #0x4
+bgt .sprite_gold
+mov r0, #0x3
+bl .pants_sprite_norm
+.sprite_gold:
+sub r2, #0x1
+cmp r2, #0x8
+bge .sprite_espresso
+mov r0, r2
+bl .pants_sprite_norm
+.sprite_espresso:
+sub r2, #0x8
+cmp r2, #0x6
+bgt .sprite_bean
+mov r0, #0x8
+bl .pants_sprite_norm
+.sprite_bean:
+sub r2, #0xE
+mov r0, #0x9
+add r0, r2
+bl .pants_sprite_norm
+.sprite_key:
+cmp r2, #0x9E
+bge .sprite_badge
+mov r0, #0xD
+bl .pants_sprite_norm
+.sprite_badge:
+cmp r2, #0xCA
+bge .sprite_pants
+mov r0, #0xE
+bl .pants_sprite_norm
+.sprite_pants:
+cmp r2, #0xF8
+bge .sprite_special
+mov r0, #0x11
+bl .pants_sprite_norm
+.sprite_special:
+mov r0, #0x12
+.pants_sprite_norm:
+add r1, r0
+mov r6, r1
+pop { r2, pc }
+.pool
+
 .org EQUIP_FIX_SUBR
 push { r5, lr }
 ldr r5, =0x03003FE6
@@ -206,6 +281,11 @@ cmp r0, r9
 beq .count_fix
 bl .count_end
 .count_fix:
+ldr r2, =ROOM
+ldrh r2, [r2]
+ldr r3, =0x182
+cmp r2, r3
+beq .count_end
 ldr r2, =0x03003fcc
 ldrb r3, [r2]
 sub r3, #0x1

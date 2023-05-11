@@ -84,7 +84,44 @@ namespace MLSSRandomizerForm
             InitializeComponent();
             progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             Text += " " + progVersion; // show version in title
+            ScriptRead();
         }
+
+
+
+        public void ScriptRead()
+        {
+            byte[] arr = new byte[] { 0x0A, 0x51, 0x82, 0xB0, 0x74 };
+            List<byte> bytes = new List<byte>();
+            int temp = arr[1] & 0x10;
+            byte b = (byte)(temp == 0x10 ? 1 : 0);
+            arr[1] = (byte)(arr[1] - temp);
+            temp = arr[1] & 1;
+            arr[1] = (byte)(arr[1] - temp);
+            temp <<= 3;
+            b = (byte)(b + temp);
+            b += arr[1];
+            temp = arr[2] << 3;
+            temp >>= 8;
+            b = (byte)(b + temp); 
+            bytes.Add(b);
+            bytes.Add(arr[0]);
+            bytes.Add(0);
+            temp = arr[2] & 0x7F;
+            temp <<= 4;
+            int temp2 = arr[3] & 0xC0;
+            temp2 >>= 4;
+            temp += temp2;
+            temp >>= 2;
+            bytes.Add((byte)temp);
+            temp = arr[3] & 0x3;
+            temp <<= 0x8;
+            temp += (arr[4] & 0xF8);
+            temp >>= 3;
+            bytes.Add((byte)temp);
+            Console.WriteLine(bytes.ToString());
+        }
+
 
         public string ComputeHash()
         {

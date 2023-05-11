@@ -6,6 +6,13 @@
     .include "Badges.asm"
     .include "Hint.asm"
     .include "Cutscenes.asm"
+    .include "Sprites.asm"
+
+    .org 0x082EBE42 ; Save block removal
+        db 0x30
+
+    .org 0x082F7EE0
+        db 0x30
 
     .org 0x0821E4FE ;Espresso reward sprites + possibly other sprites??
         db 0x0
@@ -602,6 +609,12 @@
 
     .org POW_SCALE_HOOK
         bl POW_SCALE_SUBR
+
+    .org SHOP_SPRITE_HOOK
+        bl SHOP_SPRITE_SUBR
+
+    .org SHOP_SPRITE_MINI_HOOK
+        bl SHOP_SPRITE_MINI_SUBR
 
 
 
@@ -1230,6 +1243,107 @@
 
 
 
+    .org 0x0812DBDE ;Shop Mini  Sprite Fix
+        db 0xFF
+
+    .org 0x0812D9E6 ;Shop Sprite Fix
+        db 0xFF
+
+
+    .org SHOP_SPRITE_MINI_SUBR
+    push { r2-r3, lr }
+    ldr r2, =0x03003FE4
+    ldrb r2, [r2]
+    ldr r3, [r5, #0x40]
+    ldrb r2, [r3, r2]
+    cmp r2, #0x30
+    bge .smsprite_key
+    cmp r2, #0x2B
+    bge .smsprite_bean
+    cmp r2, #0x12
+    bge .smsprite_coffee
+    bl .shop_msprite_norm
+    .smsprite_coffee:
+    mov r0, #0xC
+    bl .shop_msprite_end
+    .smsprite_bean:
+    sub r2, #0x2B
+    mov r0, #0xE
+    add r0, r2
+    bl .shop_msprite_end
+    .smsprite_key:
+    cmp r2, #0x9E
+    bge .smsprite_badge
+    mov r0, #0x11
+    bl .shop_msprite_end
+    .smsprite_badge:
+    cmp r2, #0xCA
+    bge .smsprite_pants
+    mov r0, #0x12
+    bl .shop_msprite_end
+    .smsprite_pants:
+    cmp r2, #0xF8
+    bge .smsprite_special
+    mov r0, #0x15
+    bl .shop_msprite_end
+    .smsprite_special:
+    mov r0, #0x16
+    bl .shop_msprite_end
+    .shop_msprite_norm:
+    ldrb r0, [r0, #0x1]
+    .shop_msprite_end:
+    add r1, r0
+    pop { r2-r3, pc }
+    .pool
+
+
+
+
+    .org SHOP_SPRITE_SUBR
+    push { r2-r3, lr }
+    ldr r2, =0x03003F60
+    ldr r2, [r2]
+    mov r3, r8
+    ldrb r2, [r2, r3]
+    cmp r2, #0x30
+    bge .ssprite_key
+    cmp r2, #0x2B
+    bge .ssprite_bean
+    cmp r2, #0x12
+    bge .ssprite_coffee
+    bl .shop_sprite_norm
+    .ssprite_coffee:
+    mov r5, #0xC
+    bl .shop_sprite_end
+    .ssprite_bean:
+    sub r2, #0x2B
+    mov r5, #0xE
+    add r5, r2
+    bl .shop_sprite_end
+    .ssprite_key:
+    cmp r2, #0x9E
+    bge .ssprite_badge
+    mov r5, #0x11
+    bl .shop_sprite_end
+    .ssprite_badge:
+    cmp r2, #0xCA
+    bge .ssprite_pants
+    mov r5, #0x12
+    bl .shop_sprite_end
+    .ssprite_pants:
+    cmp r2, #0xF8
+    bge .ssprite_special
+    mov r5, #0x15
+    bl .shop_sprite_end
+    .ssprite_special:
+    mov r5, #0x16
+    bl .shop_sprite_end
+    .shop_sprite_norm:
+    ldrb r5, [r5, #0x1]
+    .shop_sprite_end:
+    add r0, r5
+    pop { r2-r3, pc }
+    .pool
 
 
     .org SHOP_INJECT_RAM_SUBR
@@ -1837,11 +1951,38 @@
     orr r4, r2
     strb r4, [r3]
     .moves_end:
+    bl MOVE_REMOVER
     pop r0-r4
     add r1, #0x1
     bx r1
     .pool
-
+    
+    .org MOVE_REMOVER
+    push { r0-r2, pc }
+    ldr r0, =HAMMER
+    ldrb r0, [r0, #0x1]
+    mov r1, #0x1
+    and r1, r0
+    cmp r1, #0x1
+    beq .thunder_remove_check
+    ldr r0, =0x02004860
+    ldrb r1, [r1]
+    mov r2, #0x40
+    bic r1, r2
+    strb r1, [r0]
+    .thunder_remove_check:
+    mov r1, #0x2
+    and r1, r0
+    cmp r1, #0x2
+    beq .move_remove_end
+    ldr r0, =0x0200489C
+    ldrb r1, [r1]
+    mov r2, #0x40
+    bic r1, r2
+    strb r1, [r0]
+    .move_remove_end
+    pop { r0-r2, pc }
+    .pool
 
 
 
@@ -2998,8 +3139,12 @@
     ldrb r3, [r2]
     mov r4, #0x0
     strb r4, [r2]
+    ldr r4, =0x020042F8
+    cmp r4, r5
+    beq .ab_skip
     cmp r3, #0x1
     beq .ability_end2
+    .ab_skip:
     orr r1, r0
     str r1, [r5]
     bl .ability_end2
