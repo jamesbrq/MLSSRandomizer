@@ -61,6 +61,7 @@ namespace MLSSRandomizerForm
         public static bool visible = false;
         public static bool invisible = false;
         public static bool removeHidden = false;
+        public static bool espressoKey = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -193,6 +194,15 @@ namespace MLSSRandomizerForm
                     radioButton8.Checked = true;
                     break;
             }
+            config.TryGetValue("visible", out temp);
+            visible = Convert.ToBoolean(temp);
+            checkBox44.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("invisible", out temp);
+            invisible = Convert.ToBoolean(temp);
+            checkBox45.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("removehidden", out temp);
+            removeHidden = Convert.ToBoolean(temp);
+            checkBox46.Checked = Convert.ToBoolean(temp);
             config.TryGetValue("rose", out temp);
             rose = Convert.ToBoolean(temp);
             checkBox2.Checked = Convert.ToBoolean(temp);
@@ -256,6 +266,9 @@ namespace MLSSRandomizerForm
             config.TryGetValue("espresso", out temp);
             espresso = Convert.ToBoolean(temp);
             checkBox17.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("espressokey", out temp);
+            espressoKey = Convert.ToBoolean(temp);
+            checkBox47.Checked = Convert.ToBoolean(temp);
             config.TryGetValue("brosbp", out temp);
             brosBp = Convert.ToBoolean(temp);
             checkBox26.Checked = Convert.ToBoolean(temp);
@@ -310,6 +323,9 @@ namespace MLSSRandomizerForm
             strings.Add("seedtype," + seedType + ",");
             strings.Add("pieces," + Convert.ToInt32(pieces) + ",");
             strings.Add("chuckle," + chuckle + ",");
+            strings.Add("visible," + Convert.ToInt32(visible) + ",");
+            strings.Add("invisible," + Convert.ToInt32(invisible) + ",");
+            strings.Add("removehidden," + Convert.ToInt32(removeHidden) + ",");
             strings.Add("rose," + Convert.ToInt32(rose) + ",");
             strings.Add("brooch," + Convert.ToInt32(brooch) + ",");
             strings.Add("chuckola," + Convert.ToInt32(chuckola) + ",");
@@ -331,6 +347,7 @@ namespace MLSSRandomizerForm
             strings.Add("badges," + Convert.ToInt32(badges) + ",");
             strings.Add("pants," + Convert.ToInt32(pants) + ",");
             strings.Add("espresso," + Convert.ToInt32(espresso) + ",");
+            strings.Add("espressokey," + Convert.ToInt32(espressoKey) + ",");
             strings.Add("brosbp," + Convert.ToInt32(brosBp) + ",");
             strings.Add("itemheal," + Convert.ToInt32(itemHeal) + ",");
             strings.Add("coffeevalue," + Convert.ToInt32(coffeeValue) + ",");
@@ -936,6 +953,11 @@ namespace MLSSRandomizerForm
         private void radioButton1_MouseHover(object sender, EventArgs e)
         {
            // toolTip1.Show("Removes All Chuckle Beans from the item pool", radioButton1);
+        }
+
+        private void checkBox47_CheckedChanged(object sender, EventArgs e)
+        {
+            espressoKey = checkBox47.Checked;
         }
     }
 }

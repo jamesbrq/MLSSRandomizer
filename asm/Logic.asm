@@ -1966,7 +1966,7 @@
     cmp r1, #0x1
     beq .thunder_remove_check
     ldr r0, =0x02004860
-    ldrb r1, [r1]
+    ldrb r1, [r0]
     mov r2, #0x40
     bic r1, r2
     strb r1, [r0]
@@ -1976,11 +1976,11 @@
     cmp r1, #0x2
     beq .move_remove_end
     ldr r0, =0x0200489C
-    ldrb r1, [r1]
+    ldrb r1, [r0]
     mov r2, #0x40
     bic r1, r2
     strb r1, [r0]
-    .move_remove_end
+    .move_remove_end:
     pop { r0-r2, pc }
     .pool
 
@@ -5753,6 +5753,18 @@
     strb r2, [r0, #0x1]
     strb r2, [r0, #0x2]
     .escort_end3:
+    ldr r0, =0x02004342
+    ldrb r0, [r0]
+    mov r1, #0x10
+    and r1, r0
+    cmp r1, #0x10
+    bne .escort_end4
+    ldr r0, =0x0200433D
+    ldrb r1, [r0]
+    mov r2, #0x4
+    orr r1, r2
+    strb r1, [r0]
+    .escort_end4:
     pop pc
     .pool
 

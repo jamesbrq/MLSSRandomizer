@@ -137,10 +137,11 @@ namespace MLSSRandomizerForm
             this.button7 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.checkBox47 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -656,6 +657,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.checkBox47);
             this.tabPage4.Controls.Add(this.checkBox21);
             this.tabPage4.Controls.Add(this.checkBox13);
             this.tabPage4.Controls.Add(this.checkBox17);
@@ -688,7 +690,7 @@ namespace MLSSRandomizerForm
             this.checkBox13.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox13.Checked = true;
             this.checkBox13.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox13.Location = new System.Drawing.Point(202, 18);
+            this.checkBox13.Location = new System.Drawing.Point(83, 84);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.Size = new System.Drawing.Size(68, 17);
             this.checkBox13.TabIndex = 20;
@@ -702,7 +704,7 @@ namespace MLSSRandomizerForm
             this.checkBox17.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox17.Checked = true;
             this.checkBox17.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox17.Location = new System.Drawing.Point(195, 52);
+            this.checkBox17.Location = new System.Drawing.Point(275, 19);
             this.checkBox17.Name = "checkBox17";
             this.checkBox17.Size = new System.Drawing.Size(75, 17);
             this.checkBox17.TabIndex = 24;
@@ -840,12 +842,14 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox39.Enabled = false;
             this.checkBox39.Location = new System.Drawing.Point(251, 53);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
             this.checkBox39.TabIndex = 43;
             this.checkBox39.Text = "Randomize Doors?";
             this.checkBox39.UseVisualStyleBackColor = true;
+            this.checkBox39.Visible = false;
             this.checkBox39.CheckedChanged += new System.EventHandler(this.checkBox39_CheckedChanged);
             // 
             // checkBox38
@@ -1477,6 +1481,18 @@ namespace MLSSRandomizerForm
             this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
             this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
             // 
+            // checkBox47
+            // 
+            this.checkBox47.AutoSize = true;
+            this.checkBox47.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox47.Location = new System.Drawing.Point(186, 42);
+            this.checkBox47.Name = "checkBox47";
+            this.checkBox47.Size = new System.Drawing.Size(163, 17);
+            this.checkBox47.TabIndex = 27;
+            this.checkBox47.Text = "No key items in coffee shop?";
+            this.checkBox47.UseVisualStyleBackColor = true;
+            this.checkBox47.CheckedChanged += new System.EventHandler(this.checkBox47_CheckedChanged);
+            // 
             // form1BindingSource
             // 
             this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
@@ -1649,6 +1665,7 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox44;
         private CheckBox checkBox46;
         private ToolTip toolTip1;
+        private CheckBox checkBox47;
     }
 }
 

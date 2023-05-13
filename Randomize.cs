@@ -508,7 +508,7 @@ namespace MLSSRandomizerForm
                 return;
             FillRoomArray();
             NewShuffle();
-           // OceanShuffle();
+            OceanShuffle();
         }
 
         public byte[] ScriptDoorArr(byte[] arr)
@@ -637,9 +637,36 @@ namespace MLSSRandomizerForm
                     doorArray.Shuffle(random);
                     goto Retry;
                 }
-                ScriptDoorArr(doorArray[i].arr);
-                stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
-                stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
+                if (insertArray[0].logic.location >= 0x300000)
+                {
+                    stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
+                    stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
+                }
+                else
+                {
+                    stream.Seek(insertArray[0].logic.location, SeekOrigin.Begin);
+                    byte[] arr = ScriptDoorArr(doorArray[i].arr);
+                    stream.Write(arr, 0, arr.Length);
+                    stream.Seek(3, SeekOrigin.Current);
+                    stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                    if(stream.ReadByte() == 0x88)
+                    {
+                        stream.Seek(1, SeekOrigin.Current);
+                        stream.Write(arr, 0, arr.Length);
+                        stream.Seek(3, SeekOrigin.Current);
+                        stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            stream.Seek(insertArray[0].logic.location + (j * 37), SeekOrigin.Begin);
+                            stream.Write(arr, 0, arr.Length);
+                            stream.Seek(3, SeekOrigin.Current);
+                            stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                        }
+                    }
+                }
                 int rIndex = roomArray.FindIndex(c => c.id == doorArray[i].returnRoom);
                 roomArray[rIndex].index -= 1;
                 Door temp = new Door();
@@ -654,8 +681,36 @@ namespace MLSSRandomizerForm
                     Console.WriteLine(insertArray[0].returnRoom);
                     Console.WriteLine(doorArray[i].returnRoom);
                 }
-                stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
-                stream.Write(temp.arr, 0, temp.arr.Length);
+                if (tempInsert.logic.location >= 0x300000)
+                {
+                    stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
+                    stream.Write(temp.arr, 0, temp.arr.Length);
+                }
+                else
+                {
+                    stream.Seek(tempInsert.logic.location, SeekOrigin.Begin);
+                    byte[] arr = ScriptDoorArr(temp.arr);
+                    stream.Write(arr, 0, arr.Length);
+                    stream.Seek(3, SeekOrigin.Current);
+                    stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                    if (stream.ReadByte() == 0x88)
+                    {
+                        stream.Seek(1, SeekOrigin.Current);
+                        stream.Write(arr, 0, arr.Length);
+                        stream.Seek(3, SeekOrigin.Current);
+                        stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                    }
+                    else
+                    {
+                        for (int j = 0; j < 3; j++)
+                        {
+                            stream.Seek(tempInsert.logic.location + (j * 37), SeekOrigin.Begin);
+                            stream.Write(arr, 0, arr.Length);
+                            stream.Seek(3, SeekOrigin.Current);
+                            stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                        }
+                    }
+                }
                 doorArray.RemoveAt(i);
                 doorArray.Remove(temp);
                 insertArray.RemoveAt(0);
@@ -1519,7 +1574,12 @@ namespace MLSSRandomizerForm
                 {
                     if (Form1.espresso)
                     {
-                        ValidArrayAdd(data);
+                        if(Form1.espressoKey)
+                        {
+                            ValidArrayAdd(new LocationData(data.location, data.item, data.itemType, 3, true, true, true, true, 3, true, true, true, true, true, true, true, true, 7, 0, true, 4, true, true));
+                        }
+                        else
+                            ValidArrayAdd(data);
                     }
                     else
                     {
