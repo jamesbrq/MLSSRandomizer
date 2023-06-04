@@ -319,6 +319,10 @@ ldrb r2, [r1, r0]
 cmp r2, #0xFF
 beq .pants_buy_clause
 add r2, #0x1
+cmp r2, #0x64
+blt .bmush
+mov r2, #0x63
+.bmush:
 strb r2, [r1, r0]
 bl .pants_buy_end
 .pants_buy_clause:

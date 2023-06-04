@@ -116,7 +116,8 @@ namespace MLSSRandomizerForm
             {
                 if (!File.Exists(Environment.CurrentDirectory + "/bis/bis.nds"))
                     File.Copy(path, Environment.CurrentDirectory + "/bis/bis.nds");
-                stream = new FileStream(Environment.CurrentDirectory + "/bis/bis.nds", FileMode.Open);
+               // Decompression.ExtractRom("bis.nds");
+                //stream = new FileStream(Environment.CurrentDirectory + "/bis/bis.nds", FileMode.Open);
                 FreshArrayPopulate();
                 SeedInitialize(seed);
                 CheckOptions();
@@ -637,6 +638,8 @@ namespace MLSSRandomizerForm
                     doorArray.Shuffle(random);
                     goto Retry;
                 }
+                if (doorArray[i].logic.location == 0x3AD234)
+                    Console.WriteLine("poop");
                 if (insertArray[0].logic.location >= 0x300000)
                 {
                     stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
@@ -683,6 +686,8 @@ namespace MLSSRandomizerForm
                 }
                 if (tempInsert.logic.location >= 0x300000)
                 {
+                    if (temp.arr[0] == 0x49 && temp.arr[1] == 0x2B)
+                        Console.WriteLine("poop");
                     stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
                     stream.Write(temp.arr, 0, temp.arr.Length);
                 }
@@ -1139,11 +1144,10 @@ namespace MLSSRandomizerForm
                 list.Add("Badges: " + Form1.badges);
                 list.Add("Pants: " + Form1.pants);
                 list.Add("Espresso: " + Form1.espresso);
+                list.Add("EspressoKey: " + Form1.espressoKey);
                 list.Add("BP Costs: " + Form1.brosBp);
                 list.Add("Item Heal: " + Form1.itemHeal);
                 list.Add("Espresso Stats: " + Form1.coffeeValue);
-                list.Add("Enemies: " + Form1.enemy);
-                list.Add("Enemy Stats: " + Form1.scale);
                 list.Add("Disable Mush: " + Form1.mush);
                 list.Add("Disable Surf: " + Form1.surf);
                 list.Add("Skip Minecart: " + Form1.minecart);
@@ -1191,9 +1195,10 @@ namespace MLSSRandomizerForm
                     {
                         if (i <= validLocations.Count - 1)
                         {
-                            if (data.Where(c => c.location == validLocations[i].location).ToList().Count != 0)
+                            List<dynamic> read = data.Where(c => c.location == validLocations[i].location).ToList();
+                            if (read.Count != 0)
                             {
-                                dynamic tempData = data.Where(c => c.location == validLocations[i].location).ToList()[0];
+                                dynamic tempData = read[0];
                                 if (validLocations[i].location > 0x3C0000 && tempData.item == 0x38)
                                     return false;
                                 UpdateState((byte)tempData.item);
@@ -1245,6 +1250,8 @@ namespace MLSSRandomizerForm
         {
             if (gameId == 1)
             {
+                if (data.item == 0x1E)
+                    Console.WriteLine('a');
                 validLocationArray.Add(data);
                 freshItemArray.Add((byte)data.item);
             }
@@ -1261,13 +1268,18 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
+                if(!Form1.castle)
+                {
+                    ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
+                }
                 bool placedBro = false;
                 LocationData tempData = new LocationData();
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
+
                     if (data.location == 0x39DB0F)
                     {
-                        if (Form1.minecart)
+                        if (Form1.minecart || Form1.chuckle != 3)
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
                             continue;
@@ -1281,7 +1293,7 @@ namespace MLSSRandomizerForm
 
                     if(Form1.removeHidden)
                     {
-                        if(data.itemType == 0)
+                        if(data.itemType == 0 && data.item != 0x1E)
                         {
                             stream.Seek(data.location - 6, SeekOrigin.Begin);
                             if (stream.ReadByte() == 0x10)
@@ -1289,7 +1301,7 @@ namespace MLSSRandomizerForm
                                 ItemInject(data.location, data.itemType, (byte)data.item);
                                 if(Form1.visible)
                                 {
-                                    stream.Seek(-1, SeekOrigin.Current);
+                                    stream.Seek(data.location - 6, SeekOrigin.Begin);
                                     stream.WriteByte(0x0);
                                 }
                                 continue;
@@ -1299,10 +1311,25 @@ namespace MLSSRandomizerForm
                                 ValidArrayAdd(data);
                                 if (Form1.visible)
                                 {
-                                    stream.Seek(-1, SeekOrigin.Current);
+                                    stream.Seek(data.location - 6, SeekOrigin.Begin);
                                     stream.WriteByte(0x0);
                                 }
                                 continue;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (data.itemType == 0 && data.item != 0x1E)
+                        {
+                            stream.Seek(data.location - 6, SeekOrigin.Begin);
+                            if (stream.ReadByte() == 0x10)
+                            {
+                                if (Form1.visible)
+                                {
+                                    stream.Seek(data.location - 6, SeekOrigin.Begin);
+                                    stream.WriteByte(0x0);
+                                }
                             }
                         }
                     }
@@ -1620,19 +1647,6 @@ namespace MLSSRandomizerForm
                     surfSkip:;
                 }
                 optionsArray = new List<dynamic>();
-                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
-                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
-                {
-                    if (!Form1.castle)
-                    {
-                        ValidArrayAdd(data);
-                    }
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-                optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
@@ -1775,14 +1789,24 @@ namespace MLSSRandomizerForm
                 stream.Seek(0x21CC44, SeekOrigin.Begin);
                 while (true)
                 {
-                    if (stream.Position == 0x21CDDC || stream.Position == 0x21CF1C)
+                    long currentPos = stream.Position;
+                    byte tempByte = 0x0;
+                    byte[] temp2 = new byte[4];
+                    stream.Read(temp2, 0, 4);
+                    stream.Seek(temp2[0] | temp2[1] << 8 | temp2[2] << 16, SeekOrigin.Begin);
+                    while (tempByte != 0xFF)
                     {
-                        stream.Seek(4, SeekOrigin.Current);
+                        tempByte = (byte)stream.ReadByte();
+                    }
+                    if (stream.ReadByte() == 0xFF)
+                    {
+                        stream.Position = currentPos + 4;
                         continue;
                     }
-                    if (stream.Position == 0x21D1CC)
+                    if (stream.Position >= 0x21D1CC)
                         break;
                     byte[] temp = new byte[4];
+                    stream.Position = currentPos;
                     stream.Read(temp, 0, 4);
                     sounds.Add(temp);
                 }
@@ -1790,13 +1814,23 @@ namespace MLSSRandomizerForm
                 stream.Seek(0x21CC44, SeekOrigin.Begin);
                 for (int i = sounds.Count - 1; i >= 0; i--)
                 {
-                    if (stream.Position == 0x21CDDC || stream.Position == 0x21CF1C)
+                    long currentPos = stream.Position;
+                    byte temp = 0x0;
+                    byte[] temp2 = new byte[4];
+                    stream.Read(temp2, 0, 4);
+                    stream.Seek(temp2[0] | temp2[1] << 8 | temp2[2] << 16, SeekOrigin.Begin);
+                    while(temp != 0xFF)
                     {
-                        stream.Seek(4, SeekOrigin.Current);
-                        i++;
+                        temp = (byte)stream.ReadByte();
+                    }
+                    if (stream.ReadByte() == 0xFF)
+                    {
+                        stream.Position = currentPos + 4;
                         continue;
                     }
+                    stream.Position = currentPos;
                     stream.Write(sounds[i], 0, 4);
+                    sounds.RemoveAt(i);
                 }
             }
             if (Form1.mDisable)
@@ -1868,13 +1902,15 @@ namespace MLSSRandomizerForm
 
         public void EnemyRandomize()
         {
-            if (Form1.enemy)
+            if (Form1.enemy || Form1.bosses != 1)
+            {
                 //Write byte for stat scale execution
                 if (Form1.scale)
                 {
                     stream.Seek(0x1E9418, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
+            }
             if (Form1.pow)
             {
                 stream.Seek(0x1E9419, SeekOrigin.Begin);
@@ -2241,7 +2277,7 @@ namespace MLSSRandomizerForm
         {
             for (int i = 0; i < str.Length; i += 4)
             {
-                int value = random.Next(0, Convert.ToInt32(str[i + 1], 16));
+                int value = random.Next(1, Convert.ToInt32(str[i + 1], 16));
                 int length = Convert.ToInt32(str[i + 2], 16);
                 byte[] arr = Encoding.ASCII.GetBytes(Convert.ToString(value));
                 if (arr.Length < length)
@@ -2396,15 +2432,18 @@ namespace MLSSRandomizerForm
                 }
                 foreach(dynamic data in fakeLocationsArray)
                 {
+                    //Inject intems in pre-verified positions
                     ItemInject(data.location, data.itemType, (byte)data.item);
                 }
                 if (Form1.intro)
                 {
+                    //Enable Skip Intro in ROM
                     stream.Seek(0x244D08, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x88, 0x0, 0x19, 0x91, 0x1, 0x20, 0x58, 0x1, 0xF, 0xA0, 0x3, 0x15, 0x27, 0x8 }, 0, 14);
                 }
                 if(Form1.castletown)
                 {
+                    //Spawn in castle town in ROM
                     stream.Seek(0x244D08, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x88, 0x0, 0xD, 0x51, 0x3, 0xA0, 0x68, 0x0, 0xF, 0xA0, 0x41, 0x15, 0x27, 0x8 }, 0, 14);
                 }
@@ -2423,6 +2462,7 @@ namespace MLSSRandomizerForm
                 }
                 if (Form1.castle)
                 {
+                    //Enable bowsers castle skip in ROM
                     stream.Seek(0x3AEAB0, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0xC1, 0x67, 0x0, 0x6, 0x1C, 0x08, 0x3 }, 0, 7);
                     stream.Seek(0x3AEC18, SeekOrigin.Begin);
@@ -2431,6 +2471,7 @@ namespace MLSSRandomizerForm
                 }
                 if (Form1.minecart)
                 {
+                    //Enable minecart skip in ROM
                     stream.Seek(0x3AC728, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x89, 0x13, 0x0, 0x10, 0xF, 0x08, 0x1 }, 0, 7);
                     stream.Seek(0x3AC56C, SeekOrigin.Begin);
@@ -2438,8 +2479,27 @@ namespace MLSSRandomizerForm
                 }
                 if (Form1.minigame)
                 {
+                    //Enable minigame spoilers in ROM
                     stream.Seek(0x1E1EEF, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
+                }
+                if(!Form1.doors)
+                {
+                    //Sink ship with no barrel minigame stuff
+                    stream.Seek(0x25FD4E, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x80, 0x60, 0x50, 0x2, 0xF }, 0, 7);
+                    stream.Seek(0x25FD83, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x80, 0x60, 0xC0, 0x2, 0xF }, 0, 7);
+                    stream.Seek(0x25FDB8, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x05, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
+                    stream.Seek(0x25FDED, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x06, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
+                    stream.Seek(0x25FE22, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x07, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
+                    stream.Seek(0x25FE22, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x07, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
+                    stream.Seek(0x25FE57, SeekOrigin.Begin);
+                    stream.Write(new byte[] { 0x48, 0x30, 0x08, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
                 }
             }
 

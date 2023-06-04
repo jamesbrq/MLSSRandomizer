@@ -73,6 +73,7 @@ namespace MLSSRandomizerForm
             this.checkBox12 = new System.Windows.Forms.CheckBox();
             this.checkBox16 = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.checkBox47 = new System.Windows.Forms.CheckBox();
             this.checkBox21 = new System.Windows.Forms.CheckBox();
             this.checkBox13 = new System.Windows.Forms.CheckBox();
             this.checkBox17 = new System.Windows.Forms.CheckBox();
@@ -138,7 +139,6 @@ namespace MLSSRandomizerForm
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkBox47 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -670,6 +670,18 @@ namespace MLSSRandomizerForm
             this.tabPage4.Text = "Shops";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
+            // checkBox47
+            // 
+            this.checkBox47.AutoSize = true;
+            this.checkBox47.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox47.Location = new System.Drawing.Point(186, 42);
+            this.checkBox47.Name = "checkBox47";
+            this.checkBox47.Size = new System.Drawing.Size(163, 17);
+            this.checkBox47.TabIndex = 27;
+            this.checkBox47.Text = "No key items in coffee shop?";
+            this.checkBox47.UseVisualStyleBackColor = true;
+            this.checkBox47.CheckedChanged += new System.EventHandler(this.checkBox47_CheckedChanged);
+            // 
             // checkBox21
             // 
             this.checkBox21.AutoSize = true;
@@ -843,7 +855,7 @@ namespace MLSSRandomizerForm
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox39.Enabled = false;
-            this.checkBox39.Location = new System.Drawing.Point(251, 53);
+            this.checkBox39.Location = new System.Drawing.Point(251, 54);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
             this.checkBox39.TabIndex = 43;
@@ -1480,18 +1492,6 @@ namespace MLSSRandomizerForm
             this.saveFileDialog3.DefaultExt = "txt";
             this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
             this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
-            // 
-            // checkBox47
-            // 
-            this.checkBox47.AutoSize = true;
-            this.checkBox47.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox47.Location = new System.Drawing.Point(186, 42);
-            this.checkBox47.Name = "checkBox47";
-            this.checkBox47.Size = new System.Drawing.Size(163, 17);
-            this.checkBox47.TabIndex = 27;
-            this.checkBox47.Text = "No key items in coffee shop?";
-            this.checkBox47.UseVisualStyleBackColor = true;
-            this.checkBox47.CheckedChanged += new System.EventHandler(this.checkBox47_CheckedChanged);
             // 
             // form1BindingSource
             // 

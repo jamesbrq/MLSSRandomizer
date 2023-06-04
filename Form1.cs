@@ -85,7 +85,7 @@ namespace MLSSRandomizerForm
             InitializeComponent();
             progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             Text += " " + progVersion; // show version in title
-            ScriptRead();
+            //ScriptRead();
         }
 
 
@@ -442,6 +442,7 @@ namespace MLSSRandomizerForm
             {
                 tabControl2.Visible = true;
                 gameId = 3;
+              //  Decompression.ExtractRom(filePath);
             }
             else if(filePath.Contains(".gba"))
             {

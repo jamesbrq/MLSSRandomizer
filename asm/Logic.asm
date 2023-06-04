@@ -14,6 +14,12 @@
     .org 0x082F7EE0
         db 0x30
 
+    .org 0x0821E5B1 ; Max Nut Sprite Fix
+        db 0x0
+
+    .org 0x0821E584 ; Ultra Nut Sprite Fix
+        db 0x0
+
     .org 0x0821E4FE ;Espresso reward sprites + possibly other sprites??
         db 0x0
 
@@ -43,6 +49,15 @@
 
     .org 0x082000A4
         db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA ;Bros move advance
+
+    .org 0x08250780 ; Fast chuckolator fight start
+        db 0x2, 0x10, 0x04, 0x0b, 0x25, 0x08
+
+    .org 0x08250D39 ; Fast chuckolator fight end
+        db 0x2, 0x10, 0xD2, 0xEB, 0x24, 0x08
+
+    .org 0x082652BC ; Fast beanstar recovery
+        db 0x2, 0x10, 0x74, 0x62, 0x26, 0x08
 
     .org GUFAWHA_SKIP_ETR
         db 0x81, 0x52, 0x0, 0x6, 0x12, 0x8, 0x1 ;Removes 1 room in gufawha ruins
@@ -409,6 +424,9 @@
     .org BEANLET_FIX
         db 0x16
 
+    .org 0x084831E8 ; 1-up text
+        db 0x16
+
     .org FLAG_FIX 
         mov r0, r0
 
@@ -727,17 +745,12 @@
     bne .scale_norm
     ldr r2, =0x030024B8
     ldrb r2, [r2]
-    cmp r2, #0x32
+    cmp r2, #0x5B
     beq .scale_norm
-    cmp r2, #0x1F
+    ldr r2, =0x030024B8
+    ldrb r2, [r2]
+    cmp r2, #0x5C
     beq .scale_norm
-    cmp r2, #0x9A
-    beq .scale_norm
-    cmp r2, #0xB1
-    beq .scale_norm
-    ldr r2, =0x1000
-    cmp r0, r2
-    bgt .scale_norm
     bl CALC_HEALTH
     strh r0, [r1]
     bl .scale_end2
@@ -757,19 +770,14 @@
     ldrb r1, [r1]
     cmp r1, #0x1
     bne .scale_end
-    ldr r1, =0x030024B8
-    ldrb r1, [r1]
-    cmp r1, #0x32
+    ldr r2, =0x030024B8
+    ldrb r2, [r2]
+    cmp r2, #0x5B
     beq .scale_end
-    cmp r1, #0x1F
+    ldr r2, =0x030024B8
+    ldrb r2, [r2]
+    cmp r2, #0x5C
     beq .scale_end
-    cmp r1, #0x9A
-    beq .scale_end
-    cmp r1, #0xB1
-    beq .scale_end
-    ldr r1, =0x1000
-    cmp r0, r1
-    bgt .scale_end
     bl CALC_HEALTH
     .scale_end:
     strh r0, [r6]
@@ -812,14 +820,19 @@
 
 
     .org CALC_HEALTH
-    push { r1, lr }
+    push { r1-r2, lr }
     ldr r1, =0x030024B8
     ldrb r1, [r1]
     sub r1, #0x7
     lsl r1, #0x1
     add r1, #0xA
+    ldr r2, =0x1388
+    cmp r0, r2
+    blt .calc_norm
+    add r1, r2
+    .calc_norm:
     mov r0, r1
-    pop { r1, pc }
+    pop { r1-r2, pc }
     .pool
 
 
@@ -1243,7 +1256,7 @@
 
 
 
-    .org 0x0812DBDE ;Shop Mini  Sprite Fix
+    .org 0x0812DBDE ;Shop Mini Sprite Fix
         db 0xFF
 
     .org 0x0812D9E6 ;Shop Sprite Fix
@@ -1971,6 +1984,8 @@
     bic r1, r2
     strb r1, [r0]
     .thunder_remove_check:
+    ldr r0, =HAMMER
+    ldrb r0, [r0, #0x1]
     mov r1, #0x2
     and r1, r0
     cmp r1, #0x2
@@ -3637,12 +3652,8 @@
     bne .badge_check3
     ldr r1, =ROOM
     ldrh r1, [r1]
-    ldr r2, =0x1CD
-    cmp r1, r2
-    beq .badge_check3
-    mov r2, #0x33
-    cmp r1, r2
-    beq .badge_check3
+    cmp r1, #0x67
+    bne .badge_check3
     ldr r1, =0x081E9435
     ldrb r2, [r1]
     ldr r1, =TEXT_VAR
@@ -4673,8 +4684,11 @@
     .fire_remove:
     ldr r0, =ROOM
     ldrh r0, [r0]
-    cmp r0, #0xB0
-    bne .check_end
+    cmp r0, #0xB1
+    blt .fire_remove2
+    cmp r0, #0xB3
+    ble .check_end
+    .fire_remove2:
     ldr r0, =REMOVE_RAM
     mov r1, #0x0
     strb r1, [r0]
@@ -4726,8 +4740,11 @@
     .thunder_remove:
     ldr r0, =ROOM
     ldrh r0, [r0]
-    cmp r0, #0xB4
-    bne .check_end
+    cmp r0, #0xB5
+    blt .thunder_remove2
+    cmp r0, #0xB7
+    ble .check_end
+    .thunder_remove2:
     ldr r0, =REMOVE_RAM
     mov r1, #0x0
     strb r1, [r0]
@@ -5226,7 +5243,12 @@
     mov r2, #0x4
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =0x02004410 ; Checkleroot Grandaughter Gate Flag
+    ldr r0, =0x020042FC ; Wiggler speed-up
+    ldrb r1, [r0]
+    mov r2, #0x18
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004410 ; Chuckleroot Grandaughter Gate Flag
     ldrb r1, [r0]
     mov r2, #0x7
     orr r1, r2
@@ -5750,8 +5772,11 @@
     orr r1, r2
     strb r1, [r0]
     mov r2, #0xFF
-    strb r2, [r0, #0x1]
     strb r2, [r0, #0x2]
+    mov r2, #0xF0
+    ldrb r1, [r0, #0x1]
+    orr r1, r2
+    strb r1, [r0, #0x1]
     .escort_end3:
     ldr r0, =0x02004342
     ldrb r0, [r0]
@@ -5786,6 +5811,89 @@
     strb r1, [r0]
     .blablanadon_end:
     pop { r0-r2, pc }
+    .pool
+
+
+
+
+    .org PEACH_ARRIVAL
+    push { r0-r2, lr }
+    ldr r0, =0x0200433D
+    ldrb r0, [r0]
+    mov r1, #0x2
+    and r1, r0
+    cmp r1, #0x2
+    bne .arrival_end
+    ldr r0, =0x02004309
+    ldrb r1, [r0]
+    mov r2, #0xC0
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x020043EB
+    ldrb r1, [r0]
+    mov r2, #0x1
+    orr r1, r2
+    strb r1, [r0]
+    .arrival_end:
+    pop { r0-r2, pc }
+    .pool
+
+
+
+
+
+
+    .org BARREL_MINIGAME
+    push { r0-r3, lr }
+    ldr r0, =0x0200430A
+    ldrb r1, [r0]
+    mov r2, #0x2
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    ldr r1, =0x135
+    cmp r1, r0
+    bne .barrel_mini_end
+    ldr r0, =0x0200430A
+    ldrb r1, [r0]
+    mov r2, #0x20
+    and r2, r1
+    cmp r2, #0x20
+    beq .barrel_mini_end
+    ldr r1, =0x0200490B
+    ldrb r2, [r1]
+    mov r3, #0x1
+    and r3, r2
+    cmp r2, #0x1
+    bne .barrel_mini_end
+    ldrb r1, [r0]
+    mov r2, #0x20
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =BARREL_RAM
+    mov r1, #0x1
+    strb r1, [r0]
+    .barrel_mini_end:
+    ldr r0, =ROOM
+    ldrh r1, [r0]
+    ldr r2, =0x135
+    cmp r2, r1
+    beq .barrel_restore_skip
+    ldr r0, =BARREL_RAM
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    beq .barrel_restore_skip
+    ldr r0, =0x0200430A
+    ldrb r1, [r0]
+    mov r2, #0x20
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =BARREL_RAM
+    mov r1, #0x0
+    strb r1, [r0]
+    .barrel_restore_skip:
+    pop { r0-r3, pc }
     .pool
 
 
@@ -5858,6 +5966,7 @@
     bx r0
     bl ESCORT_CUTSCENE
     bl BLABLANADON
+    bl PEACH_ARRIVAL
     ldr r0, =FAWFUL_STONE
     ldrb r0, [r0]
     mov r1, #0x1
@@ -6037,6 +6146,7 @@
     bic r1, r2
     strb r1, [r0]
     .barrel_skip:
+    bl BARREL_MINIGAME
     pop r0-r2
     add r1, #0x1
     bx r1
