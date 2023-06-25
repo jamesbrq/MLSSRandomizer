@@ -62,6 +62,7 @@ namespace MLSSRandomizerForm
         public static bool invisible = false;
         public static bool removeHidden = false;
         public static bool espressoKey = false;
+        public static bool tattle = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -86,6 +87,26 @@ namespace MLSSRandomizerForm
             progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             Text += " " + progVersion; // show version in title
             //ScriptRead();
+            //Audio();
+        }
+
+
+
+        public void Audio()
+        {
+            /* 
+            DirectoryInfo info = new DirectoryInfo(Environment.CurrentDirectory + "/audio/");
+            FileInfo[] files = info.GetFiles("*.wav");
+            List<AudioFileReader> list = new List<AudioFileReader>();
+
+            var first = new AudioFileReader(files[0].FullName).FollowedBy(TimeSpan.FromSeconds(1), new AudioFileReader(files[1].FullName));
+            WaveFileWriter.CreateWaveFile16(Environment.CurrentDirectory + "/audio/newFile1.wav", first);
+            for(int i = 2; i < files.Length; i++)
+            {
+                first = new AudioFileReader(Environment.CurrentDirectory + "/audio/newFile" + (i - 1) + ".wav").FollowedBy(TimeSpan.FromSeconds(1), new AudioFileReader(files[i].FullName));
+                WaveFileWriter.CreateWaveFile16(Environment.CurrentDirectory + "/audio/newFile" + i + ".wav", first);
+            }
+            */
         }
 
 
@@ -281,6 +302,9 @@ namespace MLSSRandomizerForm
             config.TryGetValue("intro", out temp);
             intro = Convert.ToBoolean(temp);
             checkBox1.Checked = Convert.ToBoolean(temp);
+            config.TryGetValue("doors", out temp);
+            doors = Convert.ToBoolean(temp);
+            checkBox39.Checked = Convert.ToBoolean(temp);
             config.TryGetValue("castle", out temp);
             castle = Convert.ToBoolean(temp);
             checkBox24.Checked = Convert.ToBoolean(temp);
@@ -359,6 +383,7 @@ namespace MLSSRandomizerForm
             strings.Add("minigame," + Convert.ToInt32(minigame) + ",");
             strings.Add("mario," + Convert.ToInt32(mario) + ",");
             strings.Add("luigi," + Convert.ToInt32(luigi) + ",");
+            strings.Add("doors," + Convert.ToInt32(doors) + ",");
             strings.Add("scale," + Convert.ToInt32(scale) + ",");
             strings.Add("enemy," + Convert.ToInt32(enemy) + ",");
             strings.Add("bosses," + bosses);
@@ -831,8 +856,16 @@ namespace MLSSRandomizerForm
                 {
                     if (str[i] == "seed")
                     {
-                        seed = str[i + 1];
-                        SeedTextbox.Text = seed;
+                        if (str[i + 1] == "0")
+                        {
+                            seed = "";
+                            SeedTextbox.Text = "";
+                        }
+                        else
+                        {
+                            seed = str[i + 1];
+                            SeedTextbox.Text = seed;
+                        }
                     }
                     else
                         config.Add(str[i], Convert.ToInt32(str[i + 1], 16));
@@ -959,6 +992,11 @@ namespace MLSSRandomizerForm
         private void checkBox47_CheckedChanged(object sender, EventArgs e)
         {
             espressoKey = checkBox47.Checked;
+        }
+
+        private void checkBox48_CheckedChanged(object sender, EventArgs e)
+        {
+            tattle = checkBox48.Checked;
         }
     }
 }

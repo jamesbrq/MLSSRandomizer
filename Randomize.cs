@@ -509,7 +509,7 @@ namespace MLSSRandomizerForm
                 return;
             FillRoomArray();
             NewShuffle();
-            OceanShuffle();
+            //OceanShuffle();
         }
 
         public byte[] ScriptDoorArr(byte[] arr)
@@ -638,8 +638,6 @@ namespace MLSSRandomizerForm
                     doorArray.Shuffle(random);
                     goto Retry;
                 }
-                if (doorArray[i].logic.location == 0x3AD234)
-                    Console.WriteLine("poop");
                 if (insertArray[0].logic.location >= 0x300000)
                 {
                     stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
@@ -647,6 +645,8 @@ namespace MLSSRandomizerForm
                 }
                 else
                 {
+                    if (insertArray[0].logic.location == 0x2550C2)
+                        Console.Write('a');
                     stream.Seek(insertArray[0].logic.location, SeekOrigin.Begin);
                     byte[] arr = ScriptDoorArr(doorArray[i].arr);
                     stream.Write(arr, 0, arr.Length);
@@ -661,9 +661,9 @@ namespace MLSSRandomizerForm
                     }
                     else
                     {
-                        for (int j = 0; j < 3; j++)
+                        for (int j = 1; j <= 3; j++)
                         {
-                            stream.Seek(insertArray[0].logic.location + (j * 37), SeekOrigin.Begin);
+                            stream.Seek(insertArray[0].logic.location + (j * 35), SeekOrigin.Begin);
                             stream.Write(arr, 0, arr.Length);
                             stream.Seek(3, SeekOrigin.Current);
                             stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
@@ -684,15 +684,17 @@ namespace MLSSRandomizerForm
                     Console.WriteLine(insertArray[0].returnRoom);
                     Console.WriteLine(doorArray[i].returnRoom);
                 }
+                if (temp.logic.location == 0x0 || tempInsert.logic.location == 0x0)
+                    Console.WriteLine("a");
                 if (tempInsert.logic.location >= 0x300000)
                 {
-                    if (temp.arr[0] == 0x49 && temp.arr[1] == 0x2B)
-                        Console.WriteLine("poop");
                     stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
                     stream.Write(temp.arr, 0, temp.arr.Length);
                 }
                 else
                 {
+                    if (insertArray[0].logic.location == 0x2550C2)
+                        Console.Write('a');
                     stream.Seek(tempInsert.logic.location, SeekOrigin.Begin);
                     byte[] arr = ScriptDoorArr(temp.arr);
                     stream.Write(arr, 0, arr.Length);
@@ -707,9 +709,9 @@ namespace MLSSRandomizerForm
                     }
                     else
                     {
-                        for (int j = 0; j < 3; j++)
+                        for (int j = 1; j <= 3; j++)
                         {
-                            stream.Seek(tempInsert.logic.location + (j * 37), SeekOrigin.Begin);
+                            stream.Seek(tempInsert.logic.location + (j * 35), SeekOrigin.Begin);
                             stream.Write(arr, 0, arr.Length);
                             stream.Seek(3, SeekOrigin.Current);
                             stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
@@ -1602,9 +1604,7 @@ namespace MLSSRandomizerForm
                     if (Form1.espresso)
                     {
                         if(Form1.espressoKey)
-                        {
                             ValidArrayAdd(new LocationData(data.location, data.item, data.itemType, 3, true, true, true, true, 3, true, true, true, true, true, true, true, true, 7, 0, true, 4, true, true));
-                        }
                         else
                             ValidArrayAdd(data);
                     }
@@ -1805,6 +1805,12 @@ namespace MLSSRandomizerForm
                     }
                     if (stream.Position >= 0x21D1CC)
                         break;
+                    if(currentPos == 0x21CDFC)
+                    {
+                        stream.Position = currentPos + 4;
+                        continue;
+                    }
+
                     byte[] temp = new byte[4];
                     stream.Position = currentPos;
                     stream.Read(temp, 0, 4);
@@ -1824,6 +1830,11 @@ namespace MLSSRandomizerForm
                         temp = (byte)stream.ReadByte();
                     }
                     if (stream.ReadByte() == 0xFF)
+                    {
+                        stream.Position = currentPos + 4;
+                        continue;
+                    }
+                    if (currentPos == 0x21CDFC)
                     {
                         stream.Position = currentPos + 4;
                         continue;
@@ -2500,6 +2511,11 @@ namespace MLSSRandomizerForm
                     stream.Write(new byte[] { 0x48, 0x30, 0x07, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
                     stream.Seek(0x25FE57, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x48, 0x30, 0x08, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
+                }
+                if(Form1.tattle)
+                {
+                    stream.Position = 0xD00000;
+                    stream.WriteByte(0x1);
                 }
             }
 

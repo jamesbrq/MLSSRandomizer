@@ -50,6 +50,12 @@
     .org 0x082000A4
         db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA ;Bros move advance
 
+    .org 0x0825DE86 ; Fast popple2 fight end
+        db 0x2, 0x10, 0xC, 0xE5, 0x25, 0x08
+
+    .org 0x08235FB5 ; Fast hermie fight start
+        db 0x2, 0x10, 0x07, 0x67, 0x23, 0x08
+
     .org 0x08250780 ; Fast chuckolator fight start
         db 0x2, 0x10, 0x04, 0x0b, 0x25, 0x08
 
@@ -634,6 +640,171 @@
     .org SHOP_SPRITE_MINI_HOOK
         bl SHOP_SPRITE_MINI_SUBR
 
+    .org POSITION_COMPARE_HOOK
+        bl POSITION_COMPARE
+
+    .org HP_SPOIL_HOOK
+        bl HP_SPOIL
+
+    .org TATTLE_INIT_HOOK
+        bl TATTLE_INIT
+
+
+    .org HP_SPOIL
+    push r1, lr
+    ldr r1, =0x08D00000
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    bne .spoil_norm
+    ldr r0, =TATTLE_TEXT
+    bl .spoil_end
+    .spoil_norm:
+    ldr r0, [r0]
+    ldr r0, [r0]
+    .spoil_end:
+    pop r1, pc
+    .pool
+    
+
+    .org TATTLE_INIT
+    push { r1-r3, lr }
+    ldr r1, =0x08D00000
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    bne .tattle_end1
+    mov r1, r5
+    add r1, #0xF6
+    ldrh r1, [r1]
+    ldr r0, =TATTLE_TEXT
+    ldr r2, =0x1388
+    cmp r1, r2
+    blt .tattle_norm
+    sub r1, r2
+    .tattle_norm:
+    bl WRITE_HP
+    mov r1, #0x2F
+    strb r1, [r0]
+    add r0, #0x1
+    mov r1, r5
+    add r1, #0xF8
+    ldrh r1, [r1]
+    ldr r2, =0x1388
+    cmp r1, r2
+    blt .tattle_norm2
+    sub r1, r2
+    .tattle_norm2:
+    bl WRITE_HP
+    mov r1, #0x0
+    strb r1, [r0]
+    bl .tattle_end
+    .tattle_end1:
+    ldr r0, [r0]
+    ldr r0, [r0]
+    bl .tattle_end2
+    .tattle_end:
+    ldr r0, =TATTLE_TEXT
+    .tattle_end2:
+    pop { r1-r3, lr }
+    .pool
+
+
+
+
+    .org POSITION_COMPARE
+    push lr
+    add r0, #0xF0
+    push r0-r4
+    ldr r4, =0x08D00000
+    ldrb r4, [r4]
+    cmp r4, #0x1
+    bne .pos_end
+    mov r4, r0
+    ldrh r1, [r0, #0x6]
+    ldr r0, =TATTLE_TEXT
+    ldr r2, =0x1388
+    cmp r1, r2
+    blt .compare_norm
+    sub r1, r2
+    .compare_norm:
+    bl WRITE_HP
+    mov r1, #0x2F
+    strb r1, [r0]
+    add r0, #0x1
+    mov r1, r4
+    ldrh r1, [r1, #0x8]
+    ldr r2, =0x1388
+    cmp r1, r2
+    blt .compare_norm2
+    sub r1, r2
+    .compare_norm2:
+    bl WRITE_HP
+    mov r1, #0x0
+    strb r1, [r0]
+    .pos_end:
+    pop r0-r4
+    ldr r1, [r0]
+    pop pc
+    .pool
+
+
+
+    .org WRITE_HP
+    push lr
+    mov r2, #0x64
+    .h_loop:
+    cmp r1, r2
+    blt .h_end
+    add r2, #0x64
+    bl .h_loop
+    .h_end:
+    sub r2, #0x64
+    sub r1, r2
+    push r0, r1
+    mov r0, r2
+    mov r1, #0x64
+    swi 0x6
+    mov r2, r0
+    pop r0, r1
+    cmp r2, #0xA
+    blt .h_norm
+    mov r3, #0x31
+    strb r3, [r0]
+    add r0, #0x1
+    sub r2, #0xA
+    add r2, #0x30
+    strb r2, [r0]
+    add r0, #0x1
+    .h_norm:
+    mov r2, #0xA
+    .t_loop:
+    cmp r1, r2
+    blt .t_end
+    add r2, #0xA
+    bl .t_loop
+    .t_end:
+    sub r2, #0xA
+    sub r1, r2
+    push r0, r1
+    mov r0, r2
+    mov r1, #0xA
+    swi 0x6
+    mov r2, r0
+    pop r0, r1
+    cmp r2, #0x0
+    beq .t_norm
+    add r2, #0x30
+    strb r2, [r0]
+    add r0, #0x1
+    .t_norm:
+    cmp r1, #0xA
+    blt .s_norm
+    .s_norm:
+    add r1, #0x30
+    strb r1, [r0]
+    add r0, #0x1
+    pop pc
+    .pool
+
 
 
     .org POW_SCALE_SUBR
@@ -743,13 +914,22 @@
     ldrb r2, [r2]
     cmp r2, #0x1
     bne .scale_norm
-    ldr r2, =0x030024B8
+    cmp r0, #0x4
+    ble .scale_norm
+    mov r2, r5
+    sub r2, #0x9
     ldrb r2, [r2]
     cmp r2, #0x5B
     beq .scale_norm
-    ldr r2, =0x030024B8
-    ldrb r2, [r2]
     cmp r2, #0x5C
+    beq .scale_norm
+    cmp r2, #0xB1
+    beq .scale_norm
+    cmp r2, #0xB2
+    beq .scale_norm
+    cmp r2, #0xB3
+    beq .scale_norm
+    cmp r2, #0xB4
     beq .scale_norm
     bl CALC_HEALTH
     strh r0, [r1]
@@ -765,24 +945,33 @@
 
 
     .org HP_SCALE_SUBR
-    push { r1, lr }
+    push { r1-r2, lr }
     ldr r1, =ERANDOM
     ldrb r1, [r1]
     cmp r1, #0x1
     bne .scale_end
-    ldr r2, =0x030024B8
+    cmp r0, #0x4
+    ble .scale_end
+    mov r2, r6
+    sub r2, #0xA
     ldrb r2, [r2]
     cmp r2, #0x5B
     beq .scale_end
-    ldr r2, =0x030024B8
-    ldrb r2, [r2]
     cmp r2, #0x5C
+    beq .scale_end
+    cmp r2, #0xB1
+    beq .scale_end
+    cmp r2, #0xB2
+    beq .scale_end
+    cmp r2, #0xB3
+    beq .scale_end
+    cmp r2, #0xB4
     beq .scale_end
     bl CALC_HEALTH
     .scale_end:
     strh r0, [r6]
     mov r6, r9
-    pop { r1, pc }
+    pop { r1-r2, pc }
     .pool
 
 
@@ -5218,7 +5407,12 @@
     mov r2, #0x2
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =0x020043EA ;sewer_4
+    ldr r0, =0x020043E9 ;sewer_4
+    ldrb r1, [r0]
+    mov r2, #0x20
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x020043EA ;sewer_5
     ldrb r1, [r0]
     mov r2, #0xF
     orr r1, r2
@@ -5251,6 +5445,11 @@
     ldr r0, =0x02004410 ; Chuckleroot Grandaughter Gate Flag
     ldrb r1, [r0]
     mov r2, #0x7
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x0200435B ; Hooniversity barrels
+    ldrb r1, [r0]
+    mov r2, #0x18
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004374
@@ -5865,7 +6064,7 @@
     ldrb r2, [r1]
     mov r3, #0x1
     and r3, r2
-    cmp r2, #0x1
+    cmp r3, #0x1
     bne .barrel_mini_end
     ldrb r1, [r0]
     mov r2, #0x20

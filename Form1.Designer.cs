@@ -139,6 +139,7 @@ namespace MLSSRandomizerForm
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog3 = new System.Windows.Forms.SaveFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.checkBox48 = new System.Windows.Forms.CheckBox();
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
@@ -1322,6 +1323,7 @@ namespace MLSSRandomizerForm
             // 
             // tabPage9
             // 
+            this.tabPage9.Controls.Add(this.checkBox48);
             this.tabPage9.Controls.Add(this.checkBox40);
             this.tabPage9.Controls.Add(this.label14);
             this.tabPage9.Controls.Add(this.radioButton6);
@@ -1492,6 +1494,18 @@ namespace MLSSRandomizerForm
             this.saveFileDialog3.DefaultExt = "txt";
             this.saveFileDialog3.Filter = "Text File (*.txt)|*.txt|All files (*.*)|*.*";
             this.saveFileDialog3.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog2_FileOk);
+            // 
+            // checkBox48
+            // 
+            this.checkBox48.AutoSize = true;
+            this.checkBox48.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox48.Location = new System.Drawing.Point(52, 139);
+            this.checkBox48.Name = "checkBox48";
+            this.checkBox48.Size = new System.Drawing.Size(112, 17);
+            this.checkBox48.TabIndex = 44;
+            this.checkBox48.Text = "Tattle Enemy HP?";
+            this.checkBox48.UseVisualStyleBackColor = true;
+            this.checkBox48.CheckedChanged += new System.EventHandler(this.checkBox48_CheckedChanged);
             // 
             // form1BindingSource
             // 
@@ -1666,6 +1680,7 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox46;
         private ToolTip toolTip1;
         private CheckBox checkBox47;
+        private CheckBox checkBox48;
     }
 }
 
