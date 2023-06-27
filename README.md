@@ -59,7 +59,7 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 # Discord
 
-[Discord](https://discord.gg/MVZ3hDyAuY) if you have any questions, concerns, and the like. We also hold races sometimes.
+[Discord](https://discord.gg/MVZ3hDyAuY) if you have any questions, or just wanna hang out. We also hold races sometimes.
 
 # Emotracker
 
