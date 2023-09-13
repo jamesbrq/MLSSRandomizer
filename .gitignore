@@ -1,3 +1,9 @@
 /obj/
 /bin/
 /asm/*.gba
+<<<<<<< HEAD
+/.vscode/
+/.vs/
+/bis/extraction/*.nds
+=======
+>>>>>>> parent of 1667a70 (Removing extraneous files)
