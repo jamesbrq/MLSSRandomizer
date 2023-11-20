@@ -4,7 +4,6 @@
     .include "Arrays.asm"
     .include "Variables.asm"
     .include "Badges.asm"
-    .include "Hint.asm"
     .include "Cutscenes.asm"
     .include "Sprites.asm"
 
@@ -53,9 +52,6 @@
     .org 0x0825DE86 ; Fast popple2 fight end
         db 0x2, 0x10, 0xC, 0xE5, 0x25, 0x08
 
-    .org 0x08235FB5 ; Fast hermie fight start
-        db 0x2, 0x10, 0x07, 0x67, 0x23, 0x08
-
     .org 0x08250780 ; Fast chuckolator fight start
         db 0x2, 0x10, 0x04, 0x0b, 0x25, 0x08
 
@@ -70,12 +66,24 @@
 
     .org GUFAWHA_SKIP_EXIT
         db 0x9, 0x52, 0x0, 0x4, 0xD, 0x8, 0x1
-
-    .org PIRANHA_BEAN_PATCH
-        db 0x2, 0x20, 0x91, 0xD1, 0x22, 0x8
     
     .org ROSE_WARNING
         db "Peasley's Rose Required"
+
+    .org AP_TEXT_BOX
+        db "AP Item", 0x0
+
+    .org AP_TEXT_EVENT
+        db 0x13, 0x2, 0xFF, 0xB, 0x1, 0xFF, 0x41, 0xFF, 0x25
+        db "You got an AP Item!"
+        db 0xFF, 0x11, 0x1, 0xFF, 0xA
+
+    .org AP_SHOP_HOOK
+        dw AP_SHOP2
+
+    .org AP_SHOP2
+        dw AP_TEXT_BOX
+        dw AP_TEXT_BOX
 
     .org CHUCKLISSA_WARNING
         db "Beanstar, Fake Beanstar, and", 0xFF, 0x0, "Peach's Extra Dress Required"
@@ -430,6 +438,9 @@
     .org BEANLET_FIX
         db 0x16
 
+    .org 0x08484DD0 ;Harhall Pants
+        db 0x16
+
     .org 0x084831E8 ; 1-up text
         db 0x16
 
@@ -646,8 +657,140 @@
     .org HP_SPOIL_HOOK
         bl HP_SPOIL
 
+    .org BROS_TATTLE
+        bl TATTLE_INIT
+
     .org TATTLE_INIT_HOOK
         bl TATTLE_INIT
+
+    .org AP_SHOP
+        bl AP_SHOP_SUBR
+
+    .org 0x080fde9a ;Mario BP
+        mov r0, #0x0
+
+    .org 0x080fe0c4 ;Luigi BP
+        mov r0, #0x0
+
+
+
+
+
+    .org AP_SHOP_SUBR
+    push r2, lr
+    add r0, #0x18
+    ldr r1, [r0]
+    ldr r2, =AP_RAM_L
+    str r1, [r2]
+    pop r2, pc
+    .pool
+
+
+
+
+
+
+    .org AP_ITEM
+    push { r0-r4, lr }
+    ldr r0, =AP_READ
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    beq .ap_end
+    cmp r0, #0x30
+    blt .ap_norm
+    cmp r0, #0x9E
+    bge .ap_badge
+    sub r0, #0x30
+    mov r1, r0
+    lsr r0, #0x4
+    lsl r1, #0x1C
+    lsr r1, #0x1C
+    cmp r1, #0x7
+    bgt .ap_bros
+    ldr r2, =KEY_ITEM
+    mov r3, #0x1
+    lsl r3, r1
+    ldrb r4, [r2, r0]
+    orr r4, r3
+    strb r4, [r2, r0]
+    bl .ap_end
+    .ap_badge:
+    sub r0, #0x9E
+    cmp r0, #0x2C
+    bgt .ap_pants
+    ldr r2, =BADGE_ADD + 1
+    mov r1, pc
+    bx r2
+    bl .ap_end
+    .ap_pants:
+    cmp r0, #0x5A
+    bge .ap_special
+    ldr r2, =PANTS_ADD + 1
+    mov r1, pc
+    bx r2
+    bl .ap_end
+    .ap_special:
+    ldr r2, =SPECIAL_ADD + 1
+    mov r1, pc
+    bx r2
+    bl .ap_end
+    .ap_bros:
+    cmp r1, #0x8
+    bne .ap_hand
+    ldr r0, =HAMMER
+    ldrb r2, [r0]
+    and r1, r2
+    cmp r1, #0x0
+    bne .ap_super
+    mov r1, #0x8
+    orr r2, r1
+    strb r2, [r0]
+    bl .ap_end
+    .ap_super:
+    mov r1, #0x10
+    and r1, r2
+    cmp r1, #0x0
+    bne .ap_ultra
+    mov r1, #0x10
+    orr r2, r1
+    strb r2, [r0]
+    bl .ap_end
+    .ap_ultra:
+    mov r1, #0x20
+    orr r2, r1
+    strb r2, [r0]
+    bl .ap_end
+    .ap_hand:
+    sub r1, #0x8
+    ldr r0, =HAMMER
+    ldrb r2, [r0, #0x1]
+    orr r2, r1
+    strb r2, [r0, #0x1]
+    bl .ap_end
+    .ap_norm:
+    sub r0, #0xA
+    ldr r1, =MUSHROOM
+    ldrb r2, [r1, r0]
+    cmp r2, #0xFF
+    beq .ap_clause
+    add r2, #0x1
+    strb r2, [r1, r0]
+    bl .ap_end
+    .ap_clause:
+    mov r2, #0x1
+    strb r2, [r1, r0]
+    bl .ap_end
+    .ap_end:
+    ldr r0, =AP_READ
+    mov r1, #0x0
+    strb r1, [r0]
+    pop { r0-r4, pc }
+    .pool
+
+
+
+
+
 
 
     .org HP_SPOIL
@@ -667,11 +810,15 @@
     
 
     .org TATTLE_INIT
-    push { r1-r3, lr }
+    push { r1-r5, lr }
     ldr r1, =0x08D00000
     ldrb r1, [r1]
     cmp r1, #0x1
     bne .tattle_end1
+    cmp r5, #0xFF
+    bgt .init_norm
+    mov r5, r4
+    .init_norm:
     mov r1, r5
     add r1, #0xF6
     ldrh r1, [r1]
@@ -704,7 +851,7 @@
     .tattle_end:
     ldr r0, =TATTLE_TEXT
     .tattle_end2:
-    pop { r1-r3, lr }
+    pop { r1-r5, lr }
     .pool
 
 
@@ -774,7 +921,27 @@
     add r2, #0x30
     strb r2, [r0]
     add r0, #0x1
+    ldr r2, =H_RAM
+    mov r3, #0x1
+    strb r3, [r2]
+    bl .h_skip
     .h_norm:
+    cmp r2, #0x0
+    beq .h_skip
+    add r2, #0x30
+    strb r2, [r0]
+    add r0, #0x1
+    ldr r2, =H_RAM
+    mov r3, #0x1
+    strb r3, [r2]
+    cmp r1, #0x0
+    bne .h_skip
+    mov r1, #0x30
+    strb r1, [r0]
+    add r0, #0x1
+    mov r1, #0x0
+    bl .s_norm
+    .h_skip:
     mov r2, #0xA
     .t_loop:
     cmp r1, r2
@@ -795,13 +962,22 @@
     add r2, #0x30
     strb r2, [r0]
     add r0, #0x1
+    bl .s_norm
     .t_norm:
-    cmp r1, #0xA
-    blt .s_norm
+    ldr r3, =H_RAM
+    ldrb r3, [r3]
+    cmp r3, #0x0
+    beq .s_norm
+    mov r2, #0x30
+    strb r2, [r0]
+    add r0, #0x1
     .s_norm:
     add r1, #0x30
     strb r1, [r0]
     add r0, #0x1
+    ldr r1, =H_RAM
+    mov r2, #0x0
+    strb r2, [r1]
     pop pc
     .pool
 
@@ -894,7 +1070,7 @@
     add r0, #0x1
     cmp r0, r6
     bne .bpiece_norm
-    mov r0, #0x1
+    mov r0, #0x5
     and r0, r4
     cmp r0, #0x0
     bne .bpiece_end
@@ -1234,7 +1410,15 @@
     ldr r2, =0x120
     cmp r0, r2
     beq .piranha
+    cmp r0, #0xA3
+    beq .harhall2
     bl .minigame_skip
+    .harhall2:
+    cmp r1, #0x8
+    bne .minigame_skip
+    ldr r0, =0x081E9444
+    ldrb r2, [r0]
+    bl .minigame_end
     .hand:
     cmp r1, #0x3
     bne .minigame_skip
@@ -1349,6 +1533,8 @@
     add r0, r4
     cmp r4, #0x2D
     beq .pmole_fix
+    cmp r4, #0x27
+    beq .pmole_fix
     strb r6, [r0]
     .pmole_fix:
     pop pc
@@ -1361,6 +1547,8 @@
     push lr
     cmp r4, #0x2D
     beq .pflag_end
+    cmp r4, #0x27
+    beq .pmole_fix
     strb r4, [r0]
     .pflag_end:
     mov r1, r8
@@ -1574,6 +1762,9 @@
 
     .org SHOP_INJECT_DATA
     push { r1, r2, r4, r5 }
+    ldr r1, =AP_INIT_L
+    mov r2, #0x1
+    strb r2, [r1]
     ldr r1, =SHOP_INJECT_RAM
     ldrb r1, [r1]
     cmp r1, #0x18
@@ -1650,6 +1841,8 @@
     bl BRO_RESTORE
     bl .shop_inject_skip 
     .shop_hands:
+    cmp r2, #0xF
+    beq .shop_inject_skip
     cmp r2, #0xB
     beq .shop_bro
     sub r2, #0x8
@@ -1776,6 +1969,8 @@
     ldr r1, =0x08E008C4
     bl .shop_text_norm
     .shop_text_hand:
+    cmp r3, #0xF
+    beq .shop_text_ap
     cmp r3, #0xB
     beq .shop_text_bro
     sub r3, #0x8
@@ -1784,6 +1979,9 @@
     mul r3, r2
     ldr r1, =BROS_ITEM_SHOP_ARRAY
     ldr r1, [r1, r3]
+    bl .shop_text_norm
+    .shop_text_ap:
+    ldr r1, =AP_SHOP_HOOK
     bl .shop_text_norm
     .shop_text_bean:
     sub r2, #0x2B
@@ -1865,6 +2063,8 @@
     ldr r1, =0x08E008C4
     bl .shop_desc_norm
     .shop_desc_hand:
+    cmp r3, #0xF
+    beq .shop_desc_ap
     cmp r3, #0xB
     beq .shop_desc_bro
     sub r3, #0x8
@@ -1874,6 +2074,8 @@
     ldr r1, =BROS_ITEM_SHOP_ARRAY
     ldr r1, [r1, r3]
     bl .shop_desc_norm
+    .shop_desc_ap:
+    ldr r1, =AP_SHOP_HOOK
     .shop_desc_bean:
     sub r2, #0x2B
     mov r3, #0x4
@@ -2247,6 +2449,7 @@
     mov r1, #0x80
     orr r3, r1
     strb r3, [r2]
+    .tolstar:
     ldr r2, =0x020042FC
     ldrb r3, [r2]
     mov r1, #0x1
@@ -2268,6 +2471,7 @@
     mov r1, #0x2
     orr r3, r1
     strb r3, [r2]
+    bl .tolstar
     .skip_norm:
     ldr r1, =0x02004338
     mov r2, #0x6
@@ -2310,6 +2514,7 @@
     bl BRO_HANDLER
     bl PEARL_SPOILER
     bl WARNING
+    bl AP_ITEM
     ldr r1, =0x03000375
     ldrb r1, [r1]
     mov r2, #0x3
@@ -2873,7 +3078,7 @@
     cmp r1, #0x8
     bne .rose_hand
     ldr r0, =HAMMER
-    ldrb r2, [r1]
+    ldrb r2, [r0]
     and r1, r2
     cmp r1, #0x0
     bne .rose_super
@@ -2899,6 +3104,8 @@
     ldr r3, =ULTRA_HAMMER_TEXT
     bl .rose_end
     .rose_hand:
+    cmp r1, #0xF
+    beq .rose_ap
     cmp r1, #0xB
     beq .rose_bro
     sub r1, #0x8
@@ -2909,6 +3116,9 @@
     cmp r1, #0x1
     bne .rose_thunder
     ldr r3, =FIRE_TEXT
+    bl .rose_end
+    .rose_ap:
+    ldr r3, =AP_TEXT_BOX
     bl .rose_end
     .rose_thunder:
     ldr r3, =THUNDER_TEXT
@@ -3921,6 +4131,19 @@
     mov r1, #0x1
     strb r1, [r2]
     .no_fruit:
+    ldr r1, =0x084F2AB4
+    cmp r1, r7
+    bne .harhall_skip
+    ldr r1, =0x081E9444
+    ldrb r1, [r1]
+    ldr r2, =TEXT_VAR
+    add r1, r2
+    ldr r2, =TEXT_ITEM
+    str r1, [r2]
+    ldr r2, =FRUIT_REMOVE_RAM
+    mov r1, #0x1
+    strb r1, [r2]
+    .harhall_skip:
     ldr r2, =TEXT_ITEM_SUBR + 1
     mov r1, pc
     bx r2
@@ -4023,10 +4246,30 @@
     cmp r1, #0x2
     beq .fire_drop
     cmp r1, #0x3
-    beq .thunder_drop
+    beq .thunder_drop2
     cmp r1, #0x4
     beq .bro_drop2
+    cmp r1, #0x8
+    beq .ap_drop
     bl .bros_end
+
+    .ap_drop:
+    ldr r0, =BROS_RAM
+    ldrb r0, [r0]
+    mov r1, #0xF0
+    and r1, r0
+    cmp r1, #0x10
+    bne .ap_item_box
+    ldr r1, =BROS_ITEM_BUFFER
+    ldr r0, =AP_TEXT_BOX
+    sub r0, #0x1
+    str r0, [r1]
+    bl .bros_item_textbox
+    .ap_item_box:
+    ldr r0, =BROS_ITEM_BUFFER
+    ldr r1, =AP_TEXT_EVENT
+    str r1, [r0]
+    bl .bros_item_textbox
 
     .hammer_drop:
     ldr r0, =HAMMER
@@ -4116,6 +4359,9 @@
 
     .bro_drop2:
     bl .bro_drop
+
+    .thunder_drop2:
+    bl .thunder_drop
 
     .fire_drop:
     ldr r0, =HAMMER
@@ -4224,6 +4470,7 @@
     ldr r2, =BROS_ITEM_BUFFER
     ldr r2, [r2]
     str r2, [r1]
+    bl .bros_end
     .hand_box_check:
     ldr r1, =HAND_TEXT_RAM
     ldr r2, =BROS_ITEM_BUFFER
@@ -5432,9 +5679,9 @@
     mov r2, #0x8
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =0x02004340 ; Post-oasis peasley cutscene flag
+    ldr r0, =0x02004340 ; Post-oasis peasley cutscene flag + south of pipe 8 cutscene
     ldrb r1, [r0]
-    mov r2, #0x4
+    mov r2, #0x14
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x020042FC ; Wiggler speed-up
@@ -5599,12 +5846,8 @@
 
     .org JUMP_TUT
     push r1
-    ldr r0, =ROOM
-    ldrb r0, [r0]
-    cmp r0, #0x66
-    bne .jump_tut_end
     ldr r0, =0x020042F8
-    mov r1, #0xFC
+    mov r1, #0x7C
     strb r1, [r0]
     ldr r0, =0x020042FA
     ldrb r1, [r0]
@@ -5626,7 +5869,6 @@
     mov r2, #0x80
     orr r1, r2
     strb r1, [r0]
-    .jump_tut_end:
     pop r1
     add r1, #0x1
     bx r1
@@ -6100,6 +6342,11 @@
 
     .org KOOPA_BLOCK_DATA
     push r0-r2
+    ldr r0, =AP_LOGO
+    ldr r1, =0x53534C4D
+    str r1, [r0]
+    ldr r1, =0x5041
+    strh r1, [r0, #0x4]
     ldr r0, =PEARL_SPOIL_RAM
     mov r1, #0x0
     strb r1, [r0]
@@ -6178,6 +6425,8 @@
     ldr r1, =0x1D5
     cmp r0, r1
     bge .restore_skip
+    cmp r0, #0xFD
+    beq .restore_skip
     ldr r2, =PEARL_RESTORE + 1
     mov r1, pc
     bx r2

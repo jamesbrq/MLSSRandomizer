@@ -4,7 +4,7 @@ SPECIAL equ 0x02004982
 BADGE_FLAGS equ 0x02004992
 PANTS_FLAGS equ 0x020049CA
 SPECIAL_FLAGS equ 0x02004A02
-BADGE_ADD equ 0x08E01900
+BADGE_ADD equ 0x08E01950
 PANTS_ADD equ 0x08E01A00
 SPECIAL_ADD equ 0x08E01B00
 BADGE_SHOP_HOOK equ 0x0812AE7C
@@ -53,6 +53,10 @@ BSHOP_RAM equ 0x0200302D
 BUY_RAM equ 0x0200302E
 PANTS_SPRITE_HOOK equ 0x0812D87E
 PANTS_SPRITE_SUBR equ 0x081E0800
+AP_RAM equ 0x0200304C
+AP_INIT equ 0x0200304B
+AP_BADGE_HOOK equ 0x0812AE70
+AP_BADGE_SUBR equ 0x081DFDC0
 
 
 
@@ -150,6 +154,23 @@ PANTS_SPRITE_SUBR equ 0x081E0800
 
 .org PANTS_SPRITE_HOOK
 	bl PANTS_SPRITE_SUBR
+
+.org AP_BADGE_HOOK
+	bl AP_BADGE_SUBR
+
+
+
+
+
+
+.org AP_BADGE_SUBR
+push r2, lr
+add r0, #0x18
+ldr r1, [r0]
+ldr r2, =AP_RAM
+str r1, [r2]
+pop r2, pc
+.pool
 
 
 
@@ -311,6 +332,9 @@ pop { r1-r4, pc }
 
 .org BADGE_BUY_DATA
 push r1-r4
+ldr r1, =AP_INIT
+mov r2, 0x1
+strb r2, [r1]
 cmp r0, #0x30
 bge .pants_key
 sub r0, #0xA
@@ -591,6 +615,8 @@ bl .text_norm
 ldr r1, =0x08E008C4
 bl .text_norm
 .text_hands:
+cmp r3, #0xF
+beq .text_ap
 cmp r3, #0xB
 beq .text_bro
 sub r3, #0x8
@@ -599,6 +625,9 @@ add r3, #0x2
 mov r4, #0x4
 mul r3, r4
 ldr r1, [r2, r3]
+bl .text_norm
+.text_ap:
+ldr r1, =AP_SHOP_HOOK
 bl .text_norm
 .text_badge:
 sub r2, #0x9E
@@ -684,6 +713,8 @@ bl .desc_norm
 ldr r2, =0x08E008C4
 bl .desc_norm
 .desc_hands:
+cmp r4, #0xF
+beq .desc_ap
 cmp r4, #0xB
 beq .desc_bro
 sub r4, #0x8
@@ -691,6 +722,9 @@ ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
 lsl r4, #0x2
 ldr r2, [r3, r4]
+bl .desc_norm
+.desc_ap:
+ldr r2, =AP_SHOP_HOOK
 bl .desc_norm
 .desc_badge:
 sub r3, #0x9E
@@ -780,6 +814,8 @@ bl .desc_norm2
 ldr r2, =0x08E008C4
 bl .desc_norm2
 .desc_hands2:
+cmp r4, #0xF
+beq .desc_ap2
 cmp r4, #0xB
 beq .desc_bro2
 sub r4, #0x8
@@ -787,6 +823,9 @@ ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
 lsl r4, #0x2
 ldr r2, [r3, r4]
+bl .desc_norm2
+.desc_ap2:
+ldr r2, =AP_SHOP_HOOK
 bl .desc_norm2
 .desc_badge2:
 sub r3, #0x9E

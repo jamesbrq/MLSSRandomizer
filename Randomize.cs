@@ -108,8 +108,10 @@ namespace MLSSRandomizerForm
                 if (!File.Exists(Environment.CurrentDirectory + "/asm/mlss.gba"))
                     File.Copy(path, Environment.CurrentDirectory + "/asm/mlss.gba");
                 stream = new FileStream(Environment.CurrentDirectory + "/asm/mlss.gba", FileMode.Open);
-                FreshArrayPopulate();
                 SeedInitialize(seed);
+                if (Form1.rSettings)
+                    RandomSettings();
+                FreshArrayPopulate();
                 CheckOptions();
             }
             if (gameId == 3)
@@ -464,6 +466,95 @@ namespace MLSSRandomizerForm
         }
 
 
+        public void RandomSettings()
+        {
+            Form1.chuckle = random.Next(1, 4);
+            Form1.bosses = random.Next(1, 4);
+            Form1.intro = Convert.ToBoolean(random.Next(0, 2));
+            Form1.mush = Convert.ToBoolean(random.Next(0, 2));
+            Form1.rose = Convert.ToBoolean(random.Next(0, 2));
+            Form1.brooch = Convert.ToBoolean(random.Next(0, 2));
+            Form1.chuckola = Convert.ToBoolean(random.Next(0, 2));
+            Form1.membership = Convert.ToBoolean(random.Next(0, 2));
+            Form1.winkle = Convert.ToBoolean(random.Next(0, 2));
+            Form1.beanstar = Convert.ToBoolean(random.Next(0, 2));
+            Form1.dress = Convert.ToBoolean(random.Next(0, 2));
+            Form1.fruit = Convert.ToBoolean(random.Next(0, 2));
+            Form1.eggs = Convert.ToBoolean(random.Next(0, 2));
+            Form1.scrolls = Convert.ToBoolean(random.Next(0, 2));
+            Form1.beanstone = Convert.ToBoolean(random.Next(0, 2));
+            Form1.beanlet = Convert.ToBoolean(random.Next(0, 2));
+            Form1.hammers = Convert.ToBoolean(random.Next(0, 2));
+            Form1.goblets = Convert.ToBoolean(random.Next(0, 2));
+            Form1.hands = Convert.ToBoolean(random.Next(0, 2));
+            Form1.pearls = Convert.ToBoolean(random.Next(0, 2));
+            Form1.shops = Convert.ToBoolean(random.Next(0, 2));
+            Form1.espresso = Convert.ToBoolean(random.Next(0, 2));
+            Form1.pants = Convert.ToBoolean(random.Next(0, 2));
+            Form1.badges = Convert.ToBoolean(random.Next(0, 2));
+            Form1.surf = Convert.ToBoolean(random.Next(0, 2));
+            Form1.castle = Convert.ToBoolean(random.Next(0, 2));
+            Form1.enemy = Convert.ToBoolean(random.Next(0, 2));
+            Form1.brosBp = Convert.ToBoolean(random.Next(0, 2));
+            Form1.itemHeal = Convert.ToBoolean(random.Next(0, 2));
+            Form1.coffeeValue = Convert.ToBoolean(random.Next(0, 2));
+            Form1.music = Convert.ToBoolean(random.Next(0, 2));
+            Form1.background = Convert.ToBoolean(random.Next(0, 2));
+            Form1.scale = Convert.ToBoolean(random.Next(0, 2));
+            Form1.minecart = Convert.ToBoolean(random.Next(0, 2));
+            Form1.spangle = Convert.ToBoolean(random.Next(0, 2));
+            Form1.pieces = Convert.ToBoolean(random.Next(0, 2));
+            Form1.minigame = Convert.ToBoolean(random.Next(0, 2));
+            Form1.mDisable = Convert.ToBoolean(random.Next(0, 2));
+            Form1.sounds = Convert.ToBoolean(random.Next(0, 2));
+            Form1.castletown = Convert.ToBoolean(random.Next(0, 2));
+            Form1.visible = Convert.ToBoolean(random.Next(0, 2));
+            Form1.invisible = Convert.ToBoolean(random.Next(0, 2));
+            Form1.removeHidden = Convert.ToBoolean(random.Next(0, 2));
+            Form1.espressoKey = Convert.ToBoolean(random.Next(0, 2));
+            Form1.tattle = Convert.ToBoolean(random.Next(0, 2));
+            Form1.items = true;
+            Form1.harhall = Convert.ToBoolean(random.Next(0, 2));
+            Form1.coins = Convert.ToBoolean(random.Next(0, 2));
+            Form1.mario = Convert.ToBoolean(random.Next(0, 2));
+            Form1.luigi = Convert.ToBoolean(random.Next(0, 2));
+            Form1.mColor = "Random";
+            Form1.lColor = "Random";
+            Form1.mPants = "Random";
+            Form1.lPants = "Random";
+            if ((!Form1.intro || !Form1.castletown) ? (!Form1.intro && !Form1.castletown) : true)
+            {
+                if (random.Next(0, 2) == 0)
+                {
+                    Form1.intro = true;
+                    Form1.castletown = false;
+                }
+                else
+                {
+                    Form1.intro = false;
+                    Form1.castletown = true;
+                }
+            }
+            if (Form1.mario && Form1.luigi)
+            {
+                if (random.Next(0, 2) == 0)
+                {
+                    Form1.luigi = false;
+                }
+                else
+                {
+                    Form1.mario = false;
+                }
+            }
+            if (Form1.invisible && Form1.removeHidden)
+            {
+                Form1.removeHidden = false;
+            }
+        }
+
+
+
+
 
 
         public void SpriteReplace()
@@ -509,7 +600,6 @@ namespace MLSSRandomizerForm
                 return;
             FillRoomArray();
             NewShuffle();
-            //OceanShuffle();
         }
 
         public byte[] ScriptDoorArr(byte[] arr)
@@ -546,47 +636,6 @@ namespace MLSSRandomizerForm
             list.Add(bytes2[0]);
             return list.ToArray();
         }
-
-        public void OceanShuffle()
-        {
-            List<Door> doorArray = new List<Door>(oceanDoorArray);
-            List<Door> insertArray = new List<Door>(oceanDoorArray);
-            doorArray.Shuffle(random);
-            for (int i = doorArray.Count - 1; i >= 0; i--)
-            {
-                stream.Seek(insertArray[0].logic.location + 4, SeekOrigin.Begin);
-                stream.Write(doorArray[i].arr, 0, doorArray[i].arr.Length);
-                Door temp = new Door();
-                Door tempInsert = new Door();
-                try
-                {
-                    temp = freshRoomArray.Where(c => c.id == insertArray[0].returnRoom).ToList()[0].doors[insertArray[0].returnIndex];
-                    tempInsert = freshRoomArray.Where(c => c.id == doorArray[i].returnRoom).ToList()[0].doors[doorArray[i].returnIndex];
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine((int)Math.Floor(GetRoomId(insertArray[0])));
-                    Console.WriteLine((int)Math.Floor(GetRoomId(doorArray[i])));
-                }
-                stream.Seek(tempInsert.logic.location + 4, SeekOrigin.Begin);
-                stream.Write(temp.arr, 0, temp.arr.Length);
-                doorArray.RemoveAt(i);
-                doorArray.Remove(temp);
-                insertArray.RemoveAt(0);
-                insertArray.Remove(tempInsert);
-                if (i > doorArray.Count)
-                    i = doorArray.Count;
-                if (insertArray.Count == 0)
-                    break;
-            }
-        }
-
-
-        public bool CheckDoorValidity()
-        {
-            return true;
-        }
-
 
 
         public int GetReturnIndex(Door door)
@@ -1027,6 +1076,29 @@ namespace MLSSRandomizerForm
             spoilerArray.Sort((x, y) => string.Compare(x.itemName, y.itemName));
         }
 
+        public void Test()
+        {
+            List<(uint, int)> count = new System.Collections.Generic.List<(uint, int)>();
+            foreach(LocationData data in freshLocationArray.Where(c => c.itemType < 4).ToList())
+            {
+                try
+                {
+                    (uint, int) temp = count.Where(c => c.Item1 == data.item).ToList()[0];
+                    (uint, int) n = (temp.Item1, temp.Item2 + 1);
+                    count[count.FindIndex(c => c == temp)] = n;
+                }
+                catch(Exception e)
+                {
+                    count.Add((data.item, 1));
+                }
+            }
+            count.Sort(Comparer<(uint, int)>.Default);
+            long total = 0;
+            for(int i = 0; i < count.Count; i++)
+                total += count[i].Item2;
+            Console.WriteLine("Done.");
+        }
+
         public void HintWrite()
         {
             List<(int, uint)> temp = new List<(int, uint)>();
@@ -1119,53 +1191,59 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 list.Add("Randomizer Version: " + Form1.progVersion);
-                list.Add("Seed Type: " + Form1.seedType);
-                list.Add("Chuckle: " + Form1.chuckle);
-                list.Add("Hidden Blocks Visible: " + Form1.visible);
-                list.Add("Item Blocks Invisible: " + Form1.invisible);
-                list.Add("Remove Hidden Blocks: " + Form1.removeHidden);
-                list.Add("Rose: " + Form1.rose);
-                list.Add("Brooch: " + Form1.brooch);
-                list.Add("Chuckola Fruit: " + Form1.chuckola);
-                list.Add("Membership Card: " + Form1.membership);
-                list.Add("Winkle Card: " + Form1.winkle);
-                list.Add("Extra Dress: " + Form1.dress);
-                list.Add("Fake Beanstar: " + Form1.beanstar);
-                list.Add("Secret Scrolls: " + Form1.scrolls);
-                list.Add("Beanfruit: " + Form1.fruit);
-                list.Add("Neon Eggs: " + Form1.eggs);
-                list.Add("Beanstones: " + Form1.beanstone);
-                list.Add("Beanlets: " + Form1.beanlet);
-                list.Add("Spangle: " + Form1.spangle);
-                list.Add("Beanstar Pieces: " + Form1.pieces);
-                list.Add("Hammers: " + Form1.hammers);
-                list.Add("Hammer Moves: " + Form1.goblets);
-                list.Add("Hands: " + Form1.hands);
-                list.Add("Hand Moves: " + Form1.pearls);
-                list.Add("Item Shops: " + Form1.shops);
-                list.Add("Badges: " + Form1.badges);
-                list.Add("Pants: " + Form1.pants);
-                list.Add("Espresso: " + Form1.espresso);
-                list.Add("EspressoKey: " + Form1.espressoKey);
-                list.Add("BP Costs: " + Form1.brosBp);
-                list.Add("Item Heal: " + Form1.itemHeal);
-                list.Add("Espresso Stats: " + Form1.coffeeValue);
-                list.Add("Disable Mush: " + Form1.mush);
-                list.Add("Disable Surf: " + Form1.surf);
-                list.Add("Skip Minecart: " + Form1.minecart);
-                list.Add("Skip Bowsers: " + Form1.castle);
-                list.Add("Skip intro: " + Form1.intro);
-                list.Add("Start Castle: " + Form1.castletown);
-                list.Add("Minigame Spoilers: " + Form1.minigame);
-                list.Add("Random Mario: " + Form1.mario);
-                list.Add("Random Luigi: " + Form1.luigi);
-                list.Add("Random Enemies: " + Form1.enemy);
-                list.Add("Random Bosses: " + Form1.bosses);
-                list.Add("Scale HP: " + Form1.scale);
-                list.Add("Random POW: " + Form1.pow);
+                list.Add("Seed Type: " + Form1.seedType.ToString());
+                list.Add("Chuckle: " + Form1.chuckle.ToString());
+                list.Add("Item Blocks / Moles: " + Form1.items.ToString());
+                list.Add("Coins: " + Form1.coins.ToString());
+                list.Add("Hidden Blocks Visible: " + Form1.visible.ToString());
+                list.Add("Item Blocks Invisible: " + Form1.invisible.ToString());
+                list.Add("Remove Hidden Blocks: " + Form1.removeHidden.ToString());
+                list.Add("Harhall's Pants: " + Form1.harhall.ToString());
+                list.Add("Rose: " + Form1.rose.ToString());
+                list.Add("Brooch: " + Form1.brooch.ToString());
+                list.Add("Chuckola Fruit: " + Form1.chuckola.ToString());
+                list.Add("Membership Card: " + Form1.membership.ToString());
+                list.Add("Winkle Card: " + Form1.winkle.ToString());
+                list.Add("Extra Dress: " + Form1.dress.ToString());
+                list.Add("Fake Beanstar: " + Form1.beanstar.ToString());
+                list.Add("Secret Scrolls: " + Form1.scrolls.ToString());
+                list.Add("Beanfruit: " + Form1.fruit.ToString());
+                list.Add("Neon Eggs: " + Form1.eggs.ToString());
+                list.Add("Beanstones: " + Form1.beanstone.ToString());
+                list.Add("Beanlets: " + Form1.beanlet.ToString());
+                list.Add("Spangle: " + Form1.spangle.ToString());
+                list.Add("Beanstar Pieces: " + Form1.pieces.ToString());
+                list.Add("Hammers: " + Form1.hammers.ToString());
+                list.Add("Hammer Moves: " + Form1.goblets.ToString());
+                list.Add("Hands: " + Form1.hands.ToString());
+                list.Add("Hand Moves: " + Form1.pearls.ToString());
+                list.Add("Item Shops: " + Form1.shops.ToString());
+                list.Add("Badges: " + Form1.badges.ToString());
+                list.Add("Pants: " + Form1.pants.ToString());
+                list.Add("Espresso: " + Form1.espresso.ToString());
+                list.Add("EspressoKey: " + Form1.espressoKey.ToString());
+                list.Add("BP Costs: " + Form1.brosBp.ToString());
+                list.Add("Item Heal: " + Form1.itemHeal.ToString());
+                list.Add("Espresso Stats: " + Form1.coffeeValue.ToString());
+                list.Add("Disable Mush: " + Form1.mush.ToString());
+                list.Add("Disable Surf: " + Form1.surf.ToString());
+                list.Add("Skip Minecart: " + Form1.minecart.ToString());
+                list.Add("Skip Bowsers: " + Form1.castle.ToString());
+                list.Add("Skip intro: " + Form1.intro.ToString());
+                list.Add("Start Castle: " + Form1.castletown.ToString());
+                list.Add("Minigame Spoilers: " + Form1.minigame.ToString());
+                list.Add("Random Mario: " + Form1.mario.ToString());
+                list.Add("Random Luigi: " + Form1.luigi.ToString());
+                list.Add("Random Enemies: " + Form1.enemy.ToString());
+                list.Add("Random Bosses: " + Form1.bosses.ToString());
+                list.Add("Scale HP: " + Form1.scale.ToString());
+                list.Add("Scale POW: " + Form1.pow.ToString());
+                list.Add("Tattle HP: " + Form1.tattle.ToString());
                 list.Add(" ");
             }
         }
+
+
 
         public bool CheckValidity(List<dynamic> data)
         {
@@ -1278,8 +1356,20 @@ namespace MLSSRandomizerForm
                 LocationData tempData = new LocationData();
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
-
-                    if (data.location == 0x39DB0F)
+                    if ((!Form1.items && (data.item != 0x1E)) && (data.item != 0x1D))
+                    {
+                        if (Form1.invisible && data.itemType == 0)
+                        {
+                            stream.Seek(data.location - 6, SeekOrigin.Begin);
+                            if (stream.ReadByte() == 0)
+                            {
+                                stream.Seek(-1, SeekOrigin.Current);
+                                stream.WriteByte(0x10);
+                            }
+                        }
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                    else if (data.location == 0x39DB0F)
                     {
                         if (Form1.minecart || Form1.chuckle != 3)
                         {
@@ -1292,16 +1382,19 @@ namespace MLSSRandomizerForm
                             continue;
                         }
                     }
+                    else 
+                    { 
 
-                    if(Form1.removeHidden)
+
+                    if (Form1.removeHidden)
                     {
-                        if(data.itemType == 0 && data.item != 0x1E)
+                        if (data.itemType == 0 && data.item != 0x1E)
                         {
                             stream.Seek(data.location - 6, SeekOrigin.Begin);
                             if (stream.ReadByte() == 0x10)
                             {
                                 ItemInject(data.location, data.itemType, (byte)data.item);
-                                if(Form1.visible)
+                                if (Form1.visible)
                                 {
                                     stream.Seek(data.location - 6, SeekOrigin.Begin);
                                     stream.WriteByte(0x0);
@@ -1391,6 +1484,143 @@ namespace MLSSRandomizerForm
                                 stream.Seek(-1, SeekOrigin.Current);
                                 stream.WriteByte(0x10);
                             }
+                        }
+                    }
+                }
+
+                }
+                optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (Form1.espresso)
+                    {
+                        if(Form1.espressoKey)
+                            ValidArrayAdd(new LocationData(data.location, data.item, data.itemType, 3, true, true, true, true, 3, true, true, true, true, true, true, true, true, 7, 0, true, 4, true, true));
+                        else
+                            ValidArrayAdd(data);
+                    }
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                }
+                optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (Form1.shops)
+                    {
+                        ValidArrayAdd(data);
+                    }
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                }
+                optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (Form1.surf && data.item == 0xEB)
+                    {
+                        ItemInject(data.location, data.itemType, 0xEB);
+                        goto surfSkip;
+                    }
+
+                    if (Form1.pants)
+                    {
+                        ValidArrayAdd(data);
+                    }
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                    surfSkip:;
+                }
+                optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (Form1.mush && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
+                    {
+                        ItemInject(data.location, data.itemType, 0xA);
+                        goto mushSkip;
+                    }
+
+                    if (data.item == 0x9E)
+                    {
+                        ItemInject(data.location, data.itemType, 0x9E);
+                        goto mushSkip;
+                    }
+
+
+                    if (data.item == 0xF1)
+                    {
+                        if (Form1.harhall)
+                        {
+                            ValidArrayAdd(data);
+                            continue;
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                            continue;
+                        }
+                    }
+
+                    if (Form1.badges)
+                    {
+                        ValidArrayAdd(data);
+                    }
+                    else
+                    {
+                        ItemInject(data.location, data.itemType, (byte)data.item);
+                    }
+                    mushSkip:;
+                }
+                optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Coins.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (Form1.coins)
+                    {
+                        ValidArrayAdd(data);
+                    }
+                    if (Form1.invisible)
+                    {
+                        stream.Position = data.location - 6;
+                        stream.WriteByte(0x10);
+                    }
+
+                }
+                optionsArray = new List<dynamic>();
+                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
+                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
+                {
+                    if (data.item == 0x38)
+                    {
+                        if (Form1.hammers)
+                        {
+                            ValidArrayAdd(data);
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                        }
+                    }
+
+                    if (data.item == 0x39 || data.item == 0x3A)
+                    {
+                        if (Form1.hands)
+                        {
+                            ValidArrayAdd(data);
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                            stream.Seek(0x1e9411, SeekOrigin.Begin);
+                            stream.WriteByte(0x1);
                         }
                     }
                 }
@@ -1566,111 +1796,6 @@ namespace MLSSRandomizerForm
                         }
                     }
 
-                }
-                optionsArray = new List<dynamic>();
-                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
-                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
-                {
-                    if (data.item == 0x38)
-                    {
-                        if (Form1.hammers)
-                        {
-                            ValidArrayAdd(data);
-                        }
-                        else
-                        {
-                            ItemInject(data.location, data.itemType, (byte)data.item);
-                        }
-                    }
-
-                    if (data.item == 0x39 || data.item == 0x3A)
-                    {
-                        if (Form1.hands)
-                        {
-                            ValidArrayAdd(data);
-                        }
-                        else
-                        {
-                            ItemInject(data.location, data.itemType, (byte)data.item);
-                            stream.Seek(0x1e9411, SeekOrigin.Begin);
-                            stream.WriteByte(0x1);
-                        }
-                    }
-                }
-                optionsArray = new List<dynamic>();
-                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
-                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
-                {
-                    if (Form1.espresso)
-                    {
-                        if(Form1.espressoKey)
-                            ValidArrayAdd(new LocationData(data.location, data.item, data.itemType, 3, true, true, true, true, 3, true, true, true, true, true, true, true, true, 7, 0, true, 4, true, true));
-                        else
-                            ValidArrayAdd(data);
-                    }
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-                optionsArray = new List<dynamic>();
-                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
-                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
-                {
-                    if (Form1.shops)
-                    {
-                        ValidArrayAdd(data);
-                    }
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                }
-                optionsArray = new List<dynamic>();
-                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
-                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
-                {
-                    if (Form1.surf && data.item == 0xEB)
-                    {
-                        ItemInject(data.location, data.itemType, 0xEB);
-                        goto surfSkip;
-                    }
-
-                    if (Form1.pants)
-                    {
-                        ValidArrayAdd(data);
-                    }
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                    surfSkip:;
-                }
-                optionsArray = new List<dynamic>();
-                ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
-                foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
-                {
-                    if (Form1.mush && (data.item == 0xAB || data.item == 0xAD || data.item == 0xA7))
-                    {
-                        ItemInject(data.location, data.itemType, 0xA);
-                        goto mushSkip;
-                    }
-
-                    if (data.item == 0x9E)
-                    {
-                        ItemInject(data.location, data.itemType, 0x9E);
-                        goto mushSkip;
-                    }
-
-                    if (Form1.badges)
-                    {
-                        ValidArrayAdd(data);
-                    }
-                    else
-                    {
-                        ItemInject(data.location, data.itemType, (byte)data.item);
-                    }
-                    mushSkip:;
                 }
                 optionsArray = new List<dynamic>();      
             }
@@ -2007,16 +2132,6 @@ namespace MLSSRandomizerForm
                     {
                         if (i < tempgroup.id.Count)
                         {
-                            for (int j = 0; j < enemyCount.Count; j++)
-                            {
-                                if (tempgroup.id[i] == enemyCount[j].id)
-                                {
-                                    StatCount temp = enemyCount[j];
-                                    temp.total += count;
-                                    enemyCount[j] = temp;
-                                    break;
-                                }
-                            }
                             stream.Seek(Convert.ToUInt32(str, 16) + 8 + (i * 4), SeekOrigin.Begin);
                             stream.WriteByte(tempgroup.id[i]);
                             stream.Seek(1, SeekOrigin.Current);
@@ -2412,27 +2527,31 @@ namespace MLSSRandomizerForm
                 locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Reverse();
                 rBegin:
-                itemArray = itemArray.OrderBy(c => random.Next()).ToList();
                 List<dynamic> tempItemArray = new List<dynamic>(itemArray);
                 List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
+                tempLocationArray.Shuffle(random);
                 List<dynamic> fakeLocationsArray = new List<dynamic>();
-                for (int i = freshItemArray.Count - 1; i >= 0; i--)
+                while(true)
                 {
-                    int retryCount = 0;
-                    reInsert:
-                    if (CheckValidSpot(tempLocationArray[i], tempItemArray[i]))
+                    List<dynamic> count = tempLocationArray.Where(c => !CheckValidSpot(c, tempItemArray.Last())).ToList();
+                    if (count.Count > 0)
                     {
-                        if (retryCount > 50)
-                            break;
-                        retryCount++;
-                        tempLocationArray.Shuffle(random);
-                        goto reInsert;
+                        LocationData tempData = count[random.Next(count.Count)];
+                        tempLocationArray.Remove(tempData);
+                        tempData.item = tempItemArray.Last();
+                        fakeLocationsArray.Add(tempData);
+                        tempItemArray.RemoveAt(tempItemArray.Count - 1);
                     }
-                    LocationData temp = tempLocationArray[i];
-                    temp.item = itemArray[i];
-                    fakeLocationsArray.Add(temp);
-                    tempLocationArray.RemoveAt(i);
-                    tempItemArray.RemoveAt(i);
+                    else
+                    {
+                        Debug.WriteLine(tempItemArray.Count);
+                        break;
+                    }
+                    if (tempItemArray.Count == 0)
+                    {
+                        Debug.WriteLine("ZERO ITEMS");
+                        break;
+                    }
                 }
                 gameState = new LocationData(0);
                 if (!CheckValidity(fakeLocationsArray))
@@ -2507,8 +2626,6 @@ namespace MLSSRandomizerForm
                     stream.Write(new byte[] { 0x48, 0x30, 0x06, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
                     stream.Seek(0x25FE22, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x48, 0x30, 0x07, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
-                    stream.Seek(0x25FE22, SeekOrigin.Begin);
-                    stream.Write(new byte[] { 0x48, 0x30, 0x07, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
                     stream.Seek(0x25FE57, SeekOrigin.Begin);
                     stream.Write(new byte[] { 0x48, 0x30, 0x08, 0x80, 0xE4, 0x0, 0xF }, 0, 7);
                 }
@@ -2579,6 +2696,9 @@ namespace MLSSRandomizerForm
                 else
                     return false;
             } */
+
+            if(item < 0xA && data.itemType == 1)
+                return true;
 
             switch (item)
             {

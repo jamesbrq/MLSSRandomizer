@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Security.Cryptography;
@@ -12,11 +13,10 @@ namespace MLSSRandomizerForm
     public partial class Form1 : Form
     {
         public int gameId;
-        public static string progVersion; // ProductVersion on AssemblyInfo.cs, [AssemblyInformationalVersion(...)]
-        string filePath;
-        string seed;
-
-        Dictionary<string, int> config = new Dictionary<string, int>();
+        public static string progVersion;
+        private string filePath;
+        private string seed;
+        private Dictionary<string, int> config = new Dictionary<string, int>();
         public static int chuckle = 3;
         public static int bosses = 1;
         public static bool intro = false;
@@ -63,6 +63,10 @@ namespace MLSSRandomizerForm
         public static bool removeHidden = false;
         public static bool espressoKey = false;
         public static bool tattle = false;
+        public static bool rSettings = false;
+        public static bool items = true;
+        public static bool coins = false;
+        public static bool harhall = false;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -74,12 +78,10 @@ namespace MLSSRandomizerForm
         public static int r = 0;
         public static int g = 0;
         public static int b = 0;
-
-        //BiS Variables
         public readonly string bisHash = "05072F0545BF4492D81FDFF6B595B9D20C816007";
         public static bool bItems = true;
 
-        
+
 
         public Form1()
         {
@@ -157,238 +159,266 @@ namespace MLSSRandomizerForm
 
         public void SetConfig()
         {
-            int temp;
-            config.TryGetValue("chuckle", out temp);
-            chuckle = temp;
-            switch(temp)
+            int num;
+            this.config.TryGetValue("chuckle", out num);
+            chuckle = num;
+            switch (num)
             {
                 case 1:
-                    radioButton1.Checked = true;
+                    this.radioButton1.Checked = true;
                     break;
 
                 case 2:
-                    radioButton2.Checked = true;
+                    this.radioButton2.Checked = true;
                     break;
 
                 case 3:
-                    radioButton3.Checked = true;
+                    this.radioButton3.Checked = true;
                     break;
 
                 default:
-                    radioButton3.Checked = true;
+                    this.radioButton3.Checked = true;
                     break;
             }
-            config.TryGetValue("seedtype", out temp);
-            seedType = temp;
-            switch (temp)
+            this.config.TryGetValue("seedtype", out num);
+            seedType = num;
+            int num4 = num;
+            if (num4 == 1)
+            {
+                this.radioButton4.Checked = true;
+            }
+            else if (num4 != 2)
+            {
+                this.radioButton4.Checked = true;
+            }
+            else
+            {
+                this.radioButton5.Checked = true;
+            }
+            this.config.TryGetValue("bosses", out num);
+            bosses = num;
+            switch (num)
             {
                 case 1:
-                    radioButton4.Checked = true;
+                    this.radioButton8.Checked = true;
                     break;
 
                 case 2:
-                    radioButton5.Checked = true;
-                    break;
-
-                default:
-                    radioButton4.Checked = true;
-                    break;
-            }
-
-            config.TryGetValue("bosses", out temp);
-            bosses = temp;
-            switch (temp)
-            {
-                case 1:
-                    radioButton8.Checked = true;
-                    break;
-
-                case 2:
-                    radioButton7.Checked = true;
+                    this.radioButton7.Checked = true;
                     break;
 
                 case 3:
-                    radioButton6.Checked = true;
+                    this.radioButton6.Checked = true;
                     break;
 
                 default:
-                    radioButton8.Checked = true;
+                    this.radioButton8.Checked = true;
                     break;
             }
-            config.TryGetValue("visible", out temp);
-            visible = Convert.ToBoolean(temp);
-            checkBox44.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("invisible", out temp);
-            invisible = Convert.ToBoolean(temp);
-            checkBox45.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("removehidden", out temp);
-            removeHidden = Convert.ToBoolean(temp);
-            checkBox46.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("rose", out temp);
-            rose = Convert.ToBoolean(temp);
-            checkBox2.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("brooch", out temp);
-            brooch = Convert.ToBoolean(temp);
-            checkBox3.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("chuckola", out temp);
-            chuckola = Convert.ToBoolean(temp);
-            checkBox4.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("membership", out temp);
-            membership = Convert.ToBoolean(temp);
-            checkBox5.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("winkle", out temp);
-            winkle = Convert.ToBoolean(temp);
-            checkBox6.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("beanstar", out temp);
-            beanstar = Convert.ToBoolean(temp);
-            checkBox7.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("dress", out temp);
-            dress = Convert.ToBoolean(temp);
-            checkBox8.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("fruit", out temp);
-            fruit = Convert.ToBoolean(temp);
-            checkBox9.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("eggs", out temp);
-            eggs = Convert.ToBoolean(temp);
-            checkBox10.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("scrolls", out temp);
-            scrolls = Convert.ToBoolean(temp);
-            checkBox18.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("beanstone", out temp);
-            beanstone = Convert.ToBoolean(temp);
-            checkBox19.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("beanlet", out temp);
-            beanlet = Convert.ToBoolean(temp);
-            checkBox22.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("spangle", out temp);
-            spangle = Convert.ToBoolean(temp);
-            checkBox34.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("hammers", out temp);
-            hammers = Convert.ToBoolean(temp);
-            checkBox11.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("goblets", out temp);
-            goblets = Convert.ToBoolean(temp);
-            checkBox15.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("hands", out temp);
-            hands = Convert.ToBoolean(temp);
-            checkBox12.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("pearls", out temp);
-            pearls = Convert.ToBoolean(temp);
-            checkBox16.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("shops", out temp);
-            eggs = Convert.ToBoolean(temp);
-            checkBox21.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("pants", out temp);
-            pants = Convert.ToBoolean(temp);
-            checkBox14.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("badges", out temp);
-            badges = Convert.ToBoolean(temp);
-            checkBox13.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("espresso", out temp);
-            espresso = Convert.ToBoolean(temp);
-            checkBox17.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("espressokey", out temp);
-            espressoKey = Convert.ToBoolean(temp);
-            checkBox47.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("brosbp", out temp);
-            brosBp = Convert.ToBoolean(temp);
-            checkBox26.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("itemheal", out temp);
-            itemHeal = Convert.ToBoolean(temp);
-            checkBox27.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("coffeevalue", out temp);
-            coffeeValue = Convert.ToBoolean(temp);
-            checkBox28.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("intro", out temp);
-            intro = Convert.ToBoolean(temp);
-            checkBox1.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("doors", out temp);
-            doors = Convert.ToBoolean(temp);
-            checkBox39.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("castle", out temp);
-            castle = Convert.ToBoolean(temp);
-            checkBox24.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("minecart", out temp);
-            minecart = Convert.ToBoolean(temp);
-            checkBox32.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("surf", out temp);
-            surf = Convert.ToBoolean(temp);
-            checkBox23.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("mush", out temp);
-            mush = Convert.ToBoolean(temp);
-            checkBox20.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("enemy", out temp);
-            enemy = Convert.ToBoolean(temp);
-            checkBox25.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("scale", out temp);
-            scale = Convert.ToBoolean(temp);
-            checkBox31.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("minigame", out temp);
-            minigame = Convert.ToBoolean(temp);
-            checkBox36.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("pieces", out temp);
-            pieces = Convert.ToBoolean(temp);
-            checkBox33.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("mario", out temp);
-            mario = Convert.ToBoolean(temp);
-            checkBox41.Checked = Convert.ToBoolean(temp);
-            config.TryGetValue("luigi", out temp);
-            luigi = Convert.ToBoolean(temp);
-            checkBox42.Checked = Convert.ToBoolean(temp);
+            this.config.TryGetValue("visible", out num);
+            visible = Convert.ToBoolean(num);
+            this.checkBox44.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("invisible", out num);
+            invisible = Convert.ToBoolean(num);
+            this.checkBox45.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("removehidden", out num);
+            removeHidden = Convert.ToBoolean(num);
+            this.checkBox46.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("rose", out num);
+            rose = Convert.ToBoolean(num);
+            this.checkBox2.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("brooch", out num);
+            brooch = Convert.ToBoolean(num);
+            this.checkBox3.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("chuckola", out num);
+            chuckola = Convert.ToBoolean(num);
+            this.checkBox4.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("membership", out num);
+            membership = Convert.ToBoolean(num);
+            this.checkBox5.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("winkle", out num);
+            winkle = Convert.ToBoolean(num);
+            this.checkBox6.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("beanstar", out num);
+            beanstar = Convert.ToBoolean(num);
+            this.checkBox7.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("dress", out num);
+            dress = Convert.ToBoolean(num);
+            this.checkBox8.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("fruit", out num);
+            fruit = Convert.ToBoolean(num);
+            this.checkBox9.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("eggs", out num);
+            eggs = Convert.ToBoolean(num);
+            this.checkBox10.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("scrolls", out num);
+            scrolls = Convert.ToBoolean(num);
+            this.checkBox18.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("beanstone", out num);
+            beanstone = Convert.ToBoolean(num);
+            this.checkBox19.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("beanlet", out num);
+            beanlet = Convert.ToBoolean(num);
+            this.checkBox22.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("spangle", out num);
+            spangle = Convert.ToBoolean(num);
+            this.checkBox34.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("hammers", out num);
+            hammers = Convert.ToBoolean(num);
+            this.checkBox11.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("goblets", out num);
+            goblets = Convert.ToBoolean(num);
+            this.checkBox15.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("hands", out num);
+            hands = Convert.ToBoolean(num);
+            this.checkBox12.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("pearls", out num);
+            pearls = Convert.ToBoolean(num);
+            this.checkBox16.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("shops", out num);
+            eggs = Convert.ToBoolean(num);
+            this.checkBox21.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("pants", out num);
+            pants = Convert.ToBoolean(num);
+            this.checkBox14.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("badges", out num);
+            badges = Convert.ToBoolean(num);
+            this.checkBox13.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("espresso", out num);
+            espresso = Convert.ToBoolean(num);
+            this.checkBox17.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("espressokey", out num);
+            espressoKey = Convert.ToBoolean(num);
+            this.checkBox47.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("brosbp", out num);
+            brosBp = Convert.ToBoolean(num);
+            this.checkBox26.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("itemheal", out num);
+            itemHeal = Convert.ToBoolean(num);
+            this.checkBox27.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("coffeevalue", out num);
+            coffeeValue = Convert.ToBoolean(num);
+            this.checkBox28.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("intro", out num);
+            intro = Convert.ToBoolean(num);
+            this.checkBox1.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("doors", out num);
+            doors = Convert.ToBoolean(num);
+            this.checkBox39.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("castle", out num);
+            castle = Convert.ToBoolean(num);
+            this.checkBox24.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("minecart", out num);
+            minecart = Convert.ToBoolean(num);
+            this.checkBox32.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("surf", out num);
+            surf = Convert.ToBoolean(num);
+            this.checkBox23.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("mush", out num);
+            mush = Convert.ToBoolean(num);
+            this.checkBox20.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("enemy", out num);
+            enemy = Convert.ToBoolean(num);
+            this.checkBox25.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("scale", out num);
+            scale = Convert.ToBoolean(num);
+            this.checkBox31.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("minigame", out num);
+            minigame = Convert.ToBoolean(num);
+            this.checkBox36.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("pieces", out num);
+            pieces = Convert.ToBoolean(num);
+            this.checkBox33.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("mario", out num);
+            mario = Convert.ToBoolean(num);
+            this.checkBox41.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("luigi", out num);
+            luigi = Convert.ToBoolean(num);
+            this.checkBox42.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("mdisable", out num);
+            mDisable = Convert.ToBoolean(num);
+            this.checkBox37.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("pow", out num);
+            pow = Convert.ToBoolean(num);
+            this.checkBox40.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("tattle", out num);
+            tattle = Convert.ToBoolean(num);
+            this.checkBox48.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("coins", out num);
+            coins = Convert.ToBoolean(num);
+            this.checkBox51.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("items", out num);
+            items = Convert.ToBoolean(num);
+            this.checkBox50.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("harhall", out num);
+            harhall = Convert.ToBoolean(num);
+            this.checkBox52.Checked = Convert.ToBoolean(num);
         }
+
 
         public void SaveConfig()
         {
-            List<string> strings = new List<string>();
-            if(seed == null)
-                strings.Add("seed,0,"); 
+            List<string> contents = new List<string>();
+            if (ReferenceEquals(this.seed, null))
+            {
+                contents.Add("seed,0,");
+            }
             else
-                strings.Add("seed," + seed + ",");
-            strings.Add("seedtype," + seedType + ",");
-            strings.Add("pieces," + Convert.ToInt32(pieces) + ",");
-            strings.Add("chuckle," + chuckle + ",");
-            strings.Add("visible," + Convert.ToInt32(visible) + ",");
-            strings.Add("invisible," + Convert.ToInt32(invisible) + ",");
-            strings.Add("removehidden," + Convert.ToInt32(removeHidden) + ",");
-            strings.Add("rose," + Convert.ToInt32(rose) + ",");
-            strings.Add("brooch," + Convert.ToInt32(brooch) + ",");
-            strings.Add("chuckola," + Convert.ToInt32(chuckola) + ",");
-            strings.Add("membership," + Convert.ToInt32(membership) + ",");
-            strings.Add("winkle," + Convert.ToInt32(winkle) + ",");
-            strings.Add("dress," + Convert.ToInt32(dress) + ",");
-            strings.Add("beanstar," + Convert.ToInt32(beanstar) + ",");
-            strings.Add("scrolls," + Convert.ToInt32(scrolls) + ",");
-            strings.Add("eggs," + Convert.ToInt32(eggs) + ",");
-            strings.Add("beanstone," + Convert.ToInt32(beanstone) + ",");
-            strings.Add("beanlet," + Convert.ToInt32(beanlet) + ",");
-            strings.Add("fruit," + Convert.ToInt32(fruit) + ",");
-            strings.Add("spangle," + Convert.ToInt32(spangle) + ",");
-            strings.Add("hammers," + Convert.ToInt32(hammers) + ",");
-            strings.Add("goblets," + Convert.ToInt32(goblets) + ",");
-            strings.Add("hands," + Convert.ToInt32(hands)  + ",");
-            strings.Add("pearls," + Convert.ToInt32(pearls) + ",");
-            strings.Add("shops," + Convert.ToInt32(shops) + ",");
-            strings.Add("badges," + Convert.ToInt32(badges) + ",");
-            strings.Add("pants," + Convert.ToInt32(pants) + ",");
-            strings.Add("espresso," + Convert.ToInt32(espresso) + ",");
-            strings.Add("espressokey," + Convert.ToInt32(espressoKey) + ",");
-            strings.Add("brosbp," + Convert.ToInt32(brosBp) + ",");
-            strings.Add("itemheal," + Convert.ToInt32(itemHeal) + ",");
-            strings.Add("coffeevalue," + Convert.ToInt32(coffeeValue) + ",");
-            strings.Add("intro," + Convert.ToInt32(intro) + ",");
-            strings.Add("castle," + Convert.ToInt32(castle) + ",");
-            strings.Add("minecart," + Convert.ToInt32(minecart) + ",");
-            strings.Add("mush," + Convert.ToInt32(mush) + ",");
-            strings.Add("surf," + Convert.ToInt32(surf) + ",");
-            strings.Add("minigame," + Convert.ToInt32(minigame) + ",");
-            strings.Add("mario," + Convert.ToInt32(mario) + ",");
-            strings.Add("luigi," + Convert.ToInt32(luigi) + ",");
-            strings.Add("doors," + Convert.ToInt32(doors) + ",");
-            strings.Add("scale," + Convert.ToInt32(scale) + ",");
-            strings.Add("enemy," + Convert.ToInt32(enemy) + ",");
-            strings.Add("bosses," + bosses);
-            File.WriteAllLines(saveFileDialog3.FileName, strings);
+            {
+                contents.Add("seed," + this.seed + ",");
+            }
+            contents.Add("seedtype," + seedType.ToString() + ",");
+            contents.Add("pieces," + Convert.ToInt32(pieces).ToString() + ",");
+            contents.Add("chuckle," + chuckle.ToString() + ",");
+            contents.Add("visible," + Convert.ToInt32(visible).ToString() + ",");
+            contents.Add("coins," + Convert.ToInt32(coins).ToString() + ",");
+            contents.Add("items," + Convert.ToInt32(items).ToString() + ",");
+            contents.Add("harhall," + Convert.ToInt32(harhall).ToString() + ",");
+            contents.Add("invisible," + Convert.ToInt32(invisible).ToString() + ",");
+            contents.Add("removehidden," + Convert.ToInt32(removeHidden).ToString() + ",");
+            contents.Add("rose," + Convert.ToInt32(rose).ToString() + ",");
+            contents.Add("brooch," + Convert.ToInt32(brooch).ToString() + ",");
+            contents.Add("chuckola," + Convert.ToInt32(chuckola).ToString() + ",");
+            contents.Add("membership," + Convert.ToInt32(membership).ToString() + ",");
+            contents.Add("winkle," + Convert.ToInt32(winkle).ToString() + ",");
+            contents.Add("dress," + Convert.ToInt32(dress).ToString() + ",");
+            contents.Add("beanstar," + Convert.ToInt32(beanstar).ToString() + ",");
+            contents.Add("scrolls," + Convert.ToInt32(scrolls).ToString() + ",");
+            contents.Add("eggs," + Convert.ToInt32(eggs).ToString() + ",");
+            contents.Add("beanstone," + Convert.ToInt32(beanstone).ToString() + ",");
+            contents.Add("beanlet," + Convert.ToInt32(beanlet).ToString() + ",");
+            contents.Add("fruit," + Convert.ToInt32(fruit).ToString() + ",");
+            contents.Add("spangle," + Convert.ToInt32(spangle).ToString() + ",");
+            contents.Add("hammers," + Convert.ToInt32(hammers).ToString() + ",");
+            contents.Add("goblets," + Convert.ToInt32(goblets).ToString() + ",");
+            contents.Add("hands," + Convert.ToInt32(hands).ToString() + ",");
+            contents.Add("pearls," + Convert.ToInt32(pearls).ToString() + ",");
+            contents.Add("shops," + Convert.ToInt32(shops).ToString() + ",");
+            contents.Add("badges," + Convert.ToInt32(badges).ToString() + ",");
+            contents.Add("pants," + Convert.ToInt32(pants).ToString() + ",");
+            contents.Add("espresso," + Convert.ToInt32(espresso).ToString() + ",");
+            contents.Add("espressokey," + Convert.ToInt32(espressoKey).ToString() + ",");
+            contents.Add("brosbp," + Convert.ToInt32(brosBp).ToString() + ",");
+            contents.Add("itemheal," + Convert.ToInt32(itemHeal).ToString() + ",");
+            contents.Add("coffeevalue," + Convert.ToInt32(coffeeValue).ToString() + ",");
+            contents.Add("intro," + Convert.ToInt32(intro).ToString() + ",");
+            contents.Add("castle," + Convert.ToInt32(castle).ToString() + ",");
+            contents.Add("minecart," + Convert.ToInt32(minecart).ToString() + ",");
+            contents.Add("mush," + Convert.ToInt32(mush).ToString() + ",");
+            contents.Add("surf," + Convert.ToInt32(surf).ToString() + ",");
+            contents.Add("minigame," + Convert.ToInt32(minigame).ToString() + ",");
+            contents.Add("mario," + Convert.ToInt32(mario).ToString() + ",");
+            contents.Add("luigi," + Convert.ToInt32(luigi).ToString() + ",");
+            contents.Add("doors," + Convert.ToInt32(doors).ToString() + ",");
+            contents.Add("mdisable," + Convert.ToInt32(mDisable).ToString() + ",");
+            contents.Add("scale," + Convert.ToInt32(scale).ToString() + ",");
+            contents.Add("pow," + Convert.ToInt32(pow).ToString() + ",");
+            contents.Add("tattle," + Convert.ToInt32(tattle).ToString() + ",");
+            contents.Add("enemy," + Convert.ToInt32(enemy).ToString() + ",");
+            contents.Add("bosses," + bosses.ToString());
+            File.WriteAllLines(this.saveFileDialog3.FileName, contents);
         }
+
 
         private void SelectRomButton_Click(object sender, EventArgs e)
         {
@@ -998,5 +1028,95 @@ namespace MLSSRandomizerForm
         {
             tattle = checkBox48.Checked;
         }
+
+        private void checkBox50_CheckedChanged(object sender, EventArgs e)
+        {
+            items = this.checkBox50.Checked;
+        }
+
+        private void checkBox51_CheckedChanged(object sender, EventArgs e)
+        {
+            coins = this.checkBox51.Checked;
+        }
+
+        private void checkBox52_CheckedChanged(object sender, EventArgs e)
+        {
+            harhall = this.checkBox52.Checked;
+        }
+
+        private void checkBox49_CheckedChanged(object sender, EventArgs e)
+        {
+            this.checkBox1.Enabled = !this.checkBox49.Checked;
+            this.checkBox2.Enabled = !this.checkBox49.Checked;
+            this.checkBox3.Enabled = !this.checkBox49.Checked;
+            this.checkBox4.Enabled = !this.checkBox49.Checked;
+            this.checkBox5.Enabled = !this.checkBox49.Checked;
+            this.checkBox6.Enabled = !this.checkBox49.Checked;
+            this.checkBox7.Enabled = !this.checkBox49.Checked;
+            this.checkBox8.Enabled = !this.checkBox49.Checked;
+            this.checkBox9.Enabled = !this.checkBox49.Checked;
+            this.checkBox10.Enabled = !this.checkBox49.Checked;
+            this.checkBox11.Enabled = !this.checkBox49.Checked;
+            this.checkBox12.Enabled = !this.checkBox49.Checked;
+            this.checkBox13.Enabled = !this.checkBox49.Checked;
+            this.checkBox14.Enabled = !this.checkBox49.Checked;
+            this.checkBox15.Enabled = !this.checkBox49.Checked;
+            this.checkBox16.Enabled = !this.checkBox49.Checked;
+            this.checkBox17.Enabled = !this.checkBox49.Checked;
+            this.checkBox18.Enabled = !this.checkBox49.Checked;
+            this.checkBox19.Enabled = !this.checkBox49.Checked;
+            this.checkBox20.Enabled = !this.checkBox49.Checked;
+            this.checkBox21.Enabled = !this.checkBox49.Checked;
+            this.checkBox22.Enabled = !this.checkBox49.Checked;
+            this.checkBox23.Enabled = !this.checkBox49.Checked;
+            this.checkBox24.Enabled = !this.checkBox49.Checked;
+            this.checkBox25.Enabled = !this.checkBox49.Checked;
+            this.checkBox26.Enabled = !this.checkBox49.Checked;
+            this.checkBox27.Enabled = !this.checkBox49.Checked;
+            this.checkBox28.Enabled = !this.checkBox49.Checked;
+            this.checkBox29.Enabled = !this.checkBox49.Checked;
+            this.checkBox30.Enabled = !this.checkBox49.Checked;
+            this.checkBox31.Enabled = !this.checkBox49.Checked;
+            this.checkBox32.Enabled = !this.checkBox49.Checked;
+            this.checkBox33.Enabled = !this.checkBox49.Checked;
+            this.checkBox34.Enabled = !this.checkBox49.Checked;
+            this.checkBox35.Enabled = !this.checkBox49.Checked;
+            this.checkBox36.Enabled = !this.checkBox49.Checked;
+            this.checkBox37.Enabled = !this.checkBox49.Checked;
+            this.checkBox38.Enabled = !this.checkBox49.Checked;
+            this.checkBox39.Enabled = !this.checkBox49.Checked;
+            this.checkBox40.Enabled = !this.checkBox49.Checked;
+            this.checkBox41.Enabled = !this.checkBox49.Checked;
+            this.checkBox42.Enabled = !this.checkBox49.Checked;
+            this.checkBox43.Enabled = !this.checkBox49.Checked;
+            this.checkBox44.Enabled = !this.checkBox49.Checked;
+            this.checkBox45.Enabled = !this.checkBox49.Checked;
+            this.checkBox46.Enabled = !this.checkBox49.Checked;
+            this.checkBox47.Enabled = !this.checkBox49.Checked;
+            this.checkBox48.Enabled = !this.checkBox49.Checked;
+            this.checkBox50.Enabled = !this.checkBox49.Checked;
+            this.checkBox51.Enabled = !this.checkBox49.Checked;
+            this.checkBox52.Enabled = !this.checkBox49.Checked;
+            this.radioButton1.Enabled = !this.checkBox49.Checked;
+            this.radioButton2.Enabled = !this.checkBox49.Checked;
+            this.radioButton3.Enabled = !this.checkBox49.Checked;
+            this.radioButton6.Enabled = !this.checkBox49.Checked;
+            this.radioButton7.Enabled = !this.checkBox49.Checked;
+            this.radioButton8.Enabled = !this.checkBox49.Checked;
+            this.comboBox1.Enabled = !this.checkBox49.Checked;
+            this.comboBox2.Enabled = !this.checkBox49.Checked;
+            this.comboBox3.Enabled = !this.checkBox49.Checked;
+            this.comboBox4.Enabled = !this.checkBox49.Checked;
+            this.numericUpDown1.Enabled = !this.checkBox49.Checked;
+            this.numericUpDown3.Enabled = !this.checkBox49.Checked;
+            this.numericUpDown4.Enabled = !this.checkBox49.Checked;
+            this.button1.Enabled = !this.checkBox49.Checked;
+            this.button3.Enabled = !this.checkBox49.Checked;
+            this.button4.Enabled = !this.checkBox49.Checked;
+            this.button5.Enabled = !this.checkBox49.Checked;
+            rSettings = this.checkBox49.Checked;
+        }
+
+
     }
 }

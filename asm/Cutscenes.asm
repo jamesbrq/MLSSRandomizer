@@ -46,7 +46,7 @@ WATER equ 0x03002452
 .org MARIO_EVENT_TEXT
 	db 0x16, 0x2, 0xFF, 0xB, 0x1, "You got Mario!", 0xFF, 0x11, 0x1, 0xFF, 0xA
 
-.org MARIO_EVENT_TEXT
+.org LUIGI_EVENT_TEXT
 	db 0x16, 0x2, 0xFF, 0xB, 0x1, "You got Luigi!", 0xFF, 0x11, 0x1, 0xFF, 0xA
 
 .org MARIO_SHOP
@@ -181,6 +181,11 @@ ldr r0, =BRO_ITEM
 ldrb r0, [r0]
 cmp r0, #0x0
 bne .cutscene_end
+ldr r0, =0x020042FE
+mov r1, #0x60
+ldrb r2, [r0]
+orr r2, r1
+strb r2, [r0]
 ldr r0, =CUTSCENE_RAM
 ldrb r0, [r0]
 cmp r0, #0x0
