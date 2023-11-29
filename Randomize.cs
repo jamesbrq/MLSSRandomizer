@@ -1356,7 +1356,7 @@ namespace MLSSRandomizerForm
                 LocationData tempData = new LocationData();
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
-                    if ((!Form1.items && (data.item != 0x1E)) && (data.item != 0x1D))
+                    if (!Form1.items && data.item != 0x1E && data.item != 0x1D)
                     {
                         if (Form1.invisible && data.itemType == 0)
                         {
@@ -1525,7 +1525,21 @@ namespace MLSSRandomizerForm
                     if (Form1.surf && data.item == 0xEB)
                     {
                         ItemInject(data.location, data.itemType, 0xEB);
-                        goto surfSkip;
+                        continue;
+                    }
+
+                    if (data.item == 0xF1)
+                    {
+                        if (Form1.harhall)
+                        {
+                            ValidArrayAdd(data);
+                            continue;
+                        }
+                        else
+                        {
+                            ItemInject(data.location, data.itemType, (byte)data.item);
+                            continue;
+                        }
                     }
 
                     if (Form1.pants)
@@ -1536,7 +1550,6 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, (byte)data.item);
                     }
-                    surfSkip:;
                 }
                 optionsArray = new List<dynamic>();
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
@@ -1552,21 +1565,6 @@ namespace MLSSRandomizerForm
                     {
                         ItemInject(data.location, data.itemType, 0x9E);
                         goto mushSkip;
-                    }
-
-
-                    if (data.item == 0xF1)
-                    {
-                        if (Form1.harhall)
-                        {
-                            ValidArrayAdd(data);
-                            continue;
-                        }
-                        else
-                        {
-                            ItemInject(data.location, data.itemType, (byte)data.item);
-                            continue;
-                        }
                     }
 
                     if (Form1.badges)
@@ -2046,17 +2044,21 @@ namespace MLSSRandomizerForm
                     stream.Seek(0x1E9418, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
-            }
-            if (Form1.pow)
-            {
-                stream.Seek(0x1E9419, SeekOrigin.Begin);
-                stream.WriteByte(0x1);
+
+                if (Form1.pow)
+                {
+                    stream.Seek(0x1E9419, SeekOrigin.Begin);
+                    stream.WriteByte(0x1);
+                }
             }
             if (Form1.enemy)
             {
                 PopulateEnemyArray();
                 GenerateGroups();
             }
+            else if (Form1.bosses == 1)
+                return;
+
             if (Form1.bosses != 1)
                 GenerateBossGroups();
             InsertGroups();
@@ -2064,7 +2066,7 @@ namespace MLSSRandomizerForm
 
         public void InsertGroups()
         {
-            if (Form1.bosses != 2)
+            if (Form1.bosses == 3)
                 groups.AddRange(bossGroups);
             groups.Shuffle(random);
             groups = stardustGroups.Concat(groups).ToList();
@@ -2074,6 +2076,8 @@ namespace MLSSRandomizerForm
                 location = location.Concat(boss).ToArray();
             Array.Sort(location);
             int count = 0;
+            if (!Form1.enemy)
+                goto eSkip;
             foreach (string str in location)
             {
                 if (groups.Count > 0)
@@ -2115,7 +2119,7 @@ namespace MLSSRandomizerForm
                     }
                 }
             }
-
+            eSkip:
             if (Form1.bosses == 2)
             {
                 foreach (string str in boss)
@@ -2533,10 +2537,9 @@ namespace MLSSRandomizerForm
                 List<dynamic> fakeLocationsArray = new List<dynamic>();
                 while(true)
                 {
-                    List<dynamic> count = tempLocationArray.Where(c => !CheckValidSpot(c, tempItemArray.Last())).ToList();
-                    if (count.Count > 0)
+                    if (tempItemArray.Count > 0)
                     {
-                        LocationData tempData = count[random.Next(count.Count)];
+                        LocationData tempData = tempLocationArray.Last();
                         tempLocationArray.Remove(tempData);
                         tempData.item = tempItemArray.Last();
                         fakeLocationsArray.Add(tempData);
@@ -2545,11 +2548,6 @@ namespace MLSSRandomizerForm
                     else
                     {
                         Debug.WriteLine(tempItemArray.Count);
-                        break;
-                    }
-                    if (tempItemArray.Count == 0)
-                    {
-                        Debug.WriteLine("ZERO ITEMS");
                         break;
                     }
                 }
