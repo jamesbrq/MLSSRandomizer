@@ -21,7 +21,7 @@ BADGE_SHOP_TEXT_DATA equ 0x08E06A00
 BADGE_SHOP_DESC_HOOK equ 0x0812E2AC
 BADGE_SHOP_DESC_SUBR equ 0x081DFFD0
 BADGE_SHOP_DESC_DATA equ 0x08E06300
-PANTS_SHOP_DESC_HOOK equ 0x0812E2E2
+PANTS_SHOP_DESC_HOOK equ 0x0812E2E6
 PANTS_SHOP_DESC_SUBR equ 0x081E0070
 PANTS_SHOP_DESC_DATA equ 0x08E06100
 BADGE_SHOP_DESC_RAM_HOOK equ 0x0812E296
@@ -57,6 +57,69 @@ AP_RAM equ 0x0200304C
 AP_INIT equ 0x0200304B
 AP_BADGE_HOOK equ 0x0812AE70
 AP_BADGE_SUBR equ 0x081DFDC0
+AP_BADGE_DESC equ 0x08D10200
+AP_FBADGE_DESC equ 0x08D10300
+AP_PANTS_DESC equ 0x08D10400
+AP_FPANTS_DESC equ 0x08D10500
+
+
+.org AP_BADGE_DESC
+	dw 0x08D11600
+	dw 0x08D11640
+	dw 0x08D11680
+	dw 0x08D116C0
+	dw 0x08D11700
+	dw 0x08D11740
+	dw 0x08D11780
+	dw 0x08D117C0
+	dw 0x08D11800
+	dw 0x08D11840
+	dw 0x08D11880
+	dw 0x08D118C0
+	dw 0x08D11900
+	dw 0x08D11940
+	dw 0x08D11980
+	dw 0x08D119C0
+	dw 0x08D11A00
+
+.org AP_FBADGE_DESC
+	dw 0x08D11A40
+	dw 0x08D11A80
+	dw 0x08D11AC0
+	dw 0x08D11B00
+	dw 0x08D11B40
+	dw 0x08D11B80
+	dw 0x08D11BC0
+
+.org AP_PANTS_DESC
+	dw 0x08D11C00
+	dw 0x08D11C40
+	dw 0x08D11C80
+	dw 0x08D11CC0
+	dw 0x08D11D00
+	dw 0x08D11D40
+	dw 0x08D11D80
+	dw 0x08D11DC0
+	dw 0x08D11E00
+	dw 0x08D11E40
+	dw 0x08D11E80
+	dw 0x08D11EC0
+	dw 0x08D11F00
+	dw 0x08D11F40
+	dw 0x08D11F80
+	dw 0x08D11FC0
+	dw 0x08D12000
+	dw 0x08D12040
+
+.org AP_FPANTS_DESC
+	dw 0x08D12080
+	dw 0x08D120C0
+	dw 0x08D12100
+	dw 0x08D12140
+	dw 0x08D12180
+	dw 0x08D121C0
+	dw 0x08D12200
+	
 
 
 
@@ -724,19 +787,35 @@ lsl r4, #0x2
 ldr r2, [r3, r4]
 bl .desc_norm
 .desc_ap:
-ldr r2, =AP_SHOP_HOOK
-bl .desc_norm
+ldr r2, =AP_RAM
+ldr r2, [r2]
+ldr r3, =0x083C0618
+cmp r2, r3
+bne .desc_ap_f
+ldr r2, =AP_BADGE_DESC
+bl .desc_ap_norm
+.desc_ap_f:
+ldr r2, =AP_FBADGE_DESC
+.desc_ap_norm:
+ldr r3, =0x03003FE4
+ldrb r3, [r3]
+mov r4, #0x1F
+and r3, r4
+lsl r3, #0x2
+ldr r1, [r2, r3]
+bl .desc_norm_ap
 .desc_badge:
 sub r3, #0x9E
 lsl r3, #0x2
 ldr r2, =BADGE_SHOP_ARRAY
 ldr r2, [r2, r3]
 .desc_norm:
+ldr r1, [r2]
+ldr r1, [r1, #0x4]
+.desc_norm_ap:
 ldr r3, =BADGE_DESC_RAM
 mov r4, #0x0
 strb r4, [r3]
-ldr r1, [r2]
-ldr r1, [r1, #0x4]
 pop { r3-r4, r6 }
 add r4, #0x1
 bx r4
@@ -825,19 +904,35 @@ lsl r4, #0x2
 ldr r2, [r3, r4]
 bl .desc_norm2
 .desc_ap2:
-ldr r2, =AP_SHOP_HOOK
-bl .desc_norm2
+ldr r2, =AP_RAM
+ldr r2, [r2]
+ldr r3, =0x083C0618
+cmp r2, r3
+bne .desc_ap_f2
+ldr r2, =AP_PANTS_DESC
+bl .desc_ap_norm2
+.desc_ap_f2:
+ldr r2, =AP_FPANTS_DESC
+.desc_ap_norm2:
+ldr r3, =0x03003FE4
+ldrb r3, [r3]
+mov r4, #0x1F
+and r3, r4
+lsl r3, #0x2
+ldr r1, [r2, r3]
+bl .desc_norm_ap2
 .desc_badge2:
 sub r3, #0x9E
 lsl r3, #0x2
 ldr r2, =BADGE_SHOP_ARRAY
 ldr r2, [r2, r3]
 .desc_norm2:
+ldr r1, [r2]
+ldr r1, [r1, #0x4]
+.desc_norm_ap2:
 ldr r3, =BADGE_DESC_RAM
 mov r4, #0x0
 strb r4, [r3]
-ldr r1, [r2]
-ldr r1, [r1, #0x4]
 pop { r3-r4, r5 }
 add r4, #0x1
 bx r4

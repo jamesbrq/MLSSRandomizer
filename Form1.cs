@@ -329,12 +329,12 @@ namespace MLSSRandomizerForm
             this.config.TryGetValue("pieces", out num);
             pieces = Convert.ToBoolean(num);
             this.checkBox33.Checked = Convert.ToBoolean(num);
-            this.config.TryGetValue("mario", out num);
+            /*this.config.TryGetValue("mario", out num);
             mario = Convert.ToBoolean(num);
             this.checkBox41.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("luigi", out num);
             luigi = Convert.ToBoolean(num);
-            this.checkBox42.Checked = Convert.ToBoolean(num);
+            this.checkBox42.Checked = Convert.ToBoolean(num);*/
             this.config.TryGetValue("mdisable", out num);
             mDisable = Convert.ToBoolean(num);
             this.checkBox37.Checked = Convert.ToBoolean(num);
@@ -971,6 +971,7 @@ namespace MLSSRandomizerForm
             pow = checkBox40.Checked;
         }
 
+        /*
         private void checkBox41_CheckedChanged(object sender, EventArgs e)
         {
             mario = checkBox41.Checked;
@@ -981,7 +982,7 @@ namespace MLSSRandomizerForm
         {
             luigi = checkBox42.Checked;
             checkBox41.Enabled = !checkBox42.Checked;
-        }
+        }*/
 
         private void checkBox43_CheckedChanged(object sender, EventArgs e)
         {
@@ -1086,8 +1087,8 @@ namespace MLSSRandomizerForm
             this.checkBox38.Enabled = !this.checkBox49.Checked;
             this.checkBox39.Enabled = !this.checkBox49.Checked;
             this.checkBox40.Enabled = !this.checkBox49.Checked;
-            this.checkBox41.Enabled = !this.checkBox49.Checked;
-            this.checkBox42.Enabled = !this.checkBox49.Checked;
+            //this.checkBox41.Enabled = !this.checkBox49.Checked;
+            //this.checkBox42.Enabled = !this.checkBox49.Checked;
             this.checkBox43.Enabled = !this.checkBox49.Checked;
             this.checkBox44.Enabled = !this.checkBox49.Checked;
             this.checkBox45.Enabled = !this.checkBox49.Checked;

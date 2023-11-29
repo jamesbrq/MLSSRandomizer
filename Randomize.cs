@@ -2532,24 +2532,28 @@ namespace MLSSRandomizerForm
                 locationArray.Reverse();
                 rBegin:
                 List<dynamic> tempItemArray = new List<dynamic>(itemArray);
+                tempItemArray.Shuffle(random);
                 List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
                 tempLocationArray.Shuffle(random);
                 List<dynamic> fakeLocationsArray = new List<dynamic>();
-                while(true)
+                int retryCount = 0;
+                while (true)
                 {
-                    if (tempItemArray.Count > 0)
-                    {
-                        LocationData tempData = tempLocationArray.Last();
-                        tempLocationArray.Remove(tempData);
-                        tempData.item = tempItemArray.Last();
-                        fakeLocationsArray.Add(tempData);
-                        tempItemArray.RemoveAt(tempItemArray.Count - 1);
-                    }
-                    else
-                    {
-                        Debug.WriteLine(tempItemArray.Count);
+                    if (tempItemArray.Count <= 0)
                         break;
+                    if(CheckValidSpot(tempLocationArray[0], tempItemArray[0]))
+                    {
+                        retryCount++;
+                        if (retryCount > 50)
+                            break;
+                        tempItemArray.Shuffle(random);
+                        continue;
                     }
+                    LocationData temp = tempLocationArray[0];
+                    tempLocationArray.RemoveAt(0);
+                    temp.item = tempItemArray[0];
+                    tempItemArray.RemoveAt(0);
+                    fakeLocationsArray.Add(temp);
                 }
                 gameState = new LocationData(0);
                 if (!CheckValidity(fakeLocationsArray))

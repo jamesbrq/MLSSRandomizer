@@ -391,6 +391,7 @@
         dw 0x08401130
         dw 0x084785A4
         dw 0x08478570
+        dw 0x081DF610
 
 
     .org UNKNOWN_FIX
@@ -666,11 +667,39 @@
     .org AP_SHOP
         bl AP_SHOP_SUBR
 
+    .org ESPRESSO_SPRITE_HOOK
+        bl ESPRESSO_SPRITE_SUBR 
+
     .org 0x080fde9a ;Mario BP
         mov r0, #0x0
 
     .org 0x080fe0c4 ;Luigi BP
         mov r0, #0x0
+
+
+
+
+
+
+
+    .org ESPRESSO_SPRITE_SUBR
+    push r0, lr
+    cmp r1, #0x13
+    bne .esprite_norm
+    ldr r0, =ROOM
+    ldrb r0, [r0]
+    cmp r0, #0x33
+    bne .esprite_norm
+    pop r0
+    mov r0, #0x3
+    bl .esprite_end
+    .esprite_norm:
+    pop r0
+    add r0, r1
+    ldrb r0, [r0]
+    .esprite_end:
+    pop pc
+    .pool
 
 
 
@@ -774,6 +803,10 @@
     cmp r2, #0xFF
     beq .ap_clause
     add r2, #0x1
+    cmp r2, #0x63
+    ble .ap_norm_in
+    mov r2, #0x63
+    .ap_norm_in:
     strb r2, [r1, r0]
     bl .ap_end
     .ap_clause:
@@ -1282,7 +1315,12 @@
     ldr r3, =FIRE_TEXT
     bl .spoil_text_end
     .yd_thunder:
+    cmp r2, #0x3
+    bgt .yd_ap
     ldr r3, =THUNDER_TEXT
+    bl .spoil_text_end
+    .yd_ap:
+    ldr r3, =AP_TEXT_BOX
     bl .spoil_text_end
     .yd_badge:
     sub r2, #0x9E
@@ -1618,6 +1656,11 @@
     .price_key:
     cmp r1, #0x9E
     bge .price_badge
+    cmp r1, #0x3F
+    bne .price_key_norm
+    mov r1, #0x96
+    bl .price_end
+    .price_key_norm:
     ldr r1, =0x012C
     bl .price_end
     .price_badge:
@@ -2075,7 +2118,23 @@
     ldr r1, [r1, r3]
     bl .shop_desc_norm
     .shop_desc_ap:
-    ldr r1, =AP_SHOP_HOOK
+    ldr r2, =AP_RAM
+    ldr r2, [r2]
+    ldr r3, =0x083C05F0
+    cmp r2, r3
+    bne .desc_ap_f3
+    ldr r2, =AP_DESC
+    bl .desc_ap_norm2
+    .desc_ap_f3:
+    ldr r2, =AP_FDESC
+    .desc_ap_norm3:
+    ldr r3, =0x03003FE4
+    ldrb r3, [r3]
+    mov r4, #0x1F
+    and r3, r4
+    lsl r3, #0x2
+    ldr r1, [r2, r3]
+    bl .shop_desc_norm
     .shop_desc_bean:
     sub r2, #0x2B
     mov r3, #0x4
@@ -2085,6 +2144,7 @@
     .shop_desc_norm:
     ldr r1, [r1]
     ldr r1, [r1, #0x4]
+    .shop_desc_end:
     pop r2-r4
     add r3, #0x1
     bx r3
@@ -3409,7 +3469,7 @@
     bne .scroll_check
     ldr r1, =0x300
     cmp r0, r1
-    bgt .ability_norm2
+    bge .ability_norm2
     mov r1, #0x38
     and r1, r0
     cmp r1, #0x0
@@ -3502,7 +3562,7 @@
     ldr r0, =BROS_ITEM_SUBR + 1
     mov r1, pc
     bx r0
-    bl .ability_end
+    bl .ability_norm
     .ability_badge:
     sub r0, #0x9E
     ldr r2, =BADGE_TEXT_ARRAY
@@ -3873,6 +3933,10 @@
      str r0, [r1]
      bl .hammer_text_end
      .hammer_hand:
+     cmp r1, #0x6
+     blt .hammer_hand_norm
+     mov r1, #0x3
+     .hammer_hand_norm:
      add r1, #0x2
      mul r1, r2
      ldr r0, [r0, r1]
@@ -5692,11 +5756,6 @@
     ldr r0, =0x02004410 ; Chuckleroot Grandaughter Gate Flag
     ldrb r1, [r0]
     mov r2, #0x7
-    orr r1, r2
-    strb r1, [r0]
-    ldr r0, =0x0200435B ; Hooniversity barrels
-    ldrb r1, [r0]
-    mov r2, #0x18
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004374
