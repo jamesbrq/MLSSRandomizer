@@ -92,7 +92,7 @@ public class Decompression
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C mdnds.exe e " + fileName + " ./decompressed/";
+            startInfo.Arguments = $"/C mdnds.exe e ../bis.nds ./decompressed";
         }
         else
         { 
@@ -107,13 +107,13 @@ public class Decompression
     {
         Process process = new Process();
         ProcessStartInfo startInfo = new ProcessStartInfo();
-        startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+        startInfo.WindowStyle = ProcessWindowStyle.Normal;
         string domain = @Environment.CurrentDirectory + @"/bis/extraction/";
         startInfo.WorkingDirectory = domain;
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C mdnds.exe b ./decompressed/ " + fileName;
+            startInfo.Arguments = "/C mdnds.exe b ./decompressed ../bis.nds";
         }
         else
         {
@@ -124,7 +124,7 @@ public class Decompression
         process.WaitForExit();
     }
 
-    public static void Decompress(string fileName)
+    public static void Decompress(string fileName, string command)
     {
         Process process = new Process();
         ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -134,7 +134,7 @@ public class Decompression
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
             startInfo.FileName = "cmd.exe";
-            startInfo.Arguments = "/C blz.exe -d " + fileName;
+            startInfo.Arguments = $"/C blz.exe {command} " + fileName;
         }
         else
         {

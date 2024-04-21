@@ -89,26 +89,6 @@ namespace MLSSRandomizerForm
             progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             Text += " " + progVersion; // show version in title
             //ScriptRead();
-            //Audio();
-        }
-
-
-
-        public void Audio()
-        {
-            /* 
-            DirectoryInfo info = new DirectoryInfo(Environment.CurrentDirectory + "/audio/");
-            FileInfo[] files = info.GetFiles("*.wav");
-            List<AudioFileReader> list = new List<AudioFileReader>();
-
-            var first = new AudioFileReader(files[0].FullName).FollowedBy(TimeSpan.FromSeconds(1), new AudioFileReader(files[1].FullName));
-            WaveFileWriter.CreateWaveFile16(Environment.CurrentDirectory + "/audio/newFile1.wav", first);
-            for(int i = 2; i < files.Length; i++)
-            {
-                first = new AudioFileReader(Environment.CurrentDirectory + "/audio/newFile" + (i - 1) + ".wav").FollowedBy(TimeSpan.FromSeconds(1), new AudioFileReader(files[i].FullName));
-                WaveFileWriter.CreateWaveFile16(Environment.CurrentDirectory + "/audio/newFile" + i + ".wav", first);
-            }
-            */
         }
 
 
@@ -329,15 +309,12 @@ namespace MLSSRandomizerForm
             this.config.TryGetValue("pieces", out num);
             pieces = Convert.ToBoolean(num);
             this.checkBox33.Checked = Convert.ToBoolean(num);
-            /*this.config.TryGetValue("mario", out num);
-            mario = Convert.ToBoolean(num);
-            this.checkBox41.Checked = Convert.ToBoolean(num);
-            this.config.TryGetValue("luigi", out num);
-            luigi = Convert.ToBoolean(num);
-            this.checkBox42.Checked = Convert.ToBoolean(num);*/
             this.config.TryGetValue("mdisable", out num);
             mDisable = Convert.ToBoolean(num);
             this.checkBox37.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("castletown", out num);
+            mDisable = Convert.ToBoolean(num);
+            this.checkBox43.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("pow", out num);
             pow = Convert.ToBoolean(num);
             this.checkBox40.Checked = Convert.ToBoolean(num);
@@ -411,6 +388,7 @@ namespace MLSSRandomizerForm
             contents.Add("luigi," + Convert.ToInt32(luigi).ToString() + ",");
             contents.Add("doors," + Convert.ToInt32(doors).ToString() + ",");
             contents.Add("mdisable," + Convert.ToInt32(mDisable).ToString() + ",");
+            contents.Add("castletown," + Convert.ToInt32(castletown).ToString() + ",");
             contents.Add("scale," + Convert.ToInt32(scale).ToString() + ",");
             contents.Add("pow," + Convert.ToInt32(pow).ToString() + ",");
             contents.Add("tattle," + Convert.ToInt32(tattle).ToString() + ",");
@@ -530,9 +508,6 @@ namespace MLSSRandomizerForm
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             intro = checkBox1.Checked;
-            castletown = false;
-            checkBox43.Checked = false;
-            checkBox43.Enabled = !checkBox1.Checked;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -987,7 +962,6 @@ namespace MLSSRandomizerForm
         private void checkBox43_CheckedChanged(object sender, EventArgs e)
         {
             castletown = checkBox43.Checked;
-            checkBox1.Enabled = !checkBox43.Checked;
         }
 
         private void checkBox44_CheckedChanged(object sender, EventArgs e)

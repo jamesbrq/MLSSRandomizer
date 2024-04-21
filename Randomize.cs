@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -61,6 +62,7 @@ namespace MLSSRandomizerForm
                 rom = new Rom(path, seed, gameId);
                 rom.Randomize();
                 rom.stream.Close();
+                Decompression.BuildRom("bis.nds");
                 return (Environment.CurrentDirectory + "/bis/bis.nds", rom.hash);
             }
             return ("", 0);
@@ -118,8 +120,10 @@ namespace MLSSRandomizerForm
             {
                 if (!File.Exists(Environment.CurrentDirectory + "/bis/bis.nds"))
                     File.Copy(path, Environment.CurrentDirectory + "/bis/bis.nds");
-               // Decompression.ExtractRom("bis.nds");
-                //stream = new FileStream(Environment.CurrentDirectory + "/bis/bis.nds", FileMode.Open);
+                Decompression.ExtractRom("bis.nds");
+                Decompression.Decompress("./sys/arm9.bin", "-d");
+                Decompression.Decompress("./sys/arm9.bin", "-en9");
+                stream = new FileStream(Environment.CurrentDirectory + "/bis/extraction/decompressed/files/Treasure/TreasureInfo.dat", FileMode.Open);
                 FreshArrayPopulate();
                 SeedInitialize(seed);
                 CheckOptions();
@@ -522,19 +526,6 @@ namespace MLSSRandomizerForm
             Form1.lColor = "Random";
             Form1.mPants = "Random";
             Form1.lPants = "Random";
-            if ((!Form1.intro || !Form1.castletown) ? (!Form1.intro && !Form1.castletown) : true)
-            {
-                if (random.Next(0, 2) == 0)
-                {
-                    Form1.intro = true;
-                    Form1.castletown = false;
-                }
-                else
-                {
-                    Form1.intro = false;
-                    Form1.castletown = true;
-                }
-            }
             if (Form1.mario && Form1.luigi)
             {
                 if (random.Next(0, 2) == 0)
@@ -604,8 +595,10 @@ namespace MLSSRandomizerForm
 
         public byte[] ScriptDoorArr(byte[] arr)
         {
-            List<byte> list = new List<byte>();
-            list.Add(arr[1]);
+            List<byte> list = new List<byte>
+            {
+                arr[1]
+            };
             byte temp = arr[0];
             temp = (byte)(temp & 0xE);
             temp = (byte)(temp << 1);
@@ -1903,70 +1896,115 @@ namespace MLSSRandomizerForm
             }
         }
 
+        public void NewSound()
+        {
+            if(Form1.sounds)
+            {
+                List<int> pointers = new List<int>();
+                List<byte[]> sounds = new List<byte[]>();
+                stream.Position = 0x21CC44;
+                for(int i = 0; i < 353; i++)
+                {
+                    byte[] pArr = new byte[4];
+                    stream.Read(pArr, 0, 4);
+                    pointers.Add(pArr[0] | pArr[1] << 8 | pArr[2] << 16);
+                    pointers.Sort();
+                }
+
+                for(int i = 0; i < pointers.Count; i++)
+                {
+                    stream.Position = pointers[i];
+                    byte read = 0;
+                    while(read != 0xFF)
+                    {
+                        read = (byte)stream.ReadByte();
+                        if(read == 0xFF && (pointers[i + 1] - stream.Position) > 4)
+                        {
+                            read = 0;
+                        }
+                    }
+                    if(stream.ReadByte() == 0xFF)
+                    {
+                        pointers.RemoveAt(i);
+                    }
+                    else
+                    {
+                        stream.Position = pointers[i];
+                        byte[] temp = new byte[4];
+                        stream.Read(temp, 0, 4);
+                        sounds.Add(temp);
+                    }
+                }
+                sounds.Shuffle(random);
+                for (int i = 0; i < pointers.Count; i++)
+                {
+                    stream.Position = pointers[i];
+                    stream.Write(sounds[random.Next(sounds.Count)], 0, 4);
+                }
+            }
+        }
+
 
         public void MusicRandomize()
         {
             if (Form1.sounds)
             {
+                List<int> pointers = new List<int>();
                 List<byte[]> sounds = new List<byte[]>();
-                stream.Seek(0x21CC44, SeekOrigin.Begin);
-                while (true)
+                stream.Position = 0x21CC44;
+                for (int i = 0; i < 353; i++)
                 {
-                    long currentPos = stream.Position;
-                    byte tempByte = 0x0;
-                    byte[] temp2 = new byte[4];
-                    stream.Read(temp2, 0, 4);
-                    stream.Seek(temp2[0] | temp2[1] << 8 | temp2[2] << 16, SeekOrigin.Begin);
-                    while (tempByte != 0xFF)
-                    {
-                        tempByte = (byte)stream.ReadByte();
-                    }
-                    if (stream.ReadByte() == 0xFF)
-                    {
-                        stream.Position = currentPos + 4;
-                        continue;
-                    }
-                    if (stream.Position >= 0x21D1CC)
-                        break;
-                    if(currentPos == 0x21CDFC)
-                    {
-                        stream.Position = currentPos + 4;
-                        continue;
-                    }
+                    byte[] pArr = new byte[4];
+                    stream.Read(pArr, 0, 4);
+                    pointers.Add(pArr[0] | pArr[1] << 8 | pArr[2] << 16);
+                    pointers.Sort();
+                    pointers.Reverse();
+                }
 
-                    byte[] temp = new byte[4];
-                    stream.Position = currentPos;
-                    stream.Read(temp, 0, 4);
-                    sounds.Add(temp);
+                for (int i = pointers.Count - 1; i >= 0; i--)
+                {
+                    if (i == 0)
+                        goto skip;
+                    int j = 1;
+                    byte read = 0;
+                    while (true)
+                    {
+                        stream.Position = pointers[i - 1] - j;
+                        read = (byte)stream.ReadByte();
+                        if (read != 0xFF)
+                        {
+                            j++;
+                            continue;
+                        }
+                        else
+                            break;
+                    }
+                    stream.Position = stream.Position = pointers[i - 1] - (j + 1);
+                    skip:
+                    if (stream.ReadByte() >= 0xFE && i != 0)
+                    {
+                        pointers.RemoveAt(i);
+                    }
+                    else
+                    {
+                        byte[] temp = { (byte)(pointers[i] & 0xFF), (byte)(pointers[i] >> 8 & 0xFF), (byte)(pointers[i] >> 16 & 0xFF), 0x8 };
+                        sounds.Add(temp);
+                    }
                 }
                 sounds.Shuffle(random);
-                stream.Seek(0x21CC44, SeekOrigin.Begin);
-                for (int i = sounds.Count - 1; i >= 0; i--)
+                stream.Position = 0x21CC44;
+                for (int i = 0; i < pointers.Count; i++)
                 {
                     long currentPos = stream.Position;
-                    byte temp = 0x0;
-                    byte[] temp2 = new byte[4];
-                    stream.Read(temp2, 0, 4);
-                    stream.Seek(temp2[0] | temp2[1] << 8 | temp2[2] << 16, SeekOrigin.Begin);
-                    while(temp != 0xFF)
-                    {
-                        temp = (byte)stream.ReadByte();
-                    }
-                    if (stream.ReadByte() == 0xFF)
-                    {
-                        stream.Position = currentPos + 4;
+                    byte[] pArr = new byte[4];
+                    stream.Read(pArr, 0, 4);
+                    if (!pointers.Contains(pArr[0] | pArr[1] << 8 | pArr[2] << 16))
                         continue;
-                    }
-                    if (currentPos == 0x21CDFC)
-                    {
-                        stream.Position = currentPos + 4;
-                        continue;
-                    }
                     stream.Position = currentPos;
-                    stream.Write(sounds[i], 0, 4);
-                    sounds.RemoveAt(i);
+                    stream.Write(sounds[random.Next(sounds.Count)], 0, 4);
                 }
             }
+
             if (Form1.mDisable)
             {
                 stream.Seek(0x19B118, SeekOrigin.Begin);
@@ -1976,6 +2014,7 @@ namespace MLSSRandomizerForm
 
             if (!Form1.music)
                 return;
+
             List<byte[]> songs = new List<byte[]>();
             stream.Seek(0x21cb74, SeekOrigin.Begin);
             while (true)
@@ -2528,41 +2567,55 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 List<dynamic> itemArray = new List<dynamic>(freshItemArray);
-                locationArray = new List<dynamic>(validLocationArray);
+                List<dynamic> locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Reverse();
-                rBegin:
-                List<dynamic> tempItemArray = new List<dynamic>(itemArray);
-                tempItemArray.Shuffle(random);
-                List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
-                tempLocationArray.Shuffle(random);
-                List<dynamic> fakeLocationsArray = new List<dynamic>();
-                int retryCount = 0;
+
+                int iterationCount = 0;
+                const int maxRetries = 50;
+                List<dynamic> fakeLocationsArray;
+
                 while (true)
                 {
-                    if (tempItemArray.Count <= 0)
-                        break;
-                    if(CheckValidSpot(tempLocationArray[0], tempItemArray[0]))
+                    List<dynamic> tempItemArray = new List<dynamic>(itemArray);
+                    tempItemArray.Shuffle(random);
+                    List<dynamic> tempLocationArray = new List<dynamic>(locationArray);
+                    tempLocationArray.Shuffle(random);
+                    fakeLocationsArray = new List<dynamic>();
+
+                    int retryCount = 0;
+
+                    while (tempItemArray.Any())
                     {
-                        retryCount++;
-                        if (retryCount > 50)
+                        if (retryCount > maxRetries || !tempLocationArray.Any())
                             break;
-                        tempItemArray.Shuffle(random);
-                        continue;
+
+                        if (CheckValidSpot(tempLocationArray[0], tempItemArray[0]))
+                        {
+                            retryCount++;
+                            tempItemArray.Shuffle(random);
+                            continue;
+                        }
+
+                        var temp = tempLocationArray[0];
+                        tempLocationArray.RemoveAt(0);
+                        temp.item = tempItemArray[0];
+                        tempItemArray.RemoveAt(0);
+                        fakeLocationsArray.Add(temp);
                     }
-                    LocationData temp = tempLocationArray[0];
-                    tempLocationArray.RemoveAt(0);
-                    temp.item = tempItemArray[0];
-                    tempItemArray.RemoveAt(0);
-                    fakeLocationsArray.Add(temp);
+
+                    gameState = new LocationData(0);
+
+                    if (!CheckValidity(fakeLocationsArray))
+                    {
+                        validLocations = new List<dynamic>();
+                        Console.WriteLine(++iterationCount);
+                    }
+                    else
+                    {
+                        break; // Exit loop if validity check passes
+                    }
                 }
-                gameState = new LocationData(0);
-                if (!CheckValidity(fakeLocationsArray))
-                {
-                    validLocations = new List<dynamic>();
-                    Console.WriteLine(++iterationCount);
-                    goto rBegin;
-                }
-                foreach(dynamic data in fakeLocationsArray)
+                foreach (dynamic data in fakeLocationsArray)
                 {
                     //Inject intems in pre-verified positions
                     ItemInject(data.location, data.itemType, (byte)data.item);
@@ -2575,9 +2628,9 @@ namespace MLSSRandomizerForm
                 }
                 if(Form1.castletown)
                 {
-                    //Spawn in castle town in ROM
-                    stream.Seek(0x244D08, SeekOrigin.Begin);
-                    stream.Write(new byte[] { 0x88, 0x0, 0xD, 0x51, 0x3, 0xA0, 0x68, 0x0, 0xF, 0xA0, 0x41, 0x15, 0x27, 0x8 }, 0, 14);
+                    //Extra Pipes
+                    stream.Seek(0xD00001, SeekOrigin.Begin);
+                    stream.WriteByte(0x1);
                 }
                 if (Form1.mario || Form1.luigi)
                 {
@@ -2640,7 +2693,6 @@ namespace MLSSRandomizerForm
 
             if (gameId == 3)
             {
-                rBegin:
                 List<dynamic> itemArray = new List<dynamic>(freshItemArray);
                 itemArray.Shuffle(random);
                 locationArray = new List<dynamic>(validLocationArray);
@@ -2699,7 +2751,7 @@ namespace MLSSRandomizerForm
                     return false;
             } */
 
-            if(item < 0xA && data.itemType == 1)
+            if(item < 0xA && data.itemType != 0)
                 return true;
 
             switch (item)
@@ -2890,11 +2942,12 @@ namespace MLSSRandomizerForm
                 switch (itemType)
                 {
                     case 0:
-                        stream.Seek(location.location, SeekOrigin.Begin);
+                        stream.Seek(location.location - 0x5944A00, SeekOrigin.Begin);
                         stream.Write(new byte[] { item.quantity, item.byte1, item.byte2 }, 0, 3);
                         break;
 
                     case 1:
+                        break;
                         stream.Seek(location.location, SeekOrigin.Begin);
                         byte replace = location.item.byte1;
                         while (true)
@@ -2920,8 +2973,7 @@ namespace MLSSRandomizerForm
 
         public int AllNumbers(string seed)
         {
-            int i;
-            int.TryParse(seed, out i);
+            int.TryParse(seed, out int i);
             return i;
         }
 
@@ -2956,9 +3008,9 @@ namespace MLSSRandomizerForm
         public static System.Drawing.Color HexToColor(string hex)
         {
             string[] indiv = hex.Split(',');
-            string r = indiv[0];
-            string g = indiv[1];
-            string b = indiv[2];
+            string r = indiv[0].Length > 1 ? indiv[0] : "0" + indiv[0];
+            string g = indiv[1].Length > 1 ? indiv[1] : "0" + indiv[1];
+            string b = indiv[2].Length > 1 ? indiv[2] : "0" + indiv[2];
             return System.Drawing.ColorTranslator.FromHtml("#" + r + g + b);
         }
 

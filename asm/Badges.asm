@@ -55,12 +55,31 @@ PANTS_SPRITE_HOOK equ 0x0812D87E
 PANTS_SPRITE_SUBR equ 0x081E0800
 AP_RAM equ 0x0200304C
 AP_INIT equ 0x0200304B
+AP_SCROLL equ 0x0200304A
 AP_BADGE_HOOK equ 0x0812AE70
 AP_BADGE_SUBR equ 0x081DFDC0
 AP_BADGE_DESC equ 0x08D10200
 AP_FBADGE_DESC equ 0x08D10300
 AP_PANTS_DESC equ 0x08D10400
 AP_FPANTS_DESC equ 0x08D10500
+AP_RAM_CHECK_HOOK equ 0x0812E192
+AP_RAM_CHECK_SUBR equ 0x081DFE00
+
+
+.org AP_RAM_CHECK_HOOK
+	bl AP_RAM_CHECK_SUBR
+
+
+.org AP_RAM_CHECK_SUBR
+push lr
+add r1, r2
+ldr r1, [r1]
+ldr r1, [r1, #0x4]
+pop pc
+.pool
+
+.org 0x0812E196
+	db 0xA8
 
 
 .org AP_BADGE_DESC
@@ -398,6 +417,12 @@ push r1-r4
 ldr r1, =AP_INIT
 mov r2, 0x1
 strb r2, [r1]
+ldr r1, =0x03003FE4
+ldrb r2, [r1]
+mov r1, #0x7F
+and r2, r1
+ldr r1, =AP_SCROLL
+strb r2, [r1]
 cmp r0, #0x30
 bge .pants_key
 sub r0, #0xA
@@ -433,15 +458,7 @@ lsl r4, r1
 orr r3, r4
 strb r3, [r2, r0]
 bl .pants_buy_end
-.pants_bro:
-ldr r1, =0x020048FB
-mov r2, #0x1
-strb r2, [r1]
-bl 0x08E10300
-bl .pants_buy_end
 .pants_hand:
-cmp r1, #0xB
-beq .pants_bro
 sub r1, #0x9
 mov r2, #0x1
 lsl r2, r1
@@ -667,21 +684,9 @@ cmp r3, #0x8
 bgt .text_hands
 ; Hammer Code Here
 bl .text_norm
-.text_bro:
-ldr r3, =0x08DF0000
-ldrb r3, [r3]
-cmp r3, #0x1
-beq .text_luigi
-ldr r1, =0x08E008C0
-bl .text_norm
-.text_luigi:
-ldr r1, =0x08E008C4
-bl .text_norm
 .text_hands:
 cmp r3, #0xF
 beq .text_ap
-cmp r3, #0xB
-beq .text_bro
 sub r3, #0x8
 ldr r2, =BROS_ITEM_SHOP_ARRAY
 add r3, #0x2
@@ -765,21 +770,9 @@ cmp r4, #0x8
 bgt .desc_hands
 ; Hammer Code Here
 bl .desc_norm
-.desc_bro:
-ldr r4, =0x8DF0000
-ldrb r4, [r4]
-cmp r4, #0x1
-beq .desc_luigi
-ldr r2, =0x08E008C0
-bl .desc_norm
-.desc_luigi:
-ldr r2, =0x08E008C4
-bl .desc_norm
 .desc_hands:
 cmp r4, #0xF
 beq .desc_ap
-cmp r4, #0xB
-beq .desc_bro
 sub r4, #0x8
 ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
@@ -882,21 +875,9 @@ cmp r4, #0x8
 bgt .desc_hands2
 ; Hammer Code Here
 bl .desc_norm2
-.desc_bro2:
-ldr r4, =0x08DF0000
-ldrb r4, [r4]
-cmp r4, #0x1
-beq .desc_luigi2
-ldr r2, =0x08E008C0
-bl .desc_norm2
-.desc_luigi2:
-ldr r2, =0x08E008C4
-bl .desc_norm2
 .desc_hands2:
 cmp r4, #0xF
 beq .desc_ap2
-cmp r4, #0xB
-beq .desc_bro2
 sub r4, #0x8
 ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2

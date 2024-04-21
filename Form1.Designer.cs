@@ -915,13 +915,13 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox43.AutoSize = true;
             this.checkBox43.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox43.Location = new System.Drawing.Point(50, 146);
+            this.checkBox43.Location = new System.Drawing.Point(92, 146);
             this.checkBox43.Name = "checkBox43";
-            this.checkBox43.Size = new System.Drawing.Size(127, 17);
+            this.checkBox43.Size = new System.Drawing.Size(85, 17);
             this.checkBox43.TabIndex = 46;
-            this.checkBox43.Text = "Start in Castle Town?";
-            this.toolTip1.SetToolTip(this.checkBox43, "Checking this will do the same thing as Skip intro, except you will spawn in Pipe" +
-        " 3 instead of Pipe 1.");
+            this.checkBox43.Text = "Extra Pipes?";
+            this.toolTip1.SetToolTip(this.checkBox43, "CHecking this will give you access to pipes 3, 4, and 6 from the start of the gam" +
+        "e.");
             this.checkBox43.UseVisualStyleBackColor = true;
             this.checkBox43.CheckedChanged += new System.EventHandler(this.checkBox43_CheckedChanged);
             // 
