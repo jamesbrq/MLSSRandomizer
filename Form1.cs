@@ -72,6 +72,9 @@ namespace MLSSRandomizerForm
         public static string lColor = "Green";
         public static string mPants = "Vanilla";
         public static string lPants = "Vanilla";
+        public static bool pow = false;
+        public static bool mario = false;
+        public static bool luigi = false;
         public static int r = 0;
         public static int g = 0;
         public static int b = 0;
@@ -312,6 +315,9 @@ namespace MLSSRandomizerForm
             this.config.TryGetValue("castletown", out num);
             mDisable = Convert.ToBoolean(num);
             this.checkBox43.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("pow", out num);
+            pow = Convert.ToBoolean(num);
+            this.checkBox40.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("tattle", out num);
             tattle = Convert.ToBoolean(num);
             this.checkBox48.Checked = Convert.ToBoolean(num);
@@ -378,10 +384,13 @@ namespace MLSSRandomizerForm
             contents.Add("mush," + Convert.ToInt32(mush).ToString() + ",");
             contents.Add("surf," + Convert.ToInt32(surf).ToString() + ",");
             contents.Add("minigame," + Convert.ToInt32(minigame).ToString() + ",");
+            contents.Add("mario," + Convert.ToInt32(mario).ToString() + ",");
+            contents.Add("luigi," + Convert.ToInt32(luigi).ToString() + ",");
             contents.Add("doors," + Convert.ToInt32(doors).ToString() + ",");
             contents.Add("mdisable," + Convert.ToInt32(mDisable).ToString() + ",");
             contents.Add("castletown," + Convert.ToInt32(castletown).ToString() + ",");
             contents.Add("scale," + Convert.ToInt32(scale).ToString() + ",");
+            contents.Add("pow," + Convert.ToInt32(pow).ToString() + ",");
             contents.Add("tattle," + Convert.ToInt32(tattle).ToString() + ",");
             contents.Add("enemy," + Convert.ToInt32(enemy).ToString() + ",");
             contents.Add("bosses," + bosses.ToString());
@@ -932,6 +941,24 @@ namespace MLSSRandomizerForm
             }
         }
 
+        private void checkBox40_CheckedChanged(object sender, EventArgs e)
+        {
+            pow = checkBox40.Checked;
+        }
+
+        /*
+        private void checkBox41_CheckedChanged(object sender, EventArgs e)
+        {
+            mario = checkBox41.Checked;
+            checkBox42.Enabled = !checkBox41.Checked;
+        }
+
+        private void checkBox42_CheckedChanged(object sender, EventArgs e)
+        {
+            luigi = checkBox42.Checked;
+            checkBox41.Enabled = !checkBox42.Checked;
+        }*/
+
         private void checkBox43_CheckedChanged(object sender, EventArgs e)
         {
             castletown = checkBox43.Checked;
@@ -1033,6 +1060,7 @@ namespace MLSSRandomizerForm
             this.checkBox37.Enabled = !this.checkBox49.Checked;
             this.checkBox38.Enabled = !this.checkBox49.Checked;
             this.checkBox39.Enabled = !this.checkBox49.Checked;
+            this.checkBox40.Enabled = !this.checkBox49.Checked;
             //this.checkBox41.Enabled = !this.checkBox49.Checked;
             //this.checkBox42.Enabled = !this.checkBox49.Checked;
             this.checkBox43.Enabled = !this.checkBox49.Checked;

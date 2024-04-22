@@ -7,14 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLSSRandomizerForm", "MLSSR
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB616A70-4552-48BE-9D37-29FDE928A2E1}"
 	ProjectSection(SolutionItems) = preProject
-		asm\Arrays.asm = asm\Arrays.asm
-		asm\Badges.asm = asm\Badges.asm
 		Class1.cs = Class1.cs
-		asm\Heart.asm = asm\Heart.asm
-		asm\Hint.asm = asm\Hint.asm
-		asm\Logic.asm = asm\Logic.asm
-		asm\Sprites.asm = asm\Sprites.asm
-		asm\Variables.asm = asm\Variables.asm
 	EndProjectSection
 EndProject
 Global
