@@ -784,19 +784,19 @@ namespace MLSSRandomizerForm
         private void numericUpDown3_ValueChanged(object sender, EventArgs e)
         {
             r = (int)numericUpDown3.Value;
-            panel1.BackColor = System.Drawing.Color.FromArgb(r, g, b);
+            panel1.BackColor = Color.FromArgb(r, g, b);
         }
 
         private void numericUpDown1_ValueChanged_1(object sender, EventArgs e)
         {
             g = (int)numericUpDown1.Value;
-            panel1.BackColor = System.Drawing.Color.FromArgb(r, g, b);
+            panel1.BackColor = Color.FromArgb(r, g, b);
         }
 
         private void numericUpDown4_ValueChanged(object sender, EventArgs e)
         {
             b = (int)numericUpDown4.Value;
-            panel1.BackColor = System.Drawing.Color.FromArgb(r, g, b);
+            panel1.BackColor = Color.FromArgb(r, g, b);
         }
 
         private void label10_Click(object sender, EventArgs e)

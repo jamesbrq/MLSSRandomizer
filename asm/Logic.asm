@@ -1123,24 +1123,22 @@
 
 
     .org POW_SCALE_SUBR
-    push r1, pc
+    push r1-r2, pc
     ldr r1, =ERANDOM
-    ldrb r1, [r1, #0x1]
+    ldrb r1, [r1]
     cmp r1, #0x1
     bne .pow_norm
-    ldr r1, =0x030024B8
-    ldrb r1, [r1]
-    cmp r1, #0x6
-    blt .pow_norm
-    sub r1, #0x6
-    add r1, #0x14
-    mov r0, r1
+    ldr r1, =POW_ARR
+    ldr r2, =ROOM
+    ldrh r2, [r2]
+    lsl r2, #0x1
+    ldrh r0, [r1, r2]
     bl .pow_end
     .pow_norm:
     ldrh r0, [r0, #0xC]
     .pow_end:
     mov r12, r0
-    pop r1, pc
+    pop r1-r2, pc
     .pool
 
 
