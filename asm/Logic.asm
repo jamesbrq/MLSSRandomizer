@@ -14,6 +14,10 @@
         db 0x2, 0x0
         dw 0x082534EB
 
+    .org 0x0823432A ; Quicken pearl bean cutscene
+        db 0x2, 0x0
+        dw 0x08234F98
+
     .org 0x082E940C ; Rock Removal in east beanbean
         db 0x39
 
@@ -733,11 +737,36 @@
     .org ESPRESSO_SPRITE_HOOK
         bl ESPRESSO_SPRITE_SUBR 
 
+    .org DEF_SCALE_HOOK
+        bl DEF_SCALE_SUBR
+
     .org 0x080fde9a ;Mario BP
         mov r0, #0x0
 
     .org 0x080fe0c4 ;Luigi BP
         mov r0, #0x0
+
+
+
+    .org DEF_SCALE_SUBR
+    push { r2-r3, lr }
+    ldr r2, =ERANDOM
+    ldrb r2, [r2]
+    cmp r2, #0x1
+    bne .def_scale_end
+    ldr r2, =DEF_ARR
+    ldr r3, =ROOM
+    ldrh r3, [r3]
+    lsl r3, #0x1
+    ldrh r2, [r2, r3]
+    cmp r2, #0x1
+    beq .def_scale_end
+    mov r1, r2
+    .def_scale_end:
+    strh r1, [r0]
+    mov r0, #0x0
+    pop { r2-r3, pc }
+    .pool
 
 
 
@@ -1122,6 +1151,8 @@
 
 
 
+
+
     .org POW_SCALE_SUBR
     push r1-r2, pc
     ldr r1, =ERANDOM
@@ -1132,7 +1163,10 @@
     ldr r2, =ROOM
     ldrh r2, [r2]
     lsl r2, #0x1
-    ldrh r0, [r1, r2]
+    ldrh r1, [r1, r2]
+    cmp r1, #0x1
+    beq .pow_norm
+    mov r0, r1
     bl .pow_end
     .pow_norm:
     ldrh r0, [r0, #0xC]
@@ -1140,9 +1174,6 @@
     mov r12, r0
     pop r1-r2, pc
     .pool
-
-
-
 
 
 
@@ -1330,12 +1361,15 @@
     sub r7, r5
     cmp r7, #0x24
     bne .xp_end
+    ldr r7, =XP_ARR
+    ldr r5, =ROOM
+    ldrh r5, [r5]
+    lsl r5, #0x1
+    ldrh r7, [r7, r5]
+    cmp r7, #0x1
+    beq .xp_end
     lsr r3, #0x10
     lsl r3, #0x10
-    ldr r7, =0x030024B8
-    ldrb r7, [r7]
-    sub r7, #0x7
-    add r7, #0x4
     add r3, r7
     .xp_end:
     pop { r5, r7, pc }
@@ -3475,6 +3509,9 @@
     beq .hammer_tut_block
     cmp r1, #0x2
     beq .chuckle_block
+    ldr r3, =0x1D5
+    cmp r1, r3
+    beq .pearl_block
     b .unblock
 
     .chuckle_block:
@@ -3510,6 +3547,10 @@
     ldrb r0, [r0]
     cmp r0, #0x1
     bne .unblock
+    mov r0, #0xFF
+    bl .end
+
+    .pearl_block:
     mov r0, #0xFF
     bl .end
 

@@ -1300,7 +1300,6 @@ namespace MLSSRandomizerForm
                 {
                     ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
                 }
-                bool placedBro = false;
                 LocationData tempData = new LocationData();
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
