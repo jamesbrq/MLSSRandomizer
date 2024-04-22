@@ -341,6 +341,10 @@ namespace MLSSRandomizerForm
             public byte groupType;
         }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> parent of 7574f6f (Undo)
         public struct LocationData
         {
             public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi)
@@ -884,13 +888,6 @@ namespace MLSSRandomizerForm
                     gameState.thunder = true;
                     break;
 
-                case 0x3B:
-                    if(Form1.mario)
-                        gameState.mario = true;
-                    else
-                        gameState.luigi = true;
-                    break;
-
                 case 0x40:
                     gameState.membership = true;
                     break;
@@ -1197,8 +1194,6 @@ namespace MLSSRandomizerForm
                 list.Add("Skip intro: " + Form1.intro.ToString());
                 list.Add("Start Castle: " + Form1.castletown.ToString());
                 list.Add("Minigame Spoilers: " + Form1.minigame.ToString());
-                list.Add("Random Mario: " + Form1.mario.ToString());
-                list.Add("Random Luigi: " + Form1.luigi.ToString());
                 list.Add("Random Enemies: " + Form1.enemy.ToString());
                 list.Add("Random Bosses: " + Form1.bosses.ToString());
                 list.Add("Scale HP: " + Form1.scale.ToString());
@@ -1223,14 +1218,6 @@ namespace MLSSRandomizerForm
                         gameState.mini = true;
                         gameState.under = true;
                     }
-                }
-                if (!Form1.mario)
-                {
-                    gameState.mario = true;
-                }
-                if (!Form1.luigi)
-                {
-                    gameState.luigi = true;
                 }
                 UpdateList();
                 if (validLocations.Count > 0)
@@ -2036,7 +2023,11 @@ namespace MLSSRandomizerForm
                 //Write byte for stat scale execution
                 if (Form1.scale)
                 {
+<<<<<<< HEAD
                     stream.Seek(0x1E9418, SeekOrigin.Begin);
+=======
+                    stream.Seek(0xD00002, SeekOrigin.Begin);
+>>>>>>> parent of 7574f6f (Undo)
                     stream.WriteByte(0x1);
                 }
             }
@@ -2563,19 +2554,6 @@ namespace MLSSRandomizerForm
                     stream.Seek(0xD00001, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
-                if (Form1.mario || Form1.luigi)
-                {
-                    stream.Seek(0xDF0000, SeekOrigin.Begin);
-                    if(Form1.luigi)
-                        stream.WriteByte(0x1);
-                    else
-                        stream.WriteByte(0x2);
-                    if(!Form1.intro && !Form1.castletown)
-                    {
-                        stream.Seek(0x244D08, SeekOrigin.Begin);
-                        stream.Write(new byte[] { 0x88, 0x0, 0x19, 0x91, 0x1, 0x20, 0x58, 0x1, 0xF, 0xA0, 0x3, 0x15, 0x27, 0x8 }, 0, 14);
-                    }
-                }
                 if (Form1.castle)
                 {
                     //Enable bowsers castle skip in ROM
@@ -2705,13 +2683,6 @@ namespace MLSSRandomizerForm
 
                 case 0x3A:
                     if (data.thunder == true)
-                        return true;
-                    return false;
-
-                case 0x3B:
-                    if (data.mario && Form1.mario)
-                        return true;
-                    else if (data.luigi && Form1.luigi)
                         return true;
                     return false;
 
