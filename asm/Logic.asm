@@ -85,6 +85,12 @@
     .org 0x08169FDC ;Default winkle minigame to yes instead of explain
         db 0x0
 
+    .org 0x081667CC ;Default border jump to yes instead of explain
+        db 0x0
+
+    .org 0x08501710 ; Nerf piranha bean def.
+        db 0x28
+
     .org DRESS_TEXT_E ; Extra Dress Text Capitalization
         db 0x45
 
@@ -110,7 +116,7 @@
         db 0x2, 0x10, 0xC, 0xE5, 0x25, 0x08
 
     .org 0x08250780 ; Fast chuckolator fight start
-        db 0x2, 0x10, 0x04, 0x0b, 0x25, 0x08
+        db 0x2, 0x10, 0x00, 0x0b, 0x25, 0x08
 
     .org 0x08250D39 ; Fast chuckolator fight end
         db 0x2, 0x10, 0xD2, 0xEB, 0x24, 0x08
@@ -2660,6 +2666,12 @@
     blt .button_norm
     cmp r2, #0x3
     bne .pipe_skip2
+    ldr r1, =0x02004407
+    ldrb r1, [r1]
+    mov r2, #0x40
+    and r1, r2
+    cmp r1, #0x40
+    beq .pipe_skip2
     ldr r1, =0x020048FB
     ldrb r1, [r1]
     cmp r1, #0x0
@@ -5628,6 +5640,18 @@
 
     .org ROCK_BLOCK
     push r1
+    ldr r0, =0x0200490A
+    ldrb r0, [r0]
+    mov r1, #0x6
+    and r0, r1
+    cmp r0, #0x0
+    beq .bshop_skip
+    ldr r0, =0x0200436D ;unlock badge shop
+    ldrb r1, [r0]
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    .bshop_skip:
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0xCC
@@ -5668,6 +5692,16 @@
     ldr r0, =0x02004306 ;sewers cork
     ldrb r1, [r0]
     mov r2, #0x1
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x0200435C ;ss chuckola dynamite
+    ldrb r1, [r0]
+    mov r2, #0x10
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004317 ;beanbean map cutscene
+    ldrb r1, [r0]
+    mov r2, #0x2
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x020043F9 ;desert1
