@@ -99,7 +99,6 @@ namespace MLSSRandomizerForm
         public List<EnemyGroup> groups = new List<EnemyGroup>();
         public List<EnemyGroup> stardustGroups = new List<EnemyGroup>();
         public List<EnemyGroup> bossGroups = new List<EnemyGroup>();
-        public List<StatCount> enemyCount = new List<StatCount>();
 
 
         public Rom(string path, string seed, int id)
@@ -342,19 +341,6 @@ namespace MLSSRandomizerForm
             public byte groupType;
         }
 
-        public struct StatCount
-        {
-            public StatCount(int id)
-            {
-                this.id = id;
-                count = 1;
-                total = 0;
-            }
-
-            public int id;
-            public int count;
-            public int total;
-        }
 
         public struct LocationData
         {
@@ -520,23 +506,10 @@ namespace MLSSRandomizerForm
             Form1.items = true;
             Form1.harhall = Convert.ToBoolean(random.Next(0, 2));
             Form1.coins = Convert.ToBoolean(random.Next(0, 2));
-            Form1.mario = Convert.ToBoolean(random.Next(0, 2));
-            Form1.luigi = Convert.ToBoolean(random.Next(0, 2));
             Form1.mColor = "Random";
             Form1.lColor = "Random";
             Form1.mPants = "Random";
             Form1.lPants = "Random";
-            if (Form1.mario && Form1.luigi)
-            {
-                if (random.Next(0, 2) == 0)
-                {
-                    Form1.luigi = false;
-                }
-                else
-                {
-                    Form1.mario = false;
-                }
-            }
             if (Form1.invisible && Form1.removeHidden)
             {
                 Form1.removeHidden = false;
@@ -912,13 +885,6 @@ namespace MLSSRandomizerForm
                     gameState.thunder = true;
                     break;
 
-                case 0x3B:
-                    if(Form1.mario)
-                        gameState.mario = true;
-                    else
-                        gameState.luigi = true;
-                    break;
-
                 case 0x40:
                     gameState.membership = true;
                     break;
@@ -1225,12 +1191,9 @@ namespace MLSSRandomizerForm
                 list.Add("Skip intro: " + Form1.intro.ToString());
                 list.Add("Start Castle: " + Form1.castletown.ToString());
                 list.Add("Minigame Spoilers: " + Form1.minigame.ToString());
-                list.Add("Random Mario: " + Form1.mario.ToString());
-                list.Add("Random Luigi: " + Form1.luigi.ToString());
                 list.Add("Random Enemies: " + Form1.enemy.ToString());
                 list.Add("Random Bosses: " + Form1.bosses.ToString());
                 list.Add("Scale HP: " + Form1.scale.ToString());
-                list.Add("Scale POW: " + Form1.pow.ToString());
                 list.Add("Tattle HP: " + Form1.tattle.ToString());
                 list.Add(" ");
             }
@@ -1252,14 +1215,6 @@ namespace MLSSRandomizerForm
                         gameState.mini = true;
                         gameState.under = true;
                     }
-                }
-                if (!Form1.mario)
-                {
-                    gameState.mario = true;
-                }
-                if (!Form1.luigi)
-                {
-                    gameState.luigi = true;
                 }
                 UpdateList();
                 if (validLocations.Count > 0)
@@ -1419,20 +1374,6 @@ namespace MLSSRandomizerForm
                                     stream.WriteByte(0x0);
                                 }
                             }
-                        }
-                    }
-
-                    if (data.item == 0xA && (Form1.mario || Form1.luigi))
-                    {
-                        if (!placedBro)
-                        {
-                            tempData = data;
-                            tempData.item = 0x3B;
-                            placedBro = true;
-                        }
-                        else
-                        {
-                            tempData = new LocationData();
                         }
                     }
 
@@ -2080,13 +2021,7 @@ namespace MLSSRandomizerForm
                 //Write byte for stat scale execution
                 if (Form1.scale)
                 {
-                    stream.Seek(0x1E9418, SeekOrigin.Begin);
-                    stream.WriteByte(0x1);
-                }
-
-                if (Form1.pow)
-                {
-                    stream.Seek(0x1E9419, SeekOrigin.Begin);
+                    stream.Seek(0xD00002, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
             }
@@ -2369,25 +2304,6 @@ namespace MLSSRandomizerForm
                     id = stream.ReadByte();
                     if (id == 0x18 || id == 0x53 || id == 0x4B || (id >= 0x2D && id <= 0x30) || id == 0x3C)
                         type = 0x4;
-                    if (enemyCount.Count == 0)
-                        enemyCount.Add(new StatCount(id));
-                    else
-                    {
-                        for (int j = 0; j < enemyCount.Count; j++)
-                        {
-                            if (id == enemyCount[j].id)
-                            {
-                                StatCount temp = enemyCount[j];
-                                temp.count++;
-                                enemyCount[j] = temp;
-                                break;
-                            }
-                            else if (j == enemyCount.Count - 1)
-                            {
-                                enemyCount.Add(new StatCount(id));
-                            }
-                        }
-                    }
                     if (id == 0xF && type == 0x3)
                         goto skipAdd;
 
@@ -2632,19 +2548,6 @@ namespace MLSSRandomizerForm
                     stream.Seek(0xD00001, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
-                if (Form1.mario || Form1.luigi)
-                {
-                    stream.Seek(0xDF0000, SeekOrigin.Begin);
-                    if(Form1.luigi)
-                        stream.WriteByte(0x1);
-                    else
-                        stream.WriteByte(0x2);
-                    if(!Form1.intro && !Form1.castletown)
-                    {
-                        stream.Seek(0x244D08, SeekOrigin.Begin);
-                        stream.Write(new byte[] { 0x88, 0x0, 0x19, 0x91, 0x1, 0x20, 0x58, 0x1, 0xF, 0xA0, 0x3, 0x15, 0x27, 0x8 }, 0, 14);
-                    }
-                }
                 if (Form1.castle)
                 {
                     //Enable bowsers castle skip in ROM
@@ -2774,13 +2677,6 @@ namespace MLSSRandomizerForm
 
                 case 0x3A:
                     if (data.thunder == true)
-                        return true;
-                    return false;
-
-                case 0x3B:
-                    if (data.mario && Form1.mario)
-                        return true;
-                    else if (data.luigi && Form1.luigi)
                         return true;
                     return false;
 

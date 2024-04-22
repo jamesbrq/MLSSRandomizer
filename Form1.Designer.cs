@@ -125,7 +125,6 @@ namespace MLSSRandomizerForm
             this.label7 = new System.Windows.Forms.Label();
             this.tabPage9 = new System.Windows.Forms.TabPage();
             this.checkBox48 = new System.Windows.Forms.CheckBox();
-            this.checkBox40 = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.radioButton6 = new System.Windows.Forms.RadioButton();
             this.radioButton7 = new System.Windows.Forms.RadioButton();
@@ -1386,7 +1385,6 @@ namespace MLSSRandomizerForm
             // tabPage9
             // 
             this.tabPage9.Controls.Add(this.checkBox48);
-            this.tabPage9.Controls.Add(this.checkBox40);
             this.tabPage9.Controls.Add(this.label14);
             this.tabPage9.Controls.Add(this.radioButton6);
             this.tabPage9.Controls.Add(this.radioButton7);
@@ -1405,7 +1403,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox48.AutoSize = true;
             this.checkBox48.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox48.Location = new System.Drawing.Point(52, 139);
+            this.checkBox48.Location = new System.Drawing.Point(52, 81);
             this.checkBox48.Name = "checkBox48";
             this.checkBox48.Size = new System.Drawing.Size(112, 17);
             this.checkBox48.TabIndex = 44;
@@ -1415,19 +1413,6 @@ namespace MLSSRandomizerForm
         "e screen.");
             this.checkBox48.UseVisualStyleBackColor = true;
             this.checkBox48.CheckedChanged += new System.EventHandler(this.checkBox48_CheckedChanged);
-            // 
-            // checkBox40
-            // 
-            this.checkBox40.AutoSize = true;
-            this.checkBox40.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox40.Location = new System.Drawing.Point(42, 104);
-            this.checkBox40.Name = "checkBox40";
-            this.checkBox40.Size = new System.Drawing.Size(122, 17);
-            this.checkBox40.TabIndex = 43;
-            this.checkBox40.Text = "Scale enemy POW?";
-            this.toolTip1.SetToolTip(this.checkBox40, "This will scale the POW of all Enemies and Bosses to the area you are in.");
-            this.checkBox40.UseVisualStyleBackColor = true;
-            this.checkBox40.CheckedChanged += new System.EventHandler(this.checkBox40_CheckedChanged);
             // 
             // label14
             // 
@@ -1480,7 +1465,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox25.AutoSize = true;
             this.checkBox25.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox25.Location = new System.Drawing.Point(36, 42);
+            this.checkBox25.Location = new System.Drawing.Point(36, 35);
             this.checkBox25.Name = "checkBox25";
             this.checkBox25.Size = new System.Drawing.Size(128, 17);
             this.checkBox25.TabIndex = 29;
@@ -1494,12 +1479,13 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox31.AutoSize = true;
             this.checkBox31.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox31.Location = new System.Drawing.Point(15, 81);
+            this.checkBox31.Location = new System.Drawing.Point(43, 58);
             this.checkBox31.Name = "checkBox31";
-            this.checkBox31.Size = new System.Drawing.Size(149, 17);
+            this.checkBox31.Size = new System.Drawing.Size(121, 17);
             this.checkBox31.TabIndex = 38;
-            this.checkBox31.Text = "Scale enemy HP and XP?";
-            this.toolTip1.SetToolTip(this.checkBox31, "This will scale the HP and XP of all enemies and bosses to the area you are in.");
+            this.checkBox31.Text = "Scale Enemy Stats?";
+            this.toolTip1.SetToolTip(this.checkBox31, "This will scale the HP, POW, DEF, and XP of all enemies and bosses to vanilla val" +
+        "ues.");
             this.checkBox31.UseVisualStyleBackColor = true;
             this.checkBox31.CheckedChanged += new System.EventHandler(this.checkBox31_CheckedChanged);
             // 
@@ -1541,10 +1527,6 @@ namespace MLSSRandomizerForm
         "ble.");
             this.radioButton4.UseVisualStyleBackColor = true;
             this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
-            // 
-            // statCountBindingSource
-            // 
-            this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
             // 
             // tabControl2
             // 
@@ -1631,18 +1613,6 @@ namespace MLSSRandomizerForm
             this.toolTip1.SetToolTip(this.checkBox49, "Checking this will randomize all settings when you click Rnandomize.");
             this.checkBox49.UseVisualStyleBackColor = true;
             this.checkBox49.CheckedChanged += new System.EventHandler(this.checkBox49_CheckedChanged);
-            // 
-            // form1BindingSource
-            // 
-            this.form1BindingSource.DataSource = typeof(MLSSRandomizerForm.Form1);
-            // 
-            // form1BindingSource1
-            // 
-            this.form1BindingSource1.DataSource = typeof(MLSSRandomizerForm.Form1);
-            // 
-            // romBindingSource
-            // 
-            this.romBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom);
             // 
             // Form1
             // 
@@ -1800,7 +1770,6 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox37;
         private CheckBox checkBox38;
         private CheckBox checkBox39;
-        private CheckBox checkBox40;
         private CheckBox checkBox43;
         private CheckBox checkBox45;
         private CheckBox checkBox44;
