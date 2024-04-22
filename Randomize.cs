@@ -1587,7 +1587,7 @@ namespace MLSSRandomizerForm
                         else
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
-                            stream.Seek(0x1e9413, SeekOrigin.Begin);
+                            stream.Seek(0xD00005, SeekOrigin.Begin);
                             stream.WriteByte(0x1);
                         }
                     }
@@ -1649,7 +1649,7 @@ namespace MLSSRandomizerForm
                         else
                         {
                             ItemInject(data.location, data.itemType, (byte)data.item);
-                            stream.Seek(0x1e9414, SeekOrigin.Begin);
+                            stream.Seek(0xD00006, SeekOrigin.Begin);
                             stream.WriteByte(0x1);
                         }
                     }
@@ -1679,7 +1679,7 @@ namespace MLSSRandomizerForm
                         if (Form1.pieces)
                         {
                             ValidArrayAdd(data);
-                            stream.Seek(0x1E1EEE, SeekOrigin.Begin);
+                            stream.Seek(0xD00004, SeekOrigin.Begin);
                             stream.WriteByte(0x1);
                         }
                         else
