@@ -99,7 +99,6 @@ namespace MLSSRandomizerForm
         public List<EnemyGroup> groups = new List<EnemyGroup>();
         public List<EnemyGroup> stardustGroups = new List<EnemyGroup>();
         public List<EnemyGroup> bossGroups = new List<EnemyGroup>();
-        public List<StatCount> enemyCount = new List<StatCount>();
 
 
         public Rom(string path, string seed, int id)
@@ -342,20 +341,6 @@ namespace MLSSRandomizerForm
             public byte groupType;
         }
 
-        public struct StatCount
-        {
-            public StatCount(int id)
-            {
-                this.id = id;
-                count = 1;
-                total = 0;
-            }
-
-            public int id;
-            public int count;
-            public int total;
-        }
-
         public struct LocationData
         {
             public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi)
@@ -410,8 +395,8 @@ namespace MLSSRandomizerForm
                 currentBeanfruit = 0;
                 spangle = false;
                 pieces = 0;
-                mario = false;
-                luigi = false;
+                mario = true;
+                luigi = true;
             }
 
             public uint location;
@@ -520,23 +505,10 @@ namespace MLSSRandomizerForm
             Form1.items = true;
             Form1.harhall = Convert.ToBoolean(random.Next(0, 2));
             Form1.coins = Convert.ToBoolean(random.Next(0, 2));
-            Form1.mario = Convert.ToBoolean(random.Next(0, 2));
-            Form1.luigi = Convert.ToBoolean(random.Next(0, 2));
             Form1.mColor = "Random";
             Form1.lColor = "Random";
             Form1.mPants = "Random";
             Form1.lPants = "Random";
-            if (Form1.mario && Form1.luigi)
-            {
-                if (random.Next(0, 2) == 0)
-                {
-                    Form1.luigi = false;
-                }
-                else
-                {
-                    Form1.mario = false;
-                }
-            }
             if (Form1.invisible && Form1.removeHidden)
             {
                 Form1.removeHidden = false;
@@ -1230,7 +1202,6 @@ namespace MLSSRandomizerForm
                 list.Add("Random Enemies: " + Form1.enemy.ToString());
                 list.Add("Random Bosses: " + Form1.bosses.ToString());
                 list.Add("Scale HP: " + Form1.scale.ToString());
-                list.Add("Scale POW: " + Form1.pow.ToString());
                 list.Add("Tattle HP: " + Form1.tattle.ToString());
                 list.Add(" ");
             }
@@ -1418,20 +1389,6 @@ namespace MLSSRandomizerForm
                                     stream.WriteByte(0x0);
                                 }
                             }
-                        }
-                    }
-
-                    if (data.item == 0xA && (Form1.mario || Form1.luigi))
-                    {
-                        if (!placedBro)
-                        {
-                            tempData = data;
-                            tempData.item = 0x3B;
-                            placedBro = true;
-                        }
-                        else
-                        {
-                            tempData = new LocationData();
                         }
                     }
 
@@ -2082,12 +2039,6 @@ namespace MLSSRandomizerForm
                     stream.Seek(0x1E9418, SeekOrigin.Begin);
                     stream.WriteByte(0x1);
                 }
-
-                if (Form1.pow)
-                {
-                    stream.Seek(0x1E9419, SeekOrigin.Begin);
-                    stream.WriteByte(0x1);
-                }
             }
             if (Form1.enemy)
             {
@@ -2368,25 +2319,6 @@ namespace MLSSRandomizerForm
                     id = stream.ReadByte();
                     if (id == 0x18 || id == 0x53 || id == 0x4B || (id >= 0x2D && id <= 0x30) || id == 0x3C)
                         type = 0x4;
-                    if (enemyCount.Count == 0)
-                        enemyCount.Add(new StatCount(id));
-                    else
-                    {
-                        for (int j = 0; j < enemyCount.Count; j++)
-                        {
-                            if (id == enemyCount[j].id)
-                            {
-                                StatCount temp = enemyCount[j];
-                                temp.count++;
-                                enemyCount[j] = temp;
-                                break;
-                            }
-                            else if (j == enemyCount.Count - 1)
-                            {
-                                enemyCount.Add(new StatCount(id));
-                            }
-                        }
-                    }
                     if (id == 0xF && type == 0x3)
                         goto skipAdd;
 

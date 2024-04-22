@@ -1542,10 +1542,6 @@ namespace MLSSRandomizerForm
             this.radioButton4.UseVisualStyleBackColor = true;
             this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
             // 
-            // statCountBindingSource
-            // 
-            this.statCountBindingSource.DataSource = typeof(MLSSRandomizerForm.Rom.StatCount);
-            // 
             // tabControl2
             // 
             this.tabControl2.Controls.Add(this.tabPage8);
