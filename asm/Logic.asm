@@ -1353,24 +1353,38 @@
     mov r7, r0
     stmia r1!, { r2, r5, r6 }
     ldmia r0!, { r3-r4 }
-    ldr r5, =ERANDOM
-    ldrb r5, [r5]
-    cmp r5, #0x1
-    bne .xp_end
     mov r5, r9
     sub r7, r5
     cmp r7, #0x24
     bne .xp_end
+    ldr r5, =ERANDOM
+    ldrb r5, [r5]
+    cmp r5, #0x1
+    bne .xp_norm
     ldr r7, =XP_ARR
     ldr r5, =ROOM
     ldrh r5, [r5]
     lsl r5, #0x1
     ldrh r7, [r7, r5]
     cmp r7, #0x1
-    beq .xp_end
+    beq .xp_norm
+    ldr r5, =XP_MUL
+    ldrb r5, [r5]
+    mul r7, r5
     lsr r3, #0x10
     lsl r3, #0x10
     add r3, r7
+    bl .xp_end
+    .xp_norm:
+    mov r5, r3
+    lsr r5, #0x10
+    lsl r5, #0x10
+    lsl r3, #0x18
+    lsr r3, #0x18
+    ldr r7, =XP_MUL
+    ldrb r7, [r7]
+    mul r3, r7
+    add r3, r5, r3
     .xp_end:
     pop { r5, r7, pc }
     .pool
@@ -5723,6 +5737,17 @@
     bic r1, r2
     strb r1, [r0]
     .shop_skip:
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    ldr r1, =0x1D6
+    cmp r0, r1
+    bne .pskip
+    ldr r0, =0x02004339 ;Pearl Beans
+    ldrb r1, [r0]
+    mov r2, #0xC
+    orr r1, r2
+    strb r1, [r0]
+    .pskip:
     ldr r0, =0x0200452D ;teehee valley super rock
     ldrb r1, [r0]
     mov r2, #0x14

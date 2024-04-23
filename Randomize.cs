@@ -341,10 +341,6 @@ namespace MLSSRandomizerForm
             public byte groupType;
         }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of 7574f6f (Undo)
         public struct LocationData
         {
             public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi)
@@ -2023,11 +2019,7 @@ namespace MLSSRandomizerForm
                 //Write byte for stat scale execution
                 if (Form1.scale)
                 {
-<<<<<<< HEAD
-                    stream.Seek(0x1E9418, SeekOrigin.Begin);
-=======
                     stream.Seek(0xD00002, SeekOrigin.Begin);
->>>>>>> parent of 7574f6f (Undo)
                     stream.WriteByte(0x1);
                 }
             }
@@ -2598,6 +2590,8 @@ namespace MLSSRandomizerForm
                     stream.Position = 0xD00000;
                     stream.WriteByte(0x1);
                 }
+                stream.Seek(0xD00003, SeekOrigin.Begin);
+                stream.WriteByte(0x1);
             }
 
             if (gameId == 3)

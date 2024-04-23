@@ -501,6 +501,7 @@ HP_ARR equ 0x08DA0000
 	dh 0x0001
 	dh 0x0001
 
+POW_ARR equ 0x08DA0400
 .org POW_ARR
 	dh 0x0001
 	dh 0x0001
@@ -1003,6 +1004,8 @@ HP_ARR equ 0x08DA0000
 	dh 0x0001
 	dh 0x0001
 
+
+DEF_ARR equ 0x08DA0800
 .org DEF_ARR
 	dh 0x0001
 	dh 0x0001
@@ -1505,6 +1508,8 @@ HP_ARR equ 0x08DA0000
 	dh 0x0001
 	dh 0x0001
 
+
+XP_ARR equ 0x08DA0C00
 .org XP_ARR
 	dh 0x0001
 	dh 0x0001
