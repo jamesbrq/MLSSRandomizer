@@ -148,6 +148,8 @@ namespace MLSSRandomizerForm
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.label15 = new System.Windows.Forms.Label();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -166,6 +168,7 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.romBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
             // 
             // SelectRomButton
@@ -1384,6 +1387,8 @@ namespace MLSSRandomizerForm
             // 
             // tabPage9
             // 
+            this.tabPage9.Controls.Add(this.label15);
+            this.tabPage9.Controls.Add(this.numericUpDown2);
             this.tabPage9.Controls.Add(this.checkBox48);
             this.tabPage9.Controls.Add(this.label14);
             this.tabPage9.Controls.Add(this.radioButton6);
@@ -1614,6 +1619,34 @@ namespace MLSSRandomizerForm
             this.checkBox49.UseVisualStyleBackColor = true;
             this.checkBox49.CheckedChanged += new System.EventHandler(this.checkBox49_CheckedChanged);
             // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.Location = new System.Drawing.Point(128, 104);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(36, 20);
+            this.numericUpDown2.TabIndex = 45;
+            this.numericUpDown2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDown2.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown2.ValueChanged += new System.EventHandler(this.numericUpDown2_ValueChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(54, 106);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(68, 13);
+            this.label15.TabIndex = 46;
+            this.label15.Text = "XP Multiplier:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1663,6 +1696,7 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.romBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1781,6 +1815,8 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox50;
         private CheckBox checkBox51;
         private CheckBox checkBox52;
+        private NumericUpDown numericUpDown2;
+        private Label label15;
     }
 }
 

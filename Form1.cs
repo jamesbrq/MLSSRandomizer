@@ -75,6 +75,7 @@ namespace MLSSRandomizerForm
         public static int r = 0;
         public static int g = 0;
         public static int b = 0;
+        public static int mul = 1;
         public readonly string bisHash = "05072F0545BF4492D81FDFF6B595B9D20C816007";
         public static bool bItems = true;
 
@@ -1064,6 +1065,9 @@ namespace MLSSRandomizerForm
             rSettings = this.checkBox49.Checked;
         }
 
-
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
+        {
+            mul = (int)numericUpDown2.Value;
+        }
     }
 }
