@@ -1379,8 +1379,8 @@
     mov r5, r3
     lsr r5, #0x10
     lsl r5, #0x10
-    lsl r3, #0x18
-    lsr r3, #0x18
+    lsl r3, #0x10
+    lsr r3, #0x10
     ldr r7, =XP_MUL
     ldrb r7, [r7]
     mul r3, r7
@@ -5718,25 +5718,6 @@
     orr r1, r2
     strb r1, [r0]
     .gate_skip:
-    ldr r0, =0x02004300
-    ldrb r1, [r0]
-    mov r2, #0x40
-    and r2, r1
-    cmp r2, #0x40
-    bne .shop_skip
-    ldr r0, =0x0200436D
-    ldrb r1, [r0]
-    mov r2, #0x80
-    orr r1, r2
-    strb r1, [r0]
-    bl .shop_skip
-    .shop_clear:
-    ldr r0, =0x0200436D
-    ldrb r1, [r0]
-    mov r2, #0x80
-    bic r1, r2
-    strb r1, [r0]
-    .shop_skip:
     ldr r0, =ROOM
     ldrh r0, [r0]
     ldr r1, =0x1D6
