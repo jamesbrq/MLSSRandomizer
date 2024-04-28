@@ -3598,9 +3598,10 @@
     ldr r2, =HAMMER
     cmp r2, r5
     bne .scroll_check
-    ldr r1, =0x300
-    cmp r0, r1
-    bge .ability_norm2
+    ldr r1, =0x3FF
+    and r0, r1
+    cmp r0, #0x0
+    beq .ability_norm2
     mov r1, #0x38
     and r1, r0
     cmp r1, #0x0
@@ -3610,13 +3611,12 @@
     strb r2, [r1]
     bl .cont_check
     .scroll_check:
-    ldr r0, =0x0200434C
-    cmp r0, r5
+    ldr r2, =0x0200434C
+    cmp r2, r5
     bne .ability_norm
-    sub r4, #0xA0
-    mov r0, #0xF
-    and r0, r4
-    cmp r0, #0xF
+    ldr r1, =0x60000
+    and r1, r0
+    cmp r1, #0x0
     beq .ability_norm
     .cont_check:
     ldr r0, =TEXT_VAR
@@ -5734,6 +5734,11 @@
     mov r2, #0x14
     orr r1, r2
     strb r1, [r0]
+    ldr r0, =0x03000D40 ; Assure Save Data is stored in proper location in RAM, such as to not clash with my own RAM data (This might break the game I have no idea honestly)
+    ldrb r1, [r0]
+    mov r2, #0xF8
+    bic r1, r2
+    strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork
     ldrb r1, [r0]
     mov r2, #0x1
@@ -5973,11 +5978,11 @@
 
 
     .org STAR_QUEST
-    push r1
+    push r1-r2
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x3E
-    bne .quest_skip
+    bne .xor
     ldr r0, =0x0200490D
     ldrb r2, [r0]
     mov r1, #0xE0
@@ -5990,8 +5995,23 @@
     cmp r1, #0x1
     bne .quest_skip
     ldr r0, =0x020046F6
-    mov r1, #0x4F
+    ldrb r1, [r0]
+    mov r2, #0x4F
+    xor r2, r1
+    orr r1, r2
     strb r1, [r0]
+    ldr r0, =XOR_RAM
+    strb r2, [r0]
+    bl .quest_skip
+    .xor:
+    ldr r0, =XOR_RAM
+    ldrb r1, [r0]
+    mov r2, #0x0
+    strb r2, [r0]
+    ldr r0, =0x020046F6
+    ldrb r2, [r0]
+    bic r2, r1
+    strb r2, [r0]
     .quest_skip:
     ldr r0, =0x0200430B
     ldrb r0, [r0]
@@ -6010,7 +6030,7 @@
     orr r1, r2
     strb r1, [r0]
     .quest_end:
-    pop r1
+    pop r1-r2
     add r1, #0x1
     bx r1
     .pool
@@ -6112,11 +6132,18 @@
     mov r1, #0x2
     and r1, r0
     cmp r1, #0x2
-    bne .kidnap_skip
+    bne .kidnap_bic
     ldr r0, =0x0200433D
     ldrb r1, [r0]
     mov r2, #0x4
     orr r1, r2
+    strb r1, [r0]
+    bl .kidnap_skip
+    .kidnap_bic:
+    ldr r0, =0x0200433D
+    ldrb r1, [r0]
+    mov r2, #0x4
+    bic r1, r2
     strb r1, [r0]
     .kidnap_skip:
     ldr r0, =0x0200490E
