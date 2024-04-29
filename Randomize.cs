@@ -45,12 +45,12 @@ namespace MLSSRandomizerForm
                 rom.RandomizeStats();
                 rom.MusicRandomize();
                 rom.BackgroundRandomize();
-                Form1.mColor = Rom.GenColor(Form1.mColor, false);
-                Form1.lColor = Rom.GenColor(Form1.lColor, false);
+                Form1.mColor = rom.GenColor(Form1.mColor, false);
+                Form1.lColor = rom.GenColor(Form1.lColor, false);
                 rom.ColorSwap(Form1.mColor, 0, "");
                 rom.ColorSwap(Form1.lColor, 1, "");
-                rom.ColorSwap(Rom.GenColor(Form1.mPants, true), 0, "pants/");
-                rom.ColorSwap(Rom.GenColor(Form1.lPants, true), 1, "pants/");
+                rom.ColorSwap(rom.GenColor(Form1.mPants, true), 0, "pants/");
+                rom.ColorSwap(rom.GenColor(Form1.lPants, true), 1, "pants/");
                 rom.SeedInject();
                 rom.EntranceRandomize();
                 rom.stream.Close();
@@ -99,6 +99,8 @@ namespace MLSSRandomizerForm
         public List<EnemyGroup> groups = new List<EnemyGroup>();
         public List<EnemyGroup> stardustGroups = new List<EnemyGroup>();
         public List<EnemyGroup> bossGroups = new List<EnemyGroup>();
+        public List<string> colors = new List<string> { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Silhouette" };
+        public List<string> pColors = new List<string> { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
 
 
         public Rom(string path, string seed, int id)
@@ -1815,71 +1817,27 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public static string GenColor(string color, bool pants)
+        public string GenColor(string color, bool pants)
         {
-            string[] colors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White", "Silhouette" };
-            string[] pColors = new string[] { "Red", "Green", "Purple", "Yellow", "Black", "Pink", "Cyan", "Blue", "Orange", "White" };
             string temp = color;
             switch (temp)
             {
 
                 case "Random":
                     if (!pants)
-                        temp = colors[random.Next(0, colors.Length)];
+                    {
+                        temp = colors[random.Next(0, colors.Count)];
+                        colors.Remove(temp);
+                    }
                     else
-                        temp = pColors[random.Next(0, pColors.Length)];
+                    {
+                        temp = pColors[random.Next(0, colors.Count)];
+                        pColors.Remove(temp);
+                    }
                     return temp;
 
                 default:
                     return temp;
-            }
-        }
-
-        public void NewSound()
-        {
-            if(Form1.sounds)
-            {
-                List<int> pointers = new List<int>();
-                List<byte[]> sounds = new List<byte[]>();
-                stream.Position = 0x21CC44;
-                for(int i = 0; i < 353; i++)
-                {
-                    byte[] pArr = new byte[4];
-                    stream.Read(pArr, 0, 4);
-                    pointers.Add(pArr[0] | pArr[1] << 8 | pArr[2] << 16);
-                    pointers.Sort();
-                }
-
-                for(int i = 0; i < pointers.Count; i++)
-                {
-                    stream.Position = pointers[i];
-                    byte read = 0;
-                    while(read != 0xFF)
-                    {
-                        read = (byte)stream.ReadByte();
-                        if(read == 0xFF && (pointers[i + 1] - stream.Position) > 4)
-                        {
-                            read = 0;
-                        }
-                    }
-                    if(stream.ReadByte() == 0xFF)
-                    {
-                        pointers.RemoveAt(i);
-                    }
-                    else
-                    {
-                        stream.Position = pointers[i];
-                        byte[] temp = new byte[4];
-                        stream.Read(temp, 0, 4);
-                        sounds.Add(temp);
-                    }
-                }
-                sounds.Shuffle(random);
-                for (int i = 0; i < pointers.Count; i++)
-                {
-                    stream.Position = pointers[i];
-                    stream.Write(sounds[random.Next(sounds.Count)], 0, 4);
-                }
             }
         }
 
@@ -1888,59 +1846,32 @@ namespace MLSSRandomizerForm
         {
             if (Form1.sounds)
             {
+                string[] strs = File.ReadAllLines(Environment.CurrentDirectory + "/items/sounds.txt");
                 List<int> pointers = new List<int>();
-                List<byte[]> sounds = new List<byte[]>();
-                stream.Position = 0x21CC44;
-                for (int i = 0; i < 353; i++)
+                List<int> sounds = new List<int>();
+                List<int> soundsFresh = new List<int>();
+                foreach (string str in strs)
                 {
-                    byte[] pArr = new byte[4];
-                    stream.Read(pArr, 0, 4);
-                    pointers.Add(pArr[0] | pArr[1] << 8 | pArr[2] << 16);
-                    pointers.Sort();
-                    pointers.Reverse();
+                    soundsFresh.Add(Convert.ToInt32(str, 16));
                 }
-
-                for (int i = pointers.Count - 1; i >= 0; i--)
-                {
-                    if (i == 0)
-                        goto skip;
-                    int j = 1;
-                    byte read = 0;
-                    while (true)
-                    {
-                        stream.Position = pointers[i - 1] - j;
-                        read = (byte)stream.ReadByte();
-                        if (read != 0xFF)
-                        {
-                            j++;
-                            continue;
-                        }
-                        else
-                            break;
-                    }
-                    stream.Position = stream.Position = pointers[i - 1] - (j + 1);
-                    skip:
-                    if (stream.ReadByte() >= 0xFE && i != 0)
-                    {
-                        pointers.RemoveAt(i);
-                    }
-                    else
-                    {
-                        byte[] temp = { (byte)(pointers[i] & 0xFF), (byte)(pointers[i] >> 8 & 0xFF), (byte)(pointers[i] >> 16 & 0xFF), 0x8 };
-                        sounds.Add(temp);
-                    }
-                }
+                sounds = soundsFresh.ToList();
                 sounds.Shuffle(random);
                 stream.Position = 0x21CC44;
-                for (int i = 0; i < pointers.Count; i++)
+                while (sounds.Count > 0)
                 {
-                    long currentPos = stream.Position;
-                    byte[] pArr = new byte[4];
-                    stream.Read(pArr, 0, 4);
-                    if (!pointers.Contains(pArr[0] | pArr[1] << 8 | pArr[2] << 16))
-                        continue;
-                    stream.Position = currentPos;
-                    stream.Write(sounds[random.Next(sounds.Count)], 0, 4);
+                    byte[] output = new byte[4];
+                    stream.Read(output, 0, 4);
+                    int conv = BitConverter.ToInt32(output, 0);
+                    conv &= 0xFFFFFF;
+                    if (soundsFresh.Contains(conv))
+                    {
+                        int temp = sounds.Where(c => c != conv).ToList()[0];
+                        sounds.Remove(temp);
+                        stream.Seek(-4, SeekOrigin.Current);
+                        byte[] temparr = BitConverter.GetBytes(temp);
+                        stream.Write(temparr, 0, 3);
+                        stream.Seek(1, SeekOrigin.Current);
+                    }
                 }
             }
 

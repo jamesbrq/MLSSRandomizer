@@ -37,6 +37,17 @@
         db 0x2, 0x0
         dw 0x0825507E
 
+    .org 0x088209BB ; Remove digspots in chuckle bean tutorial
+        db 0x3
+    .org 0x088209DC
+        db 0x3
+    .org 0x08820A5A
+        db 0x3
+    .org 0x08820A69
+        db 0x3
+    .org 0x08820ABB 
+        db 0x3
+
     .org 0x082550B1
         db 0x2, 0x0
         dw 0x082550C0
@@ -5749,9 +5760,14 @@
     mov r2, #0x10
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =0x02004317 ;beanbean map cutscene
+    ldr r0, =0x02004317 ;beanbean map cutscene + Bowsers castle door
     ldrb r1, [r0]
-    mov r2, #0x2
+    mov r2, #0x6
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x020043FF ;Bowsers castle door
+    ldrb r1, [r0]
+    mov r2, #0x10
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x020043F9 ;desert1
@@ -5864,9 +5880,9 @@
     mov r2, #0x14
     orr r1, r2
     strb r1, [r0]
-    ldr r0, =0x020042FC ; Wiggler speed-up
+    ldr r0, =0x020042FC ; Wiggler speed-up + Skip castle town first entry cutscene
     ldrb r1, [r0]
-    mov r2, #0x18
+    mov r2, #0x98
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004741 ; Continue from castle

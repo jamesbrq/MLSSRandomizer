@@ -311,7 +311,7 @@ namespace MLSSRandomizerForm
             mDisable = Convert.ToBoolean(num);
             this.checkBox37.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("castletown", out num);
-            mDisable = Convert.ToBoolean(num);
+            castletown = Convert.ToBoolean(num);
             this.checkBox43.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("tattle", out num);
             tattle = Convert.ToBoolean(num);
@@ -426,6 +426,9 @@ namespace MLSSRandomizerForm
                         Console.WriteLine("Seed: " + hash);
                         if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                             Clipboard.SetText(Convert.ToString(hash), TextDataFormat.Text);
+                        if (File.Exists(Environment.CurrentDirectory + "/spoilers/" + Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + "-Spoiler.txt"))
+                            File.Delete(Environment.CurrentDirectory + "/spoilers/" + Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + "-Spoiler.txt");
+                        File.Move(Environment.CurrentDirectory + "/spoilers/" + hash + " Spoiler.txt", Environment.CurrentDirectory + "/spoilers/" + Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + "-Spoiler.txt");
                     }
                 }
                 else if (gameId == 3)
@@ -1034,8 +1037,6 @@ namespace MLSSRandomizerForm
             this.checkBox37.Enabled = !this.checkBox49.Checked;
             this.checkBox38.Enabled = !this.checkBox49.Checked;
             this.checkBox39.Enabled = !this.checkBox49.Checked;
-            //this.checkBox41.Enabled = !this.checkBox49.Checked;
-            //this.checkBox42.Enabled = !this.checkBox49.Checked;
             this.checkBox43.Enabled = !this.checkBox49.Checked;
             this.checkBox44.Enabled = !this.checkBox49.Checked;
             this.checkBox45.Enabled = !this.checkBox49.Checked;
