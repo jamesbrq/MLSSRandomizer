@@ -6732,6 +6732,7 @@
     ldr r0, =ROOM
     ldrb r0, [r0, #0x1]
     cmp r0, #0x0
+    bne .koopa_norm
     ldr r0, =0x02004349
     ldrb r1, [r0]
     mov r2, #0x1
