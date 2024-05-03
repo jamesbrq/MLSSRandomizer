@@ -2677,11 +2677,6 @@
     orr r3, r1
     strb r3, [r2, #0x1]
     .skip_norm:
-    ldr r1, =0x02004338
-    mov r2, #0x6
-    ldrb r3, [r1]
-    orr r3, r2
-    strb r3, [r1]
     pop r1
     mov r1, r9
     ldrb r0, [r1]
@@ -3629,6 +3624,7 @@
     and r1, r0
     cmp r1, #0x0
     beq .ability_norm
+    sub r4, #0xA0
     .cont_check:
     ldr r0, =TEXT_VAR
     sub r4, r0

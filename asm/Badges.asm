@@ -504,7 +504,7 @@ add r2, #0x1
 strb r2, [r1, r0]
 ldrb r2, [r1, r0]
 cmp r2, #0x1
-beq .pants_flag
+beq .badge_flag
 bl .badge_end
 .badge_clause:
 mov r2, #0x1
