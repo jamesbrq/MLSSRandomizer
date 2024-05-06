@@ -3629,8 +3629,7 @@
     ldr r0, =TEXT_VAR
     sub r4, r0
     ldr r0, =ABILITY_STORAGE
-    add r0, r4
-    ldrb r0, [r0]
+    ldrb r0, [r0, r4]
     cmp r0, #0x30
     bge .ability_key
     cmp r0, #0x2B
@@ -5746,6 +5745,11 @@
     mov r2, #0xF8
     bic r1, r2
     strb r1, [r0]
+    ldr r0, =0x02004336 ; Fungitown arcade machine
+    ldrb r1, [r0]
+    mov r2, #0x2
+    orr r1, r2
+    strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork
     ldrb r1, [r0]
     mov r2, #0x1
@@ -5995,17 +5999,25 @@
     ldrh r0, [r0]
     cmp r0, #0x3E
     bne .xor
+    ldr r0, =XOR_RAM
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    bne .quest_skip
+    ldr r0, =BEANSTAR_RESTORE
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    bne .quest_skip
     ldr r0, =0x0200490D
     ldrb r2, [r0]
     mov r1, #0xE0
     and r1, r2
     cmp r1, #0xE0
-    bne .quest_skip
+    bne .quest_disable
     ldrb r2, [r0, #0x1]
     mov r1, #0x1
     and r1, r2
     cmp r1, #0x1
-    bne .quest_skip
+    bne .quest_disable
     ldr r0, =0x020046F6
     ldrb r1, [r0]
     mov r2, #0x4F
@@ -6023,7 +6035,21 @@
     ldr r0, =0x020046F6
     ldrb r2, [r0]
     bic r2, r1
+    ldr r1, =BEANSTAR_RESTORE
+    ldrb r1, [r1]
+    orr r2, r1
     strb r2, [r0]
+    ldr r1, =BEANSTAR_RESTORE
+    mov r0, #0x0
+    strb r0, [r1]
+    bl .quest_skip
+    .quest_disable:
+    ldr r0, =0x020046F6
+    ldrb r1, [r0]
+    mov r2, #0x0
+    strb r2, [r0]
+    ldr r0, =BEANSTAR_RESTORE
+    strb r1, [r0]
     .quest_skip:
     ldr r0, =0x0200430B
     ldrb r0, [r0]
@@ -6054,7 +6080,9 @@
     .org JUMP_TUT
     push r1
     ldr r0, =0x020042F8
-    mov r1, #0x7C
+    ldrb r1, [r0]
+    mov r2, #0x7C
+    orr r1, r2
     strb r1, [r0]
     ldr r0, =0x020042FA
     ldrb r1, [r0]
@@ -6470,7 +6498,7 @@
     cmp r1, #0x40
     bne .blablanadon_end
     ldr r0, =0x020042F9
-    ldrb r1, [r1]
+    ldrb r1, [r0]
     mov r2, #0x2
     orr r1, r2
     strb r1, [r0]
