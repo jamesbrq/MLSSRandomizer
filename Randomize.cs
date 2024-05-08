@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows.Forms;
 
@@ -139,7 +140,7 @@ namespace MLSSRandomizerForm
             {
                 this.id = id;
                 this.doors = doors;
-                this.index = doors.Count;
+                index = doors.Count;
                 this.used = used;
             }
 
@@ -564,7 +565,7 @@ namespace MLSSRandomizerForm
             if (!Form1.doors)
                 return;
             FillRoomArray();
-            NewShuffle();
+            NewerShuffle();
         }
 
         public byte[] ScriptDoorArr(byte[] arr)
@@ -627,6 +628,90 @@ namespace MLSSRandomizerForm
         public float GetRoomId(Door door)
         {
             return ((float)(door.arr[1] * 0x100) + door.arr[0]) / 0x40;
+        }
+
+
+
+
+        public void NewerShuffle()
+        {
+            List<Room> roomArray = new List<Room>(freshRoomArray);
+            List<Door> doorArray = new List<Door>();
+            List<Room> queue = new List<Room>();
+
+            roomArray.Shuffle(random);
+            queue.Add(roomArray.Where(c => c.id == 0x66).First());
+            roomArray.Where(c => c.id == 0x66).First().used = true;
+            while (queue[0].doors.Count > 0)
+            {
+                Door currentDoor = queue[0].doors[0];
+                queue[0].doors.RemoveAt(0);
+                if (queue[0].doors.Count == 0)
+                    queue.RemoveAt(0);
+                if (roomArray.Where(c => c.used == false).ToList().Count > 0)
+                { 
+                    int index = roomArray.FindIndex(c => c.used == false && (queue.Count > 10 ? true : c.doors.Count > 1));
+                    queue.Add(roomArray[index]);
+                    roomArray[index].used = true;
+                }
+                else
+                {
+                    foreach(Room room in queue)
+                        doorArray.AddRange(room.doors);
+                    doorArray.Shuffle(random);
+                    queue.Clear();
+                }
+                Door toDoor;
+                if (queue.Count != 0)
+                {
+                    toDoor = queue[0].doors[0];
+                    queue[0].doors.RemoveAt(0);
+                    queue.Shuffle(random);
+                }
+                else
+                {
+                    toDoor = doorArray[0];
+                    doorArray.RemoveAt(0);
+                }
+                Door toData = freshRoomArray.Where(c => toDoor.returnIndex == c.id).First().doors[toDoor.returnIndex];
+                Door fromData = freshRoomArray.Where(c => currentDoor.returnIndex == c.id).First().doors[currentDoor.returnIndex];
+                Door[] doors = new Door[] { currentDoor, toDoor};
+                Door[] data = new Door[] { toData, fromData };
+
+                for (int i = 0; i < doors.Length; i++)
+                {
+                    if (doors[i].logic.location >= 0x300000)
+                    {
+                        stream.Seek(doors[i].logic.location + 4, SeekOrigin.Begin);
+                        stream.Write(data[i].arr, 0, data[i].arr.Length);
+                    }
+                    else
+                    {
+                        stream.Seek(doors[i].logic.location, SeekOrigin.Begin);
+                        byte[] arr = ScriptDoorArr(data[i].arr);
+                        stream.Write(arr, 0, arr.Length);
+                        stream.Seek(3, SeekOrigin.Current);
+                        stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                        if (stream.ReadByte() == 0x88)
+                        {
+                            stream.Seek(1, SeekOrigin.Current);
+                            stream.Write(arr, 0, arr.Length);
+                            stream.Seek(3, SeekOrigin.Current);
+                            stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                        }
+                        else
+                        {
+                            for (int j = 1; j <= 3; j++)
+                            {
+                                stream.Seek(doors[i].logic.location + (j * 35), SeekOrigin.Begin);
+                                stream.Write(arr, 0, arr.Length);
+                                stream.Seek(3, SeekOrigin.Current);
+                                stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -709,8 +794,6 @@ namespace MLSSRandomizerForm
                 }
                 else
                 {
-                    if (insertArray[0].logic.location == 0x2550C2)
-                        Console.Write('a');
                     stream.Seek(tempInsert.logic.location, SeekOrigin.Begin);
                     byte[] arr = ScriptDoorArr(temp.arr);
                     stream.Write(arr, 0, arr.Length);
