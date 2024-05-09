@@ -133,7 +133,7 @@ namespace MLSSRandomizerForm
         }
 
 
-
+        [Serializable]
         public class Room
         {
             public Room(int id, List<Door> doors, bool used)
@@ -150,13 +150,22 @@ namespace MLSSRandomizerForm
                 index = doors.Count;
             }
 
+            public Room DeepCopy()
+            {
+                Room newRoom = new Room(this.id, new List<Door>(), this.used);
+                foreach(Door door in this.doors)
+                    newRoom.DoorAdd(door.DeepCopy());
+                return newRoom;
+            }
+
             public int id;
             public List<Door> doors;
             public int index;
             public bool used;
         }
 
-        public struct Door
+        [Serializable]
+        public class Door
         {
             public Door(int id, byte[] arr, int returnRoom, int returnIndex, LocationData logic)
             {
@@ -165,6 +174,17 @@ namespace MLSSRandomizerForm
                 this.returnIndex = returnIndex;
                 this.arr = arr;
                 this.logic = logic;
+            }
+
+            public Door()
+            {
+
+            }
+
+            public Door DeepCopy()
+            {
+                Door newDoor = new Door(this.id, this.arr, this.returnRoom, this.returnIndex, this.logic);
+                return newDoor;
             }
 
             public int id;
@@ -344,7 +364,8 @@ namespace MLSSRandomizerForm
             public byte groupType;
         }
 
-        public struct LocationData
+        [Serializable]
+        public class LocationData
         {
             public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi)
             {
@@ -640,18 +661,28 @@ namespace MLSSRandomizerForm
             List<Room> queue = new List<Room>();
 
             roomArray.Shuffle(random);
-            queue.Add(roomArray.Where(c => c.id == 0x66).First());
+            queue.Add(roomArray.Where(c => c.id == 0x66).First().DeepCopy());
             roomArray.Where(c => c.id == 0x66).First().used = true;
-            while (queue[0].doors.Count > 0)
+            while (queue.Count > 0 || doorArray.Count > 0)
             {
-                Door currentDoor = queue[0].doors[0];
-                queue[0].doors.RemoveAt(0);
-                if (queue[0].doors.Count == 0)
-                    queue.RemoveAt(0);
+                Door currentDoor;
+                if (queue.Count > 0)
+                {
+                    currentDoor = queue[0].doors[0];
+                    queue[0].doors.RemoveAt(0);
+                    if (queue[0].doors.Count == 0)
+                        queue.RemoveAt(0);
+                }
+                else
+                {
+                    currentDoor = doorArray[0];
+                    doorArray.RemoveAt(0);
+                }
+                int index = 0;
                 if (roomArray.Where(c => c.used == false).ToList().Count > 0)
                 { 
-                    int index = roomArray.FindIndex(c => c.used == false && (queue.Count > 10 ? true : c.doors.Count > 1));
-                    queue.Add(roomArray[index]);
+                    index = roomArray.FindIndex(c => c.used == false && (queue.Count > 10 ? true : c.doors.Count > 1));
+                    queue.Add(roomArray[index].DeepCopy());
                     roomArray[index].used = true;
                 }
                 else
@@ -664,8 +695,9 @@ namespace MLSSRandomizerForm
                 Door toDoor;
                 if (queue.Count != 0)
                 {
-                    toDoor = queue[0].doors[0];
-                    queue[0].doors.RemoveAt(0);
+                    toDoor = queue.Where(c => c.id == roomArray[index].id).First().doors[0];
+                    queue.Where(c => c.id == roomArray[index].id).First().doors.RemoveAt(0);
+                    queue.RemoveAll(c => c.doors.Count == 0);
                     queue.Shuffle(random);
                 }
                 else
@@ -673,8 +705,8 @@ namespace MLSSRandomizerForm
                     toDoor = doorArray[0];
                     doorArray.RemoveAt(0);
                 }
-                Door toData = freshRoomArray.Where(c => toDoor.returnIndex == c.id).First().doors[toDoor.returnIndex];
-                Door fromData = freshRoomArray.Where(c => currentDoor.returnIndex == c.id).First().doors[currentDoor.returnIndex];
+                Door toData = freshRoomArray.Where(c => toDoor.returnRoom == c.id).First().doors[toDoor.returnIndex];
+                Door fromData = freshRoomArray.Where(c => currentDoor.returnRoom == c.id).First().doors[currentDoor.returnIndex];
                 Door[] doors = new Door[] { currentDoor, toDoor};
                 Door[] data = new Door[] { toData, fromData };
 
@@ -692,13 +724,16 @@ namespace MLSSRandomizerForm
                         stream.Write(arr, 0, arr.Length);
                         stream.Seek(3, SeekOrigin.Current);
                         stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
-                        if (stream.ReadByte() == 0x88)
+                        byte readByte = (byte)stream.ReadByte();
+                        if (readByte == 0x88)
                         {
                             stream.Seek(1, SeekOrigin.Current);
                             stream.Write(arr, 0, arr.Length);
                             stream.Seek(3, SeekOrigin.Current);
                             stream.Write(new byte[] { 0x0, 0x0, 0x0, 0x0 }, 0, 4);
                         }
+                        else if (readByte == 0xA2)
+                        { }
                         else
                         {
                             for (int j = 1; j <= 3; j++)
@@ -1384,7 +1419,7 @@ namespace MLSSRandomizerForm
                 {
                     ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
                 }
-                LocationData tempData = new LocationData();
+                LocationData tempData = new LocationData(0);
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
                 {
                     if (!Form1.items && data.item != 0x1E && data.item != 0x1D)
