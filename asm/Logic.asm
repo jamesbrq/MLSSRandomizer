@@ -5998,7 +5998,10 @@
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x3E
+    beq .sq_cont
+    cmp r0, #0x1F
     bne .xor
+    .sq_cont:
     ldr r0, =XOR_RAM
     ldrb r0, [r0]
     cmp r0, #0x0
@@ -6445,9 +6448,6 @@
     ldrb r1, [r0]
     mov r2, #0x20
     bic r1, r2
-    strb r1, [r0]
-    ldr r0, =0x020046F6
-    mov r1, #0x0
     strb r1, [r0]
     ldr r0, =ESCORT_RAM
     mov r1, #0x1
