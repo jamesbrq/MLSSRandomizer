@@ -1308,7 +1308,7 @@ namespace MLSSRandomizerForm
                 list.Add("Skip Minecart: " + Form1.minecart.ToString());
                 list.Add("Skip Bowsers: " + Form1.castle.ToString());
                 list.Add("Skip intro: " + Form1.intro.ToString());
-                list.Add("Start Castle: " + Form1.castletown.ToString());
+                list.Add("Extra Pipes: " + Form1.castletown.ToString());
                 list.Add("Minigame Spoilers: " + Form1.minigame.ToString());
                 list.Add("Random Enemies: " + Form1.enemy.ToString());
                 list.Add("Random Bosses: " + Form1.bosses.ToString());

@@ -931,6 +931,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox39.Enabled = false;
             this.checkBox39.Location = new System.Drawing.Point(251, 31);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
@@ -939,6 +940,7 @@ namespace MLSSRandomizerForm
             this.toolTip1.SetToolTip(this.checkBox39, "Checking this will randomize All Entrances in the game. Entering a door will take" +
         " you to a random location in the game.");
             this.checkBox39.UseVisualStyleBackColor = true;
+            this.checkBox39.Visible = false;
             this.checkBox39.CheckedChanged += new System.EventHandler(this.checkBox39_CheckedChanged);
             // 
             // checkBox38

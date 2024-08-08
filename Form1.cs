@@ -86,6 +86,7 @@ namespace MLSSRandomizerForm
             InitializeComponent();
             progVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
             Text += " " + progVersion; // show version in title
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             //ScriptRead();
         }
 

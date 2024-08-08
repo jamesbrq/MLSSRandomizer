@@ -231,7 +231,7 @@
         dw FIRE_SHOPNAME
 
     .org FIRE_SHOPNAME
-        db 0x46, 0x69, 0x72, 0x65, 0x20, 0x68, 0x61, 0x6E, 0x64, 0x0
+        db "Firebrand", 0x0
 
     .org THUNDER_SHOP2
         dw THUNDER_SHOPNAME
@@ -2431,7 +2431,7 @@
 
 
     .org MOVES_CHECK
-    push r0-r4
+    push r0-r4, lr
     ldr r1, =BADGE_FLAGS
     ldrb r2, [r1]
     cmp r2, #0xFF
@@ -2586,13 +2586,11 @@
     strb r4, [r3]
     .moves_end:
     bl MOVE_REMOVER
-    pop r0-r4
-    add r1, #0x1
-    bx r1
+    pop r0-r4, pc
     .pool
     
     .org MOVE_REMOVER
-    push { r0-r2, pc }
+    push { r0-r2, lr }
     ldr r0, =HAMMER
     ldrb r0, [r0, #0x1]
     mov r1, #0x1
@@ -2701,12 +2699,8 @@
         
     .org TEXT_MASH_DATA
     push r1
-    ldr r2, =MOVES_CHECK + 1
-    mov r1, pc
-    bx r2
-    ldr r2, =SAVE_BLOCK + 1
-    mov r1, pc
-    bx r2
+    bl MOVES_CHECK
+    bl SAVE_BLOCK
     bl PEARL_SPOILER
     bl WARNING
     bl AP_ITEM
@@ -2715,7 +2709,7 @@
     mov r2, #0x3
     and r2, r1
     cmp r2, #0x1
-    blt .button_norm
+    blt .button_norm2
     cmp r2, #0x3
     bne .pipe_skip2
     ldr r1, =0x02004407
@@ -2728,6 +2722,10 @@
     ldrb r1, [r1]
     cmp r1, #0x0
     beq .pipe_skip2
+    ldr r1, =0x03007AFB
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    bne .pipe_skip2
     ldr r1, =CUTSCENE_ACTIVE_ONE
     ldrb r1, [r1]
     cmp r1, #0x0
@@ -2775,6 +2773,8 @@
     cmp r1, #0x1
     bne .pipe_flag2
     bl .pipe_flag_skip
+    .button_norm2:
+    bl .button_norm
     .pipe_flag2:
     mov r2, #0x1
     sub r1, #0x2
@@ -2814,6 +2814,8 @@
     ble .pipe_skip2
     .pipe_cont:
     cmp r1, #0xFD
+    beq .pipe_skip2
+    cmp r1, #0xA3
     beq .pipe_skip2
     cmp r1, #0x40
     beq .pipe_skip2
@@ -4801,7 +4803,7 @@
 
 
     .org EGG_CHECK
-    push { r0-r3 }
+    push { r0-r3, lr }
     mov r0, #0x0
     ldr r1, =KEY_ITEM
     ldrb r2, [r1, #0x2]
@@ -4857,9 +4859,7 @@
     mov r2, #0x7
     .egg_norm:
     strb r2, [r1]
-    pop { r0-r3 }
-    add r1, #0x1
-    bx r1
+    pop { r0-r3, pc }
     .pool
 
 
@@ -5211,7 +5211,7 @@
 
 
     .org ABILITY_CHECK
-    push r1, r3
+    push r1, r3, lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0xB3
@@ -5247,9 +5247,6 @@
     ldr r0, =REMOVE_RAM
     ldrb r0, [r0]
     cmp r0, #0x0
-    bne .check_end
-    ldr r0, =0x082F6CDE
-    cmp r0, r7    
     bne .check_end
     ldr r0, =0x02004337
     ldrb r0, [r0]
@@ -5304,9 +5301,6 @@
     ldrb r0, [r0]
     cmp r0, #0x0
     bne .check_end
-    ldr r0, =0x082F6F84
-    cmp r0, r7    
-    bne .check_end
     ldr r0, =0x02004336
     ldrb r0, [r0]
     mov r1, #0x80
@@ -5357,9 +5351,7 @@
 
 
     .check_end:
-    pop r1, r3
-    add r1, #0x1
-    bx r1
+    pop r1, r3, pc
     .pool
 
 
@@ -5387,7 +5379,7 @@
 
 
     .org PEARL_BLOCK
-    push { r0-r4 }
+    push { r0-r4, lr}
     ldr r0, =ROOM
     ldrb r0, [r0, #0x1]
     cmp r0, #0x1
@@ -5426,15 +5418,13 @@
     orr r3, r4
     strb r3, [r2]
     .pearl_end:
-    pop { r0-r4 }
-    add r1, #0x1
-    bx r1
+    pop { r0-r4, pc }
     .pool
 
 
 
     .org PEARL_RESTORE
-    push { r0-r3 }
+    push { r0-r3, lr }
     ldr r0, =PEARL_RAM
     ldrb r1, [r0]
     mov r2, #0x0
@@ -5463,9 +5453,7 @@
     orr r2, r3
     strb r2, [r0, #0x1]
     .restore_end:
-    pop { r0-r3 }
-    add r1, #0x1
-    bx r1
+    pop { r0-r3, pc }
     .pool
 
 
@@ -5473,7 +5461,7 @@
 
 
     .org TUTOR_BLOCK
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0xFD
@@ -5506,9 +5494,7 @@
     ldr r0, =TUTOR_RAM
     strb r2, [r0]
     .tutor_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -5516,7 +5502,7 @@
 
 
     .org GWAHAR_PIPE
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0xC9
@@ -5527,9 +5513,7 @@
     orr r1, r2
     strb r1, [r0]
     .pipe_skip:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -5537,10 +5521,8 @@
 
 
     .org OCEAN_BLOCK
-    push r1
-    ldr r0, =GWAHAR_PIPE + 1
-    mov r1, pc
-    bx r0
+    push lr
+    bl GWAHAR_PIPE
     ldr r0, =HOONIVERSITY
     ldrb r1, [r0]
     mov r2, #0x80
@@ -5586,9 +5568,7 @@
     mov r2, #0x80
     orr r1, r2
     strb r1, [r0]
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -5596,7 +5576,7 @@
 
 
     .org SCROLL_CHECK
-    push r1
+    push lr
     ldr r0, =KEY_ITEM
     ldrb r0, [r0, #0x6]
     mov r1, #0x4
@@ -5647,9 +5627,7 @@
     orr r2, r1
     strb r2, [r0]
     .scroll_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -5698,7 +5676,7 @@
 
 
     .org ROCK_BLOCK
-    push r1
+    push lr
     ldr r0, =0x0200490A
     ldrb r0, [r0]
     mov r1, #0x6
@@ -5735,6 +5713,21 @@
     orr r1, r2
     strb r1, [r0]
     .pskip:
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0xC6
+    bne .dskip
+    ldr r0, =0x02004348 ;Ocean Red Door
+    ldrb r1, [r0]
+    mov r2, #0x10
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x020043F6 ;Ocean Red Door
+    ldrb r1, [r0]
+    mov r2, #0x42
+    orr r1, r2
+    strb r1, [r0]
+    .dskip:
     ldr r0, =0x0200452D ;teehee valley super rock
     ldrb r1, [r0]
     mov r2, #0x14
@@ -5745,9 +5738,14 @@
     mov r2, #0xF8
     bic r1, r2
     strb r1, [r0]
-    ldr r0, =0x02004336 ; Fungitown arcade machine
+    ldr r0, =0x02004336 ; Fungitown arcade machine text
     ldrb r1, [r0]
     mov r2, #0x2
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x02004343 ; Fungitown arcade machine invincishroom
+    ldrb r1, [r0]
+    mov r2, #0x1
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork
@@ -5904,16 +5902,14 @@
     mov r2, #0x1
     orr r1, r2
     strb r1, [r0]
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
 
 
     .org FAWFUL_FLAGS
-    push r1
+    push lr
     ldr r0, =0x020046EC
     mov r1, #0xF
     ldrb r2, [r0]
@@ -5939,9 +5935,7 @@
     ldrb r2, [r0]
     orr r2, r1
     strb r2, [r0]
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -5949,10 +5943,8 @@
 
 
     .org FAWFUL_BLOCK
-    push r1
-    ldr r0, =FAWFUL_FLAGS + 1
-    mov r1, pc
-    bx r0
+    push lr
+    bl FAWFUL_FLAGS
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x4D
@@ -5986,15 +5978,13 @@
     mov r1, #0x0
     strb r1, [r0]
     .fawful_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
 
     .org STAR_QUEST
-    push r1-r2
+    push { r1-r2, lr }
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x3E
@@ -6071,9 +6061,7 @@
     orr r1, r2
     strb r1, [r0]
     .quest_end:
-    pop r1-r2
-    add r1, #0x1
-    bx r1
+    pop { r1-r2, pc }
     .pool
 
 
@@ -6081,7 +6069,7 @@
 
 
     .org JUMP_TUT
-    push r1
+    push lr
     ldr r0, =0x020042F8
     ldrb r1, [r0]
     mov r2, #0x7C
@@ -6107,9 +6095,50 @@
     mov r2, #0x80
     orr r1, r2
     strb r1, [r0]
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
+    .pool
+
+
+    .org ULTRA_HAMMERS
+    push lr
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    ldr r1, =0x1D0
+    cmp r0, r1
+    bne .uh_restore
+    ldr r0, =0x0200430B
+    ldrb r0, [r0]
+    mov r1, #0x8
+    and r0, r1
+    cmp r0, #0x8
+    bne .uh_end
+    ldr r0, =0x02004359
+    ldrb r0, [r0]
+    mov r1, #0x20
+    and r0, r1
+    cmp r0, #0x20
+    beq .uh_end
+    ldr r0, =0x0200430B
+    ldrb r1, [r0]
+    mov r2, #0x8
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =UH_RAM
+    mov r1, #0x1
+    strb r1, [r0]
+    bl .uh_end
+    .uh_restore:
+    ldr r0, =UH_RAM
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    bne .uh_end
+    ldr r0, =0x0200430B
+    ldrb r1, [r0]
+    mov r2, #0x8
+    orr r1, r2
+    strb r1, [r0]
+    .uh_end:
+    pop pc
     .pool
 
 
@@ -6117,7 +6146,7 @@
 
 
     .org SAVE_BLOCK
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x95
@@ -6133,9 +6162,7 @@
     ldr r0, =0x0200948C
     strb r1, [r0]
     .save_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -6145,7 +6172,7 @@
 
 
     .org SEWER_BLOCK
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x3D
@@ -6160,16 +6187,14 @@
     mov r1, #0x1
     strb r1, [r0]
     .sewer_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
 
 
     .org PEACH_KIDNAPPED
-    push r1
+    push lr
     ldr r0, =0x0200434C
     ldrb r0, [r0]
     mov r1, #0x2
@@ -6201,9 +6226,7 @@
     orr r1, r2
     strb r1, [r0]
     .bestar_skip:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -6211,7 +6234,7 @@
 
 
     .org SPANGLE_SUBR
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0xFF
@@ -6267,9 +6290,7 @@
     strb r1, [r0]
     strb r1, [r0, #0x1]
     .spangle_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -6277,7 +6298,7 @@
 
 
     .org WINKLE_SUBR
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x9E
@@ -6330,9 +6351,7 @@
     strb r1, [r0]
     strb r1, [r0, #0x1]
     .winkle_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -6340,7 +6359,7 @@
 
 
     .org CASTLE_GATES
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x36
@@ -6369,9 +6388,7 @@
     mov r1, #0x0
     strb r1, [r2]
     .gates_end:
-    pop r1
-    add r1, #0x1
-    bx r1
+    pop pc
     .pool
 
 
@@ -6379,7 +6396,7 @@
 
 
     .org ESCORT_FIX
-    push r1
+    push lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x41
@@ -6399,24 +6416,8 @@
     mov r1, #0x0
     strb r1, [r0]
     .escort_end:
-    pop r1
-    add r1, #0x1
-    bx r1
-    .pool
-
-
-
-    .org KOOPA_BLOCK_SUBR
-    push { r0-r2, lr }
-    ldr r0, =KOOPA_BLOCK_DATA + 1
-    mov r1, pc
-    bx r0
-    pop r0-r2
-    str r1, [r4, #0xC]
-    str r2, [r4, #0x10]
     pop pc
     .pool
-
 
 
 
@@ -6592,62 +6593,47 @@
 
 
 
+    .org KOOPA_BLOCK_SUBR
+    push { r0-r5, lr }
+    ldr r0, =KOOPA_BLOCK_DATA + 1
+    mov r1, pc
+    bx r0
+    pop r0-r5
+    str r1, [r4, #0xC]
+    str r2, [r4, #0x10]
+    pop pc
+    .pool
+
+
+
+
     .org KOOPA_BLOCK_DATA
-    push r0-r2
+    push r1
     ldr r0, =PEARL_SPOIL_RAM
     mov r1, #0x0
     strb r1, [r0]
     ldr r0, =YOSHI_DISPLAY_RAM
     mov r1, #0x0
     strb r1, [r0]
-    ldr r0, =SPANGLE_SUBR + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =WINKLE_SUBR + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =PEACH_KIDNAPPED + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =JUMP_TUT + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =EGG_CHECK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =STAR_QUEST + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =ABILITY_CHECK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =TUTOR_BLOCK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =OCEAN_BLOCK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =SCROLL_CHECK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =ROCK_BLOCK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =FAWFUL_BLOCK + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =CASTLE_GATES + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =ESCORT_FIX + 1
-    mov r1, pc
-    bx r0
-    ldr r0, =SEWER_BLOCK + 1
-    mov r1, pc
-    bx r0
+    bl SPANGLE_SUBR
+    bl WINKLE_SUBR
+    bl PEACH_KIDNAPPED
+    bl JUMP_TUT
+    bl EGG_CHECK
+    bl STAR_QUEST
+    bl ABILITY_CHECK
+    bl TUTOR_BLOCK
+    bl OCEAN_BLOCK
+    bl SCROLL_CHECK
+    bl ROCK_BLOCK
+    bl FAWFUL_BLOCK
+    bl CASTLE_GATES
+    bl ESCORT_FIX
+    bl SEWER_BLOCK
     bl ESCORT_CUTSCENE
     bl BLABLANADON
     bl PEACH_ARRIVAL
+    bl ULTRA_HAMMERS
     ldr r0, =FAWFUL_STONE
     ldrb r0, [r0]
     mov r1, #0x1
@@ -6662,9 +6648,7 @@
     bge .restore_skip
     cmp r0, #0xFD
     beq .restore_skip
-    ldr r2, =PEARL_RESTORE + 1
-    mov r1, pc
-    bx r2
+    bl PEARL_RESTORE
     .restore_skip:
     ldr r0, =ROOM
     ldrb r0, [r0]
@@ -6849,7 +6833,7 @@
     strb r1, [r0]
     .barrel_skip:
     bl BARREL_MINIGAME
-    pop r0-r2
+    pop r1
     add r1, #0x1
     bx r1
     .pool

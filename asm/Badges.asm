@@ -502,16 +502,15 @@ cmp r2, #0xff
 beq .badge_clause
 add r2, #0x1
 strb r2, [r1, r0]
-ldrb r2, [r1, r0]
-cmp r2, #0x1
-beq .badge_flag
-bl .badge_end
+bl .badge_flag
 .badge_clause:
 mov r2, #0x1
 strb r2, [r1, r0]
 .badge_flag:
 ldr r1, =BADGE_FLAGS
 ldrb r2, [r1, r3]
+cmp r2, r0
+beq .badge_end
 cmp r2, #0xFF
 beq .bflag_set
 add r3, #0x1
@@ -534,16 +533,15 @@ cmp r2, #0xff
 beq .pants_clause
 add r2, #0x1
 strb r2, [r1, r0]
-ldrb r2, [r1, r0]
-cmp r2, #0x1
-beq .pants_flag
-bl .pants_end
+bl .pants_flag
 .pants_clause:
 mov r2, #0x1
 strb r2, [r1, r0]
 .pants_flag:
 ldr r1, =PANTS_FLAGS
 ldrb r2, [r1, r3]
+cmp r2, r0
+beq .pants_end
 cmp r2, #0xFF
 beq .pflag_set
 add r3, #0x1
@@ -566,16 +564,15 @@ cmp r2, #0xff
 beq .special_clause
 add r2, #0x1
 strb r2, [r1, r0]
-ldrb r2, [r1, r0]
-cmp r2, #0x1
-beq .special_flag
-bl .special_end
+bl .special_flag
 .special_clause:
 mov r2, #0x1
 strb r2, [r1, r0]
 .special_flag:
 ldr r1, =SPECIAL_FLAGS
 ldrb r2, [r1, r3]
+cmp r2, r0
+beq .special_end
 cmp r2, #0xFF
 beq .sflag_set
 add r3, #0x1
