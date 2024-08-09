@@ -829,10 +829,18 @@
 
     .org AP_ITEM
     push { r0-r4, lr }
+    ldr r0, =AP_READ_INIT
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    bne .init_skip
     ldr r0, =0x03002336
     ldrb r0, [r0]
     cmp r0, #0x2
     bne .ap_start
+    ldr r0, =AP_READ_INIT
+    mov r1, #0x1
+    strb r1, [r0]
+    .init_skip:
     ldr r0, =AP_LOGO
     ldr r1, =0x53534C4D
     str r1, [r0]
@@ -3701,7 +3709,7 @@
     ldr r0, =BROS_ITEM_SUBR + 1
     mov r1, pc
     bx r0
-    bl .ability_norm
+    bl .ability_end
     .ability_badge:
     sub r0, #0x9E
     ldr r2, =BADGE_TEXT_ARRAY
@@ -3758,7 +3766,6 @@
     cmp r3, #0x1
     beq .ability_end2
     .ab_skip:
-    ldr r1, [r5]
     orr r1, r0
     str r1, [r5]
     bl .ability_end2
@@ -5234,10 +5241,12 @@
     .block_fix:
     ldr r0, =ROOM
     ldrh r0, [r0]
-    cmp r0, #0xB0
+    cmp r0, #0xB4
     beq .unblock_hand
-    cmp r0, 0xB4
-    bne .check_end
+    cmp r0, #0xB0
+    ble .unblock_hand
+    cmp r0, 0xB8
+    bge .check_end
     .unblock_hand:
     ldr r0, =REMOVE_RAM
     mov r1, #0x0
@@ -5272,8 +5281,6 @@
     strb r1, [r0, #0x1]
     bl .check_end
     .fire_skipping:
-    bic r1, r2
-    strb r1, [r0, #0x1]
     ldr r1, =REMOVE_RAM
     mov r0, #0x10
     strb r0, [r1]
@@ -5282,8 +5289,8 @@
     .fire_remove:
     ldr r0, =ROOM
     ldrh r0, [r0]
-    cmp r0, #0xB1
-    blt .fire_remove2
+    cmp r0, #0xAF
+    ble .fire_remove2
     cmp r0, #0xB3
     ble .check_end
     .fire_remove2:
@@ -5325,8 +5332,6 @@
     strb r1, [r0, #0x1]
     bl .check_end
     .thunder_skip:
-    bic r1, r2
-    strb r1, [r0, #0x1]
     ldr r1, =REMOVE_RAM
     mov r0, #0x20
     strb r0, [r1]
@@ -5335,8 +5340,8 @@
     .thunder_remove:
     ldr r0, =ROOM
     ldrh r0, [r0]
-    cmp r0, #0xB5
-    blt .thunder_remove2
+    cmp r0, #0xB3
+    ble .thunder_remove2
     cmp r0, #0xB7
     ble .check_end
     .thunder_remove2:
@@ -6104,7 +6109,7 @@
     ldrh r0, [r0]
     ldr r1, =0x1D0
     cmp r0, r1
-    bne .uh_restore
+    blt .uh_restore
     ldr r0, =0x0200430B
     ldrb r0, [r0]
     mov r1, #0x8
