@@ -2722,7 +2722,7 @@
     ldrb r1, [r1]
     cmp r1, #0x0
     beq .pipe_skip2
-    ldr r1, =0x03007AFB
+    ldr r1, =0x03002478
     ldrb r1, [r1]
     cmp r1, #0x0
     bne .pipe_skip2
@@ -3758,6 +3758,7 @@
     cmp r3, #0x1
     beq .ability_end2
     .ab_skip:
+    ldr r1, [r5]
     orr r1, r0
     str r1, [r5]
     bl .ability_end2
@@ -5466,9 +5467,7 @@
     ldrh r0, [r0]
     cmp r0, #0xFD
     bne .tutor_end
-    ldr r0, =PEARL_BLOCK + 1
-    mov r1, pc
-    bx r0
+    bl PEARL_BLOCK
     ldr r0, =TUTOR_RAM
     ldrb r0, [r0]
     cmp r0, #0x1
