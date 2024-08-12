@@ -5,6 +5,7 @@
     .include "Variables.asm"
     .include "Badges.asm"
     .include "Sprites.asm"
+    .include "Pipes.asm"
 
     .org 0x08240290 ; Prevent neon egg turn in from removing 7 beanfruits
         db 0x2, 0x0
