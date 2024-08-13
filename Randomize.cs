@@ -38,6 +38,7 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 rom = new Rom(path, seed, gameId);
+                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/pipe.ips");
                 rom.Randomize();
                 rom.SpoilerFill();
                 rom.SpoilerGen();
@@ -476,6 +477,53 @@ namespace MLSSRandomizerForm
             public byte byte2;
             public byte quantity;
             public int itemType;
+        }
+
+
+        public void ApplyIpsPatch(string patchFilePath)
+        {
+            using (FileStream patchStream = new FileStream(patchFilePath, FileMode.Open, FileAccess.Read))
+            using (BinaryReader br = new BinaryReader(patchStream))
+            {
+                // Verify the IPS header
+                string header = Encoding.ASCII.GetString(br.ReadBytes(5));
+                if (header != "PATCH")
+                    throw new Exception("Not a valid IPS patch.");
+
+                while (true)
+                {
+                    // Read the offset (3 bytes)
+                    int offset = (br.ReadByte() << 16) | (br.ReadByte() << 8) | br.ReadByte();
+
+                    // Check for EOF marker ('EOF')
+                    if (offset == 0x454F46) // 'EOF' in ASCII
+                        break;
+
+                    // Read the length (2 bytes)
+                    ushort length = (ushort)((br.ReadByte() << 8) | br.ReadByte());
+
+                    if (length == 0)
+                    {
+                        // RLE encoded data
+                        byte value = br.ReadByte();
+                        ushort rleSize = (ushort)((br.ReadByte()) | br.ReadByte() << 8);
+
+                        // Apply the RLE encoded data
+                        for (int i = 0; i < rleSize; i++)
+                        {
+                            stream.Position = offset + i;
+                            stream.WriteByte(value);
+                        }
+                    }
+                    else
+                    {
+                        // Normal patch data
+                        byte[] data = br.ReadBytes(length);
+                        stream.Position = offset;
+                        stream.Write(data, 0, length);
+                    }
+                }
+            }
         }
 
 
