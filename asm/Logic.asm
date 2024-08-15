@@ -536,6 +536,17 @@
     .org FPSHOP_FIX
         mov r0, r0
 
+    .org 0x0820DEE0 ; Mushroom save block text
+        db "You found the secret text :)", 0x0
+
+    .org TRUNKLE_TEXT_HOOK
+        dw TRUNKLE_TEXT
+
+    .org TRUNKLE_TEXT
+	    db 0x12, 0x8, 0xFF, 0xB, 0x1, 0xFF, 0xB, 0x1
+	    db "If you want to wake me:", 0xFF, 0x11, 0x0, 0xFF, 0x1, 0x0, 0xFF, 0xB, 0x1, "Beat Chuckolator,", 0xFF, 0x11, 0x0, 0xFF, 0x1, 0x0, 0xFF, 0xB, 0x1, "and Mom Piranha,", 0xFF, 0x11, 0x0, 0xFF, 0x1, 0x0, 0xFF, 0xB, 0x1, "And escort the princess...", 0xFF, 0x11, 0x0, 0xFF, 0x1, 0x0, 0xFF, 0xB, 0x1, "Zzzzzzzzz..."
+	    db 0XFF, 0x11, 0x01, 0xFF, 0xA
+
     .org ULTRA_MUSHROOM_TEXT
         db 0x13, 0x2, 0xFF, 0xB, 0x1, 0xFF, 0x41, 0xFF, 0x25
         db 0x59, 0x6F, 0x75, 0x20, 0x67, 0x6F, 0x74, 0x20, 0x61, 0x6E, 0x20, 0x55, 0x6C, 0x74, 0x72, 0x61, 0x20, 0x4D, 0x75, 0x73, 0x68, 0x72, 0x6F, 0x6F, 0x6D, 0x21
@@ -3703,6 +3714,8 @@
     lsr r1, #0x1C
     cmp r1, #0x7
     ble .ability_key_norm
+    cmp r1, #0xF
+    beq .ability_norm
     sub r1, #0x7
     add r1, #0x40
     ldr r2, =BROS_RAM
@@ -3710,7 +3723,10 @@
     ldr r0, =BROS_ITEM_SUBR + 1
     mov r1, pc
     bx r0
-    bl .ability_end
+    ldr r0, =HAMMER
+    cmp r0, r5
+    beq .ability_end
+    bl .ability_norm
     .ability_badge:
     sub r0, #0x9E
     ldr r2, =BADGE_TEXT_ARRAY
@@ -3853,6 +3869,8 @@
     cmp r0, #0x0
     beq .text_end
     ldr r3, =TEXT_VAR
+    cmp r0, r3
+    blt .text_end
     sub r0, r3
     cmp r0, #0x30
     blt .key_skip
@@ -5274,14 +5292,16 @@
     mov r2, #0x1
     and r2, r1
     cmp r2, #0x1
-    beq .fire_skipping
+    beq .fire_skip
     mov r2, #0x1
     ldr r3, =REMOVE_RAM
     strb r2, [r3]
     bic r1, r2
     strb r1, [r0, #0x1]
     bl .check_end
-    .fire_skipping:
+    .fire_skip:
+    bic r1, r2
+    strb r1, [r0, #0x1]
     ldr r1, =REMOVE_RAM
     mov r0, #0x10
     strb r0, [r1]
@@ -5333,6 +5353,8 @@
     strb r1, [r0, #0x1]
     bl .check_end
     .thunder_skip:
+    bic r1, r2
+    strb r1, [r0, #0x1]
     ldr r1, =REMOVE_RAM
     mov r0, #0x20
     strb r0, [r1]
