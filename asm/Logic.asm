@@ -2663,6 +2663,7 @@
     orr r3, r1
     strb r3, [r2]
     .intro:
+    bl JUMP_TUT
     ldr r1, =INTRO_DISABLE
     mov r2, #0x1
     strb r2, [r1]
@@ -6096,7 +6097,7 @@
 
 
     .org JUMP_TUT
-    push lr
+    push { r0-r2, lr }
     ldr r0, =0x020042F8
     ldrb r1, [r0]
     mov r2, #0x7C
@@ -6122,7 +6123,7 @@
     mov r2, #0x80
     orr r1, r2
     strb r1, [r0]
-    pop pc
+    pop { r0-r2, pc }
     .pool
 
 
@@ -6173,7 +6174,7 @@
 
 
     .org SAVE_BLOCK
-    push lr
+    push r0-r1, lr
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x95
@@ -6189,7 +6190,7 @@
     ldr r0, =0x0200948C
     strb r1, [r0]
     .save_end:
-    pop pc
+    pop r0-r1, pc
     .pool
 
 
@@ -6645,7 +6646,6 @@
     bl SPANGLE_SUBR
     bl WINKLE_SUBR
     bl PEACH_KIDNAPPED
-    bl JUMP_TUT
     bl EGG_CHECK
     bl STAR_QUEST
     bl ABILITY_CHECK
