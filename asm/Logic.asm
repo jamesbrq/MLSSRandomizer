@@ -129,6 +129,9 @@
         db 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA, 0xA ;Bros move advance
 
     .org 0x0825DE86 ; Fast popple2 fight end
+        db 0x2, 0x10, 0xCD, 0xE0, 0x25, 0x08
+
+    .org 0x0825E0F1 ; Fast popple2 fight end
         db 0x2, 0x10, 0xC, 0xE5, 0x25, 0x08
 
     .org 0x08250780 ; Fast chuckolator fight start
@@ -3407,11 +3410,11 @@
 
 
     .org DOOR_SUBR
-    push { r0, r1, r6, lr }
+    push { r0-r2, r6, lr }
     ldr r0, =DOOR_DATA + 1
     mov r6, pc
     bx r0
-    pop { r0, r1, r6, pc }
+    pop { r0-r2, r6, pc }
     .pool
 
 
@@ -3428,12 +3431,70 @@
     beq .dress_door
     cmp r0, #0x5A
     beq .ruins_door
+    cmp r0, #0xB1
+    beq .fire_door
+    cmp r0, #0xB2
+    beq .fire_door2
+    cmp r0, #0xB5
+    beq .thunder_door
+    cmp r0, #0xB6
+    beq .thunder_door2
     bl .end2
 
+    .fire_door:
+    ldr r0, =0x020043E5
+    ldrb r1, [r1]
+    mov r2, #0x8
+    orr r2, r1
+    cmp r2, #0x8
+    bne .end2
+    ldr r0, =0x083AD33C
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
+
+    .fire_door2:
+    ldr r0, =0x020043E5
+    ldrb r1, [r1]
+    mov r2, #0x8
+    orr r2, r1
+    cmp r2, #0x8
+    bne .end2
+    ldr r0, =0x083AD360
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
+
+    .thunder_door:
+    ldr r0, =0x020043E5
+    ldrb r1, [r1]
+    mov r2, #0x20
+    orr r2, r1
+    cmp r2, #0x20
+    bne .end2
+    ldr r0, =0x083AD3B4
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
+
+    .thunder_door2:
+    ldr r0, =0x020043E5
+    ldrb r1, [r1]
+    mov r2, #0x20
+    orr r2, r1
+    cmp r2, #0x20
+    bne .end2
+    ldr r0, =0x083AD3CC
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
+
     .ruins_door:
-    ldr r0, =RUINS_DOORS + 1
-    mov r6, pc
-    bx r0
+    bl RUINS_DOORS
     bl .end3
 
     .dress_door:
@@ -3498,7 +3559,7 @@
 
 
     .org RUINS_DOORS
-    push r6
+    push lr
     ldr r0, =0x0200434C
     ldrb r0, [r0]
     mov r6, #0x3
@@ -3511,14 +3572,12 @@
     ldr r0, =0x083AC754
     cmp r1, r0
     beq .ruins_norm
-    mov r3, #0xff
+    mov r3, #0xFF
     bl .ruins_end
     .ruins_norm:
     ldrb r3, [r1]
     .ruins_end:
-    pop r6
-    add r6, #0x1
-    bx r6
+    pop pc
     .pool
 
 
@@ -3716,7 +3775,7 @@
     cmp r1, #0x7
     ble .ability_key_norm
     cmp r1, #0xF
-    beq .ability_norm
+    beq .ability_ap
     sub r1, #0x7
     add r1, #0x40
     ldr r2, =BROS_RAM
@@ -3724,9 +3783,6 @@
     ldr r0, =BROS_ITEM_SUBR + 1
     mov r1, pc
     bx r0
-    ldr r0, =HAMMER
-    cmp r0, r5
-    beq .ability_end
     bl .ability_norm
     .ability_badge:
     sub r0, #0x9E
@@ -3771,6 +3827,11 @@
     add r2, r0
     ldr r2, [r2]
     ldr r1, =HAND_TEXT_RAM
+    str r2, [r1]
+    bl .ability_norm
+    .ability_ap:
+    ldr r1, =HAND_TEXT_RAM
+    ldr r2, =AP_TEXT_EVENT
     str r2, [r1]
     .ability_norm:
     pop { r0, r1 }
@@ -4601,6 +4662,11 @@
     mov r2, #0x1
     orr r1, r2
     strb r1, [r0, #0x1]
+    ldr r0, =REMOVE_RAM
+    mov r2, #0x1
+    ldrb r1, [r0]
+    bic r1, r2
+    strb r1, [r0]
     ldr r0, =BROS_RAM
     ldrb r0, [r0]
     mov r1, #0xF0
@@ -4625,6 +4691,11 @@
     mov r2, #0x2
     orr r1, r2
     strb r1, [r0, #0x1]
+    ldr r0, =REMOVE_RAM
+    mov r2, #0x2
+    ldrb r1, [r0]
+    bic r1, r2
+    strb r1, [r0]
     ldr r0, =BROS_RAM
     ldrb r0, [r0]
     mov r1, #0xF0
@@ -5705,9 +5776,9 @@
 
     .org ROCK_BLOCK
     push lr
-    ldr r0, =0x0200490A
+    ldr r0, =0x02004300
     ldrb r0, [r0]
-    mov r1, #0x6
+    mov r1, #0x80
     and r0, r1
     cmp r0, #0x0
     beq .bshop_skip
