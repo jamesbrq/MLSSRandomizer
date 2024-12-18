@@ -15,11 +15,11 @@ namespace MLSSRandomizerForm
         public int gameId;
         public static string progVersion;
         private string filePath;
-        private string seed;
+        private string seed = "";
         private Dictionary<string, int> config = new Dictionary<string, int>();
         public static int chuckle = 3;
         public static int bosses = 1;
-        public static bool intro = false;
+        public static bool intro = true;
         public static bool mush = false;
         public static bool rose = true;
         public static bool brooch = true;
@@ -278,9 +278,6 @@ namespace MLSSRandomizerForm
             this.config.TryGetValue("coffeevalue", out num);
             coffeeValue = Convert.ToBoolean(num);
             this.checkBox28.Checked = Convert.ToBoolean(num);
-            this.config.TryGetValue("intro", out num);
-            intro = Convert.ToBoolean(num);
-            this.checkBox1.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("doors", out num);
             doors = Convert.ToBoolean(num);
             this.checkBox39.Checked = Convert.ToBoolean(num);
@@ -499,11 +496,6 @@ namespace MLSSRandomizerForm
         private void label3_Click(object sender, EventArgs e)
         {
 
-        }
-
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
-        {
-            intro = checkBox1.Checked;
         }
 
         private void groupBox1_Enter(object sender, EventArgs e)
@@ -925,16 +917,6 @@ namespace MLSSRandomizerForm
         private void checkBox39_CheckedChanged(object sender, EventArgs e)
         {
             doors = checkBox39.Checked;
-            if(checkBox1.Enabled)
-            {
-                checkBox1.Enabled = false;
-                checkBox1.Checked = true;
-            }
-            else
-            {
-                checkBox1.Enabled = true;
-                checkBox1.Checked = false;
-            }
         }
 
         private void checkBox43_CheckedChanged(object sender, EventArgs e)
@@ -999,7 +981,6 @@ namespace MLSSRandomizerForm
 
         private void checkBox49_CheckedChanged(object sender, EventArgs e)
         {
-            this.checkBox1.Enabled = !this.checkBox49.Checked;
             this.checkBox2.Enabled = !this.checkBox49.Checked;
             this.checkBox3.Enabled = !this.checkBox49.Checked;
             this.checkBox4.Enabled = !this.checkBox49.Checked;

@@ -2564,7 +2564,7 @@ namespace MLSSRandomizerForm
         public void SeedInitialize(string seed)
         {
             hash = AllNumbers(seed);
-            if (seed != null && seed != "0" && hash == 0)
+            if (seed != null && seed != "" && hash == 0)
                 hash = seed.GetHashCode();
             else if (hash != 0)
                 Console.WriteLine(hash);
@@ -2940,7 +2940,6 @@ namespace MLSSRandomizerForm
                         break;
 
                     case 1:
-                        break;
                         stream.Seek(location.location, SeekOrigin.Begin);
                         byte replace = location.item.byte1;
                         while (true)

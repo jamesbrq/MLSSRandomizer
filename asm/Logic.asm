@@ -852,6 +852,10 @@
     ldrb r0, [r0]
     cmp r0, #0x2
     bne .ap_start
+    ldr r0, =0x030003C4
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    beq .ap_start
     ldr r0, =AP_READ_INIT
     mov r1, #0x1
     strb r1, [r0]
@@ -862,8 +866,10 @@
     ldr r1, =0x5041
     strh r1, [r0, #0x4]
     .ap_start:
-    ldr r0, =AP_READ
-    ldrb r0, [r0]
+    ldr r1, =AP_READ
+    ldrb r0, [r1]
+    mov r2, #0x0
+    strb r2, [r1]
     cmp r0, #0x0
     beq .ap_end
     cmp r0, #0x30
@@ -981,11 +987,7 @@
     .ap_clause:
     mov r2, #0x1
     strb r2, [r1, r0]
-    bl .ap_end
     .ap_end:
-    ldr r0, =AP_READ
-    mov r1, #0x0
-    strb r1, [r0]
     pop { r0-r4, pc }
     .pool
 
@@ -3443,10 +3445,10 @@
 
     .fire_door:
     ldr r0, =0x020043E5
-    ldrb r1, [r1]
-    mov r2, #0x8
-    orr r2, r1
-    cmp r2, #0x8
+    ldrb r2, [r0]
+    mov r6, #0x8
+    orr r6, r1
+    cmp r6, #0x8
     bne .end2
     ldr r0, =0x083AD33C
     cmp r0, r9
@@ -3456,10 +3458,10 @@
 
     .fire_door2:
     ldr r0, =0x020043E5
-    ldrb r1, [r1]
-    mov r2, #0x8
-    orr r2, r1
-    cmp r2, #0x8
+    ldrb r2, [r0]
+    mov r6, #0x8
+    orr r6, r1
+    cmp r6, #0x8
     bne .end2
     ldr r0, =0x083AD360
     cmp r0, r9
@@ -3469,10 +3471,10 @@
 
     .thunder_door:
     ldr r0, =0x020043E5
-    ldrb r1, [r1]
-    mov r2, #0x20
-    orr r2, r1
-    cmp r2, #0x20
+    ldrb r2, [r0]
+    mov r6, #0x20
+    orr r6, r1
+    cmp r6, #0x20
     bne .end2
     ldr r0, =0x083AD3B4
     cmp r0, r9
@@ -3482,10 +3484,10 @@
 
     .thunder_door2:
     ldr r0, =0x020043E5
-    ldrb r1, [r1]
-    mov r2, #0x20
-    orr r2, r1
-    cmp r2, #0x20
+    ldrb r2, [r0]
+    mov r6, #0x20
+    orr r6, r2
+    cmp r6, #0x20
     bne .end2
     ldr r0, =0x083AD3CC
     cmp r0, r9

@@ -46,7 +46,6 @@ namespace MLSSRandomizerForm
             this.SeedTextbox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.Colors = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.checkBox52 = new System.Windows.Forms.CheckBox();
@@ -242,21 +241,6 @@ namespace MLSSRandomizerForm
             // 
             this.saveFileDialog1.DefaultExt = "gba";
             this.saveFileDialog1.Filter = "Gameboy Advance Rom (*.gba)|*.gba|All files (*.*)|*.*";
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox1.Location = new System.Drawing.Point(100, 123);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(77, 17);
-            this.checkBox1.TabIndex = 8;
-            this.checkBox1.Text = "Skip Intro?";
-            this.toolTip1.SetToolTip(this.checkBox1, "Checking this will skip the entire intro sequence of the game.\r\nYou will spawn in" +
-        " from Pipe 1, get High and Spin Jump immediately, and put the game in a state ri" +
-        "ght after Tolstar is defeated.");
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // Colors
             // 
@@ -903,7 +887,6 @@ namespace MLSSRandomizerForm
             this.tabPage5.Controls.Add(this.checkBox29);
             this.tabPage5.Controls.Add(this.checkBox24);
             this.tabPage5.Controls.Add(this.checkBox23);
-            this.tabPage5.Controls.Add(this.checkBox1);
             this.tabPage5.Controls.Add(this.checkBox20);
             this.tabPage5.Location = new System.Drawing.Point(4, 22);
             this.tabPage5.Name = "tabPage5";
@@ -917,7 +900,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox43.AutoSize = true;
             this.checkBox43.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox43.Location = new System.Drawing.Point(92, 146);
+            this.checkBox43.Location = new System.Drawing.Point(92, 123);
             this.checkBox43.Name = "checkBox43";
             this.checkBox43.Size = new System.Drawing.Size(85, 17);
             this.checkBox43.TabIndex = 46;
@@ -1713,7 +1696,6 @@ namespace MLSSRandomizerForm
         private TextBox SeedTextbox;
         private Label label2;
         private SaveFileDialog saveFileDialog1;
-        private CheckBox checkBox1;
         private TabControl Colors;
         private TabPage tabPage1;
         private TabPage tabPage2;
