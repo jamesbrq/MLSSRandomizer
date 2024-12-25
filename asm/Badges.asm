@@ -78,6 +78,16 @@ ldr r1, [r1, #0x4]
 pop pc
 .pool
 
+.org EMBLEM_SHOP_HOOK2
+	dw EMBLEM_SHOP3
+
+.org EMBLEM_SHOP3
+	dw EMBLEM_TEXT_BOX2
+	dw EMBLEM_TEXT_BOX2
+
+.org EMBLEM_TEXT_BOX2
+	db "Beanstar Emblem", 0x0
+
 .org 0x0812E196
 	db 0xA8
 
@@ -448,7 +458,7 @@ sub r0, #0x30
 mov r1, r0
 lsr r0, #0x4
 lsl r1, #0x1C
-lsr r1, #0x1c
+lsr r1, #0x1C
 cmp r1, #0x9
 bge .pants_hand
 ldr r2, =KEY_ITEM
@@ -459,6 +469,10 @@ orr r3, r4
 strb r3, [r2, r0]
 bl .pants_buy_end
 .pants_hand:
+cmp r1, #0xE
+beq .pants_emblem
+cmp r1, #0xF
+beq .pants_buy_end
 sub r1, #0x9
 mov r2, #0x1
 lsl r2, r1
@@ -466,6 +480,18 @@ ldr r1, =0x02004339
 ldrb r0, [r1]
 orr r0, r2
 strb r0, [r1]
+bl .pants_buy_end
+.pants_emblem:
+ldr r1, =0x020048FD
+ldrb r2, [r1]
+cmp r2, #0xFF
+bne .pants_emblem_norm
+mov r2, #0x1
+strb r2, [r1]
+bl .pants_buy_end
+.pants_emblem_norm:
+add r2, #0x1
+strb r2, [r1]
 bl .pants_buy_end
 .pants_badge:
 sub r0, #0x9E
@@ -685,6 +711,8 @@ bgt .text_hands
 ; Hammer Code Here
 bl .text_norm
 .text_hands:
+cmp r3, #0xE
+beq .text_emblem
 cmp r3, #0xF
 beq .text_ap
 sub r3, #0x8
@@ -693,6 +721,9 @@ add r3, #0x2
 mov r4, #0x4
 mul r3, r4
 ldr r1, [r2, r3]
+bl .text_norm
+.text_emblem:
+ldr r1, =EMBLEM_SHOP_HOOK
 bl .text_norm
 .text_ap:
 ldr r1, =AP_SHOP_HOOK
@@ -771,6 +802,8 @@ bgt .desc_hands
 ; Hammer Code Here
 bl .desc_norm
 .desc_hands:
+cmp r4, #0xE
+beq .desc_emblem
 cmp r4, #0xF
 beq .desc_ap
 sub r4, #0x8
@@ -778,6 +811,9 @@ ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
 lsl r4, #0x2
 ldr r2, [r3, r4]
+bl .desc_norm
+.desc_emblem:
+ldr r2, =EMBLEM_SHOP2
 bl .desc_norm
 .desc_ap:
 ldr r2, =AP_RAM
@@ -876,6 +912,8 @@ bgt .desc_hands2
 ; Hammer Code Here
 bl .desc_norm2
 .desc_hands2:
+cmp r4, #0xE
+beq .desc_emblem2
 cmp r4, #0xF
 beq .desc_ap2
 sub r4, #0x8
@@ -883,6 +921,9 @@ ldr r3, =BROS_ITEM_SHOP_ARRAY
 add r4, #0x2
 lsl r4, #0x2
 ldr r2, [r3, r4]
+bl .desc_norm2
+.desc_emblem2:
+ldr r2, =EMBLEM_SHOP2
 bl .desc_norm2
 .desc_ap2:
 ldr r2, =AP_RAM

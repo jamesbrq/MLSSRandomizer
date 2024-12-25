@@ -39,6 +39,8 @@ namespace MLSSRandomizerForm
             {
                 rom = new Rom(path, seed, gameId);
                 rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/pipe.ips");
+                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/castle.ips");
+                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/chuckola.ips");
                 rom.Randomize();
                 rom.SpoilerFill();
                 rom.SpoilerGen();
@@ -505,8 +507,8 @@ namespace MLSSRandomizerForm
                     if (length == 0)
                     {
                         // RLE encoded data
+                        ushort rleSize = (ushort)((br.ReadByte()) << 8 | br.ReadByte());
                         byte value = br.ReadByte();
-                        ushort rleSize = (ushort)((br.ReadByte()) | br.ReadByte() << 8);
 
                         // Apply the RLE encoded data
                         for (int i = 0; i < rleSize; i++)
