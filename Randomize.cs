@@ -41,6 +41,7 @@ namespace MLSSRandomizerForm
                 rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/pipe.ips");
                 rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/castle.ips");
                 rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/chuckola.ips");
+                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/ruins.ips");
                 rom.Randomize();
                 rom.SpoilerFill();
                 rom.SpoilerGen();

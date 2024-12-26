@@ -64,6 +64,9 @@ AP_PANTS_DESC equ 0x08D10400
 AP_FPANTS_DESC equ 0x08D10500
 AP_RAM_CHECK_HOOK equ 0x0812E192
 AP_RAM_CHECK_SUBR equ 0x081DFE00
+EMBLEM_SHOP_HOOK2 equ 0x08E012A0
+EMBLEM_SHOP3 equ 0x08E01250
+EMBLEM_TEXT_BOX2 equ 0x08E01200
 
 
 .org AP_RAM_CHECK_HOOK
@@ -482,7 +485,7 @@ orr r0, r2
 strb r0, [r1]
 bl .pants_buy_end
 .pants_emblem:
-ldr r1, =0x020048FD
+ldr r1, =0x020048FB
 ldrb r2, [r1]
 cmp r2, #0xFF
 bne .pants_emblem_norm

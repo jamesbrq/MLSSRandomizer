@@ -629,6 +629,9 @@
     .org GOLDEN_FIX
         db 0x16
 
+    .org 0x08201F30 ;Expand inv. by 1 for emblems
+        db 0x1A
+
     .org HOO_TEXT
         dw 0x08404F38
 
@@ -782,11 +785,88 @@
     .org DEF_SCALE_HOOK
         bl DEF_SCALE_SUBR
 
+    .org EMBLEM_TEXT_HOOK
+        bl EMBLEM_TEXT_SUBR
+        
+    .org EMBLEM_DESC_HOOK
+        bl EMBLEM_DESC_SUBR
+        
+    .org EMBLEM_TEXT_FIX_HOOK
+        bl EMBLEM_TEXT_FIX_SUBR
+
     .org 0x080fde9a ;Mario BP
         mov r0, #0x0
 
     .org 0x080fe0c4 ;Luigi BP
         mov r0, #0x0
+
+    .org EMBLEM_INV_HOOK
+        dw EMBLEM_INV_HOOK2
+
+    .org EMBLEM_INV_HOOK2
+        dw EMBLEM_INV_TEXT
+        dw EMBLEM_INV_TEXT
+
+    .org EMBLEM_INV_TEXT
+        db "Beanstar Emblems", 0x0
+
+
+
+
+    .org EMBLEM_TEXT_SUBR
+    push lr
+    ldr r1, =0x03007BE4
+    ldrb r1, [r1]
+    cmp r1, #0x19
+    bne .e_norm
+    ldr r1, =EMBLEM_INV_HOOK
+    bl .e_end
+    .e_norm:
+    ldrb r1, [r5]
+    lsl r1, r1, #0x2
+    add r1, r1, r2
+    .e_end:
+    pop pc
+    .pool
+
+
+
+
+
+    .org EMBLEM_DESC_SUBR
+    push r0, r3, lr
+    ldr r0, =0x030040AB
+    ldrb r0, [r0]
+    ldr r3, =0x03003FAC
+    ldrb r0, [r3, r0]
+    cmp r0, #0x19
+    bne .e_norm2
+    ldr r1, =EMBLEM_INV_HOOK
+    bl .e_end2
+    .e_norm2:
+    lsl r1, r1, #0x2
+    add r1, r1, r2
+    .e_end2:
+    pop r0, r3, pc
+    .pool
+    
+    
+    
+
+
+    
+    .org EMBLEM_TEXT_FIX_SUBR
+    push lr
+    cmp r2, #0x19
+    bne .e_norm3
+    mov r0, #0x3
+    .e_norm3:
+    and r0, r1
+    cmp r0, #0x0
+    pop pc
+    .pool
+
+
 
 
 
@@ -955,7 +1035,7 @@
     .ap_hand:
     cmp r1, #0xE
     bne .ap_hand_norm
-    ldr r1, =0x020048FD
+    ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
     bne .ap_emblem_norm
@@ -2119,18 +2199,11 @@
     bgt .shop_hands
     ; Insert hammer code here
     bl .shop_inject_skip 
-    .shop_bro:
-    ldr r2, =0x020048FB
-    mov r1, #0x1
-    strb r1, [r2]
-    bl .shop_inject_skip 
     .shop_hands:
     cmp r2, #0xE
     beq .shop_inject_emblem
     cmp r2, #0xF
     beq .shop_inject_skip
-    cmp r2, #0xB
-    beq .shop_bro
     sub r2, #0x8
     ldr r1, =HAMMER
     ldrb r4, [r1, #0x1]
@@ -2138,7 +2211,7 @@
     strb r4, [r1, #0x1]
     bl .shop_inject_skip
     .shop_inject_emblem:
-    ldr r1, =0x020048FD
+    ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
     bne .shop_inject_emblem_norm
@@ -2803,10 +2876,6 @@
     and r1, r2
     cmp r1, #0x40
     beq .pipe_skip2
-    ldr r1, =0x020048FB
-    ldrb r1, [r1]
-    cmp r1, #0x0
-    beq .pipe_skip2
     ldr r1, =0x03002478
     ldrb r1, [r1]
     cmp r1, #0x0
@@ -3412,7 +3481,7 @@
     ldr r3, =FIRE_TEXT
     bl .rose_end
     .rose_emblem:
-    ldr r1, =0x020048FD
+    ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
     bne .rose_emblem_norm
@@ -3778,11 +3847,11 @@
     .scroll_check:
     ldr r2, =0x0200434C
     cmp r2, r5
-    bne .ability_norm
+    bne .ability_norm2
     ldr r1, =0x60000
     and r1, r0
     cmp r1, #0x0
-    beq .ability_norm
+    beq .ability_norm2
     sub r4, #0xA0
     .cont_check:
     ldr r0, =TEXT_VAR
@@ -3909,7 +3978,7 @@
     str r2, [r1]
     bl .ability_norm
     .ability_emblem:
-    ldr r1, =0x020048FD
+    ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
     bne .ability_emblem_norm
@@ -3986,7 +4055,7 @@
     bx r0
     bl .kit_end
     .kit_emblem:
-    ldr r1, =0x020048FD
+    ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
     bne .kit_emblem_norm
@@ -4972,20 +5041,22 @@
     ldr r1, =0x020048FD
     ldrb r2, [r1]
     cmp r2, #0xFF
-    bne .kit_emblem_norm
+    bne .kib_emblem_norm
     mov r2, #0x1
     strb r2, [r1]
     ldr r1, =KEY_ITEM_RAM
     ldr r2, =EMBLEM_TEXT_BOX
+    sub r2, #0x1
     str r2, [r1]
-    bl .kit_end
-    .kit_emblem_norm:
+    bl .kib_end
+    .kib_emblem_norm:
     add r2, #0x1
     strb r2, [r1]
     ldr r1, =KEY_ITEM_RAM
     ldr r2, =EMBLEM_TEXT_BOX
+    sub r2, #0x1
     str r2, [r1]
-    bl .kit_end
+    bl .kib_end
     .kib_key:
     mov r4, #0x1
     lsl r4, r1
