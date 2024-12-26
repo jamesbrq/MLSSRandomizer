@@ -429,7 +429,7 @@ namespace MLSSRandomizerForm
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(378, 192);
+            this.tabPage2.Size = new System.Drawing.Size(322, 192);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Key Items";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -666,7 +666,7 @@ namespace MLSSRandomizerForm
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(378, 192);
+            this.tabPage3.Size = new System.Drawing.Size(322, 192);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Bros Items";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -743,7 +743,7 @@ namespace MLSSRandomizerForm
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(378, 192);
+            this.tabPage4.Size = new System.Drawing.Size(322, 192);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Shops";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -831,7 +831,7 @@ namespace MLSSRandomizerForm
             this.tabPage6.Location = new System.Drawing.Point(4, 22);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(378, 192);
+            this.tabPage6.Size = new System.Drawing.Size(322, 192);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "Stats";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -900,7 +900,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox43.AutoSize = true;
             this.checkBox43.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox43.Location = new System.Drawing.Point(92, 123);
+            this.checkBox43.Location = new System.Drawing.Point(92, 139);
             this.checkBox43.Name = "checkBox43";
             this.checkBox43.Size = new System.Drawing.Size(85, 17);
             this.checkBox43.TabIndex = 46;
@@ -915,7 +915,7 @@ namespace MLSSRandomizerForm
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox39.Enabled = false;
-            this.checkBox39.Location = new System.Drawing.Point(251, 31);
+            this.checkBox39.Location = new System.Drawing.Point(251, 24);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
             this.checkBox39.TabIndex = 43;
@@ -930,7 +930,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox38.AutoSize = true;
             this.checkBox38.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox38.Location = new System.Drawing.Point(243, 100);
+            this.checkBox38.Location = new System.Drawing.Point(243, 93);
             this.checkBox38.Name = "checkBox38";
             this.checkBox38.Size = new System.Drawing.Size(124, 17);
             this.checkBox38.TabIndex = 42;
@@ -943,7 +943,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox37.AutoSize = true;
             this.checkBox37.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox37.Location = new System.Drawing.Point(269, 146);
+            this.checkBox37.Location = new System.Drawing.Point(269, 139);
             this.checkBox37.Name = "checkBox37";
             this.checkBox37.Size = new System.Drawing.Size(98, 17);
             this.checkBox37.TabIndex = 41;
@@ -957,7 +957,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox36.AutoSize = true;
             this.checkBox36.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox36.Location = new System.Drawing.Point(214, 77);
+            this.checkBox36.Location = new System.Drawing.Point(214, 70);
             this.checkBox36.Name = "checkBox36";
             this.checkBox36.Size = new System.Drawing.Size(153, 17);
             this.checkBox36.TabIndex = 40;
@@ -972,7 +972,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox32.AutoSize = true;
             this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Location = new System.Drawing.Point(18, 77);
+            this.checkBox32.Location = new System.Drawing.Point(18, 93);
             this.checkBox32.Name = "checkBox32";
             this.checkBox32.Size = new System.Drawing.Size(159, 17);
             this.checkBox32.TabIndex = 39;
@@ -986,7 +986,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox30.AutoSize = true;
             this.checkBox30.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox30.Location = new System.Drawing.Point(186, 54);
+            this.checkBox30.Location = new System.Drawing.Point(186, 47);
             this.checkBox30.Name = "checkBox30";
             this.checkBox30.Size = new System.Drawing.Size(181, 17);
             this.checkBox30.TabIndex = 31;
@@ -999,7 +999,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox29.AutoSize = true;
             this.checkBox29.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox29.Location = new System.Drawing.Point(251, 123);
+            this.checkBox29.Location = new System.Drawing.Point(251, 116);
             this.checkBox29.Name = "checkBox29";
             this.checkBox29.Size = new System.Drawing.Size(116, 17);
             this.checkBox29.TabIndex = 30;
@@ -1012,7 +1012,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox24.AutoSize = true;
             this.checkBox24.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox24.Location = new System.Drawing.Point(47, 100);
+            this.checkBox24.Location = new System.Drawing.Point(47, 116);
             this.checkBox24.Name = "checkBox24";
             this.checkBox24.Size = new System.Drawing.Size(130, 17);
             this.checkBox24.TabIndex = 28;
@@ -1026,7 +1026,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox23.AutoSize = true;
             this.checkBox23.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox23.Location = new System.Drawing.Point(40, 54);
+            this.checkBox23.Location = new System.Drawing.Point(40, 70);
             this.checkBox23.Name = "checkBox23";
             this.checkBox23.Size = new System.Drawing.Size(137, 17);
             this.checkBox23.TabIndex = 27;
@@ -1039,7 +1039,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox20.AutoSize = true;
             this.checkBox20.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox20.Location = new System.Drawing.Point(47, 31);
+            this.checkBox20.Location = new System.Drawing.Point(47, 47);
             this.checkBox20.Name = "checkBox20";
             this.checkBox20.Size = new System.Drawing.Size(130, 17);
             this.checkBox20.TabIndex = 26;
@@ -1075,7 +1075,7 @@ namespace MLSSRandomizerForm
             this.tabPage7.Location = new System.Drawing.Point(4, 22);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(378, 192);
+            this.tabPage7.Size = new System.Drawing.Size(322, 192);
             this.tabPage7.TabIndex = 6;
             this.tabPage7.Text = "Colors";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -1382,7 +1382,7 @@ namespace MLSSRandomizerForm
             this.tabPage9.Location = new System.Drawing.Point(4, 22);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage9.Size = new System.Drawing.Size(378, 192);
+            this.tabPage9.Size = new System.Drawing.Size(322, 192);
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Enemies";
             this.tabPage9.UseVisualStyleBackColor = true;

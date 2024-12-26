@@ -3644,6 +3644,10 @@
     bl .end3
 
     .dress_door:
+    ldr r0, =EMBLEM_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    bne .end2
     ldr r0, =ROOM
     ldrb r0, [r0, #0x1]
     cmp r0, #0x1
@@ -6794,18 +6798,63 @@
 
     .org BLABLANADON
     push { r0-r2, lr }
+    ldr r0, =BLAB_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    bne .blab_skip
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x51
+    beq .blab_skip
+    ldr r0, =EMBLEMS
+    ldrb r1, [r0]
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =BLAB_RAM
+    mov r1, #0x0
+    strb r1, [r0]
+    .blab_skip:
+    ldr r0, =EMBLEM_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    beq .blab_norm
+    ldr r0, =EMBLEMS
+    ldrb r0, [r0]
+    ldr r1, =EMBLEM_REQUIRED
+    ldrb r1, [r1]
+    cmp r0, r1
+    blt .blab_block
+    .blab_block:
+    ldr r0, =ROOM
+    ldrh r0, [r0]
+    cmp r0, #0x51
+    bne .blab_end
+    ldr r0, =0x0200430B
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r1, r2
+    cmp r1, #0x40
+    bne .blab_norm
+    ldrb r1, [r0]
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =BLAB_RAM
+    mov r1, #0x1
+    strb r1, [r0]
+    .blab_norm:
     ldr r0, =0x0200430B
     ldrb r0, [r0]
     mov r1, #0x40
     and r1, r0
     cmp r1, #0x40
-    bne .blablanadon_end
+    bne .blab_end
     ldr r0, =0x020042F9
     ldrb r1, [r0]
     mov r2, #0x2
     orr r1, r2
     strb r1, [r0]
-    .blablanadon_end:
+    .blab_end:
     pop { r0-r2, pc }
     .pool
 
