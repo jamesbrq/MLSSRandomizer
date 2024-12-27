@@ -76,6 +76,7 @@ namespace MLSSRandomizerForm
         public static int g = 0;
         public static int b = 0;
         public static int mul = 1;
+        public readonly string mlssHash = "4b1a5897d89d9e74ec7f630eefdfd435";
         public readonly string bisHash = "05072F0545BF4492D81FDFF6B595B9D20C816007";
         public static bool bItems = true;
 
@@ -133,7 +134,18 @@ namespace MLSSRandomizerForm
             byte[] temp = Encoding.Default.GetBytes(file);
             temp = new SHA1CryptoServiceProvider().ComputeHash(temp);
             return BitConverter.ToString(temp).Replace("-", "");
-            
+        }
+
+        public string MD5Hash()
+        {
+            using (MD5 md5 = MD5.Create())
+            {
+                using (FileStream fileStream = File.OpenRead(filePath))
+                {
+                    byte[] hashBytes = md5.ComputeHash(fileStream);
+                    return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                }
+            }
         }
 
         public void SetConfig()
@@ -403,6 +415,11 @@ namespace MLSSRandomizerForm
         {
             try
             {
+                if (filePath == null)
+                {
+                    MessageBox.Show("Please select a ROM.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 Console.WriteLine(ComputeHash());
                 (string newFile, int hash) = Randomize.Random(filePath, seed, gameId);
                 // Hexadecimal ConfigHash is constant regardless of seed, and helps to identify equal settings.
@@ -463,18 +480,25 @@ namespace MLSSRandomizerForm
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             filePath = textBox1.Text;
-            //string hash = ComputeHash();
-            if (filePath.Contains(".nds"))
-            {
-                tabControl2.Visible = true;
-                gameId = 3;
-              //  Decompression.ExtractRom(filePath);
-            }
-            else if(filePath.Contains(".gba"))
+            string hash = MD5Hash();
+            if (hash == mlssHash)
             {
                 gameId = 1;
+                tabControl2.Visible = true;
                 Colors.Visible = true;
+            }
+            else if (hash == bisHash)
+            {
+                gameId = 3;
+                tabControl2.Visible = true;
+                Colors.Visible = false;
+            }
+            else
+            {
+                gameId = 0;
                 tabControl2.Visible = false;
+                Colors.Visible = false;
+                MessageBox.Show("Invalid ROM Selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
