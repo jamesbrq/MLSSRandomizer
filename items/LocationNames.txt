@@ -594,7 +594,7 @@
 0x1E9409,Oho Oasis Thunderhand,
 0x39DB48,Chucklehuck Woods Solo Luigi Cave Room 1 Coin Block 1,
 0x39DB50,Chucklehuck Woods Solo Luigi Cave Room 1 Coin Block 2,
-0x1E9408,Chucklehuck Woods Solo Luigi Cave Room 2 Block,
-0x1E9408,Chucklehuck Woods Solo Luigi Cave Room 3 Block 1,
-0x1E9408,Chucklehuck Woods Solo Luigi Cave Room 3 Block 2,
+0x39DB72,Chucklehuck Woods Solo Luigi Cave Room 2 Block,
+0x39DB5D,Chucklehuck Woods Solo Luigi Cave Room 3 Block 1,
+0x39DB65,Chucklehuck Woods Solo Luigi Cave Room 3 Block 2,
 0x39E6A3,Guffawha Ruins Block

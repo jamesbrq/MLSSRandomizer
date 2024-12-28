@@ -9,6 +9,8 @@
 0x38,Hammers,
 0x39,Firebrand,
 0x3A,Thunderhand,
+0x3E,Beanstar Emblem,
+0x3F,AP Item,
 0x40,Membership Card,
 0x41,Winkle Card,
 0x42,Extra Dress,
