@@ -3651,21 +3651,25 @@
     beq .dress_door
     cmp r0, #0x5A
     beq .ruins_door
-    cmp r0, #0xB1
-    beq .fire_door
-    cmp r0, #0xB2
-    beq .fire_door2
-    cmp r0, #0xB5
-    beq .thunder_door
-    cmp r0, #0xB6
-    beq .thunder_door2
+    ;cmp r0, #0xB1
+    ;beq .fire_door
+    ;cmp r0, #0xB2
+    ;beq .fire_door2
+    cmp r0, #0xB3
+    beq .fire_door3
+    ;cmp r0, #0xB5
+    ;beq .thunder_door
+    ;cmp r0, #0xB6
+    ;beq .thunder_door2
+    cmp r0, #0xB7
+    beq .thunder_door3
     bl .end2
 
     .fire_door:
     ldr r0, =0x020043E5
     ldrb r2, [r0]
     mov r6, #0x8
-    orr r6, r1
+    and r6, r1
     cmp r6, #0x8
     bne .end2
     ldr r0, =0x083AD33C
@@ -3678,10 +3682,17 @@
     ldr r0, =0x020043E5
     ldrb r2, [r0]
     mov r6, #0x8
-    orr r6, r1
+    and r6, r2
     cmp r6, #0x8
     bne .end2
     ldr r0, =0x083AD360
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
+
+    .fire_door3:
+    ldr r0, =0x083AD36C
     cmp r0, r9
     bne .end2
     mov r3, 0xFF
@@ -3691,7 +3702,7 @@
     ldr r0, =0x020043E5
     ldrb r2, [r0]
     mov r6, #0x20
-    orr r6, r1
+    and r6, r2
     cmp r6, #0x20
     bne .end2
     ldr r0, =0x083AD3B4
@@ -3704,10 +3715,17 @@
     ldr r0, =0x020043E5
     ldrb r2, [r0]
     mov r6, #0x20
-    orr r6, r2
+    and r6, r2
     cmp r6, #0x20
     bne .end2
     ldr r0, =0x083AD3CC
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
+
+    .thunder_door3:
+    ldr r0, =0x083AD3E4
     cmp r0, r9
     bne .end2
     mov r3, 0xFF
@@ -5487,12 +5505,13 @@
     mov r1, #0x4
     and r1, r0
     cmp r1, #0x0
-    beq .tree_norm
+    beq .tree_block2
     ldr r1, =PURPLE
     ldrb r2, [r1]
     mov r3, #0x80
     bic r2, r3
     strb r2, [r1]
+    .tree_block2:
     ldr r1, =CHUCKOLA_RAM
     mov r2, #0x0
     strb r2, [r1]
@@ -6048,6 +6067,16 @@
 
     .org ROCK_BLOCK
     push lr
+    ldr r0, =0x02004300 ; Unlock beanstar room in castle
+    ldrb r1, [r0]
+    mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    bne .bshop_norm
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    .bshop_norm:
     ldr r0, =0x02004300
     ldrb r0, [r0]
     mov r1, #0x80
@@ -6472,11 +6501,18 @@
 
     .org ULTRA_HAMMERS
     push lr
+    ldr r0, =0x082F36F0
+    cmp r0, r7
+    bne .uh_end
     ldr r0, =ROOM
     ldrh r0, [r0]
-    ldr r1, =0x1D0
+    ldr r1, =0x1CF
     cmp r0, r1
-    blt .uh_restore
+    bne .uh_end
+    ldr r0, =UH_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    beq .uh_restore
     ldr r0, =0x0200430B
     ldrb r0, [r0]
     mov r1, #0x8
@@ -6499,10 +6535,15 @@
     strb r1, [r0]
     bl .uh_end
     .uh_restore:
-    ldr r0, =UH_RAM
+    ldr r0, =0x02004359
     ldrb r0, [r0]
-    cmp r0, #0x1
+    mov r1, #0x20
+    and r0, r1
+    cmp r0, #0x20
     bne .uh_end
+    ldr r0, =UH_RAM
+    mov r1, #0x0
+    strb r1, [r0]
     ldr r0, =0x0200430B
     ldrb r1, [r0]
     mov r2, #0x8
