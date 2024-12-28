@@ -1397,8 +1397,6 @@ namespace MLSSRandomizerForm
                             if (read.Count != 0)
                             {
                                 dynamic tempData = read[0];
-                                if (validLocations[i].location > 0x3C0000 && tempData.item == 0x38)
-                                    return false;
                                 UpdateState((byte)tempData.item);
                             }
                             else
@@ -1408,8 +1406,6 @@ namespace MLSSRandomizerForm
                                     temp = (byte)ItemConvert(stream.ReadByte(), stream.ReadByte());
                                 else
                                     temp = (byte)stream.ReadByte();
-                                if (validLocations[i].location > 0x3C0000 && temp == 0x38)
-                                    return false;
                                 UpdateState(temp);
                             }
                             validLocations.RemoveAll(d => d.location == validLocations[i].location);

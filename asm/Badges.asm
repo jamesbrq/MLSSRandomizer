@@ -4,7 +4,7 @@ SPECIAL equ 0x02004982
 BADGE_FLAGS equ 0x02004992
 PANTS_FLAGS equ 0x020049CA
 SPECIAL_FLAGS equ 0x02004A02
-BADGE_ADD equ 0x08E01950
+BADGE_ADD equ 0x08E019B0
 PANTS_ADD equ 0x08E01A00
 SPECIAL_ADD equ 0x08E01B00
 BADGE_SHOP_HOOK equ 0x0812AE7C
@@ -32,7 +32,7 @@ BADGE_BUY_FIX equ 0x0812B76E
 BADGE_BUY_HOOK equ 0x0812b776
 BADGE_BUY_SUBR equ 0x081E0970
 BADGE_BUY_DATA equ 0x08E06500
-ITEM_SHOP_ARRAY equ 0x08E06600
+ITEM_SHOP_ARRAY equ 0x08E06750
 BADGE_DESC_RAM equ 0x02003043
 BADGE_BUY_BLOCK equ 0x0812B780
 BADGE_SHOP_RAM equ 0x02003042
@@ -67,6 +67,9 @@ AP_RAM_CHECK_SUBR equ 0x081DFE00
 EMBLEM_SHOP_HOOK2 equ 0x08E012A0
 EMBLEM_SHOP3 equ 0x08E01250
 EMBLEM_TEXT_BOX2 equ 0x08E01200
+ITEM_CHANGE_FIX_HOOK equ 0x0812B87E
+ITEM_CHANGE_FIX_SUBR equ 0x081E0C00
+SHOP_FLAG_FUNC equ 0x08E01900
 
 
 .org AP_RAM_CHECK_HOOK
@@ -252,6 +255,89 @@ pop pc
 
 .org AP_BADGE_HOOK
 	bl AP_BADGE_SUBR
+
+.org ITEM_CHANGE_FIX_HOOK
+	bl ITEM_CHANGE_FIX_SUBR
+
+
+
+
+
+.org SHOP_FLAG_FUNC
+push { r0-r3, lr }
+mov r3, #0x0
+ldr r0, =AP_RAM
+ldr r0, [r0]
+ldr r1, =0x083C05F0
+cmp r0, r1
+bne .shop_fungi_check
+ldr r0, =0x020047F0
+bl .flags_cont
+.shop_fungi_check:
+ldr r1, =0x083C066A
+cmp r0, r1
+bne .flags_badge
+ldr r0, =0x020047F0
+add r3, #0x10
+bl .flags_cont
+.flags_badge:
+ldr r1, =0x083C0618
+cmp r0, r1
+bne .flags_fungi
+ldr r0, =0x020047F4
+ldr r1, =0x03003FE0
+ldrb r1, [r1]
+mov r2, #0x7F
+and r1, r2
+cmp r1, #0x1
+bne .flags_cont
+add r0, #0x4
+bl .flags_cont
+.flags_fungi:
+ldr r0, =0x020047FC
+ldr r1, =0x03003FE0
+ldrb r1, [r1]
+mov r2, #0x7F
+and r1, r2
+cmp r1, #0x1
+bne .flags_cont
+add r3, #0x8
+.flags_cont:
+cmp r4, #0x2
+bne .scroll_norm
+mov r1, r5
+mov r4, #0x1
+bl .scroll_skip
+.scroll_norm:
+ldr r1, =AP_SCROLL
+ldrb r1, [r1]
+.scroll_skip:
+add r3, r1
+mov r2, #0x1
+lsl r2, r3
+ldr r1, [r0]
+cmp r4, #0x1
+bne .flags_write
+and r1, r2
+cmp r1, #0x0
+bl .flags_end
+.flags_write:
+orr r1, r2
+str r1, [r0]
+.flags_end:
+pop { r0-r3, pc }
+.pool
+
+
+
+
+
+.org ITEM_CHANGE_FIX_SUBR
+push lr
+mov r0, #0xFF
+and r0, r2
+pop pc
+.pool
 
 
 
@@ -462,14 +548,46 @@ mov r1, r0
 lsr r0, #0x4
 lsl r1, #0x1C
 lsr r1, #0x1C
-cmp r1, #0x9
-bge .pants_hand
+cmp r1, #0x8
+bge .pants_bros
 ldr r2, =KEY_ITEM
 ldrb r3, [r2, r0]
 mov r4, #0x1
 lsl r4, r1
 orr r3, r4
 strb r3, [r2, r0]
+bl .pants_buy_end
+.pants_bros:
+cmp r1, #0x8
+bne .pants_hand
+push r4
+mov r4, #0x1
+bl SHOP_FLAG_FUNC
+pop r4
+bne .pants_buy_end
+ldr r2, =0x02004338
+ldrb r3, [r2]
+mov r4, #0x8
+and r4, r3
+cmp r4, #0x8
+beq .pants_super
+mov r4, #0x8
+orr r3, r4
+strb r3, [r2]
+bl .pants_buy_end
+.pants_super:
+mov r4, #0x10
+and r4, r3
+cmp r4, #0x10
+beq .pants_ultra
+mov r4, #0x10
+orr r3, r4
+strb r3, [r2]
+bl .pants_buy_end
+.pants_ultra:
+mov r4, #0x20
+orr r3, r4
+strb r3, [r2]
 bl .pants_buy_end
 .pants_hand:
 cmp r1, #0xE
@@ -485,6 +603,11 @@ orr r0, r2
 strb r0, [r1]
 bl .pants_buy_end
 .pants_emblem:
+push r4
+mov r4, #0x1
+bl SHOP_FLAG_FUNC
+pop r4
+bne .pants_buy_end
 ldr r1, =0x020048FB
 ldrb r2, [r1]
 cmp r2, #0xFF
@@ -517,6 +640,10 @@ mov r1, pc
 bx r2
 .pants_buy_end:
 mov r0, #0xFF
+push r4
+mov r4, #0x0
+bl SHOP_FLAG_FUNC
+pop r4
 pop r1-r4
 add r1, #0x1
 bx r1
@@ -669,6 +796,15 @@ pop { r2-r4, pc }
 
 .org BADGE_SHOP_TEXT_DATA
 push r2-r4
+push r4
+mov r4, #0x2
+bl SHOP_FLAG_FUNC
+pop r4
+beq .text_cont
+cmp r6, #0xB
+beq .text_cont
+mov r6, #0x6
+.text_cont:
 ldr r3, =BADGE_DESC_RAM
 ldrb r2, [r3]
 mov r4, #0x0
@@ -711,7 +847,8 @@ bl .text_norm
 .text_bros:
 cmp r3, #0x8
 bgt .text_hands
-; Hammer Code Here
+ldr r2, =BROS_ITEM_SHOP_ARRAY
+ldr r1, [r2]
 bl .text_norm
 .text_hands:
 cmp r3, #0xE
@@ -802,7 +939,8 @@ bl .desc_norm
 .desc_bros:
 cmp r4, #0x8
 bgt .desc_hands
-; Hammer Code Here
+ldr r3, =BROS_ITEM_SHOP_ARRAY
+ldr r2, [r3]
 bl .desc_norm
 .desc_hands:
 cmp r4, #0xE
@@ -866,6 +1004,10 @@ pop { r3, pc }
 
 
 
+
+
+
+
 .org PANTS_SHOP_DESC_SUBR
 push { r3, r4, r6, lr }
 ldr r3, =PANTS_SHOP_DESC_DATA + 1
@@ -912,7 +1054,8 @@ bl .desc_norm2
 .desc_bros2:
 cmp r4, #0x8
 bgt .desc_hands2
-; Hammer Code Here
+ldr r3, =BROS_ITEM_SHOP_ARRAY
+ldr r2, [r3]
 bl .desc_norm2
 .desc_hands2:
 cmp r4, #0xE

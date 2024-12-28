@@ -794,6 +794,9 @@
     .org EMBLEM_TEXT_FIX_HOOK
         bl EMBLEM_TEXT_FIX_SUBR
 
+    .org EMBLEM_SELL_BLOCK_HOOK
+        bl EMBLEM_SELL_BLOCK_SUBR
+
     .org 0x080fde9a ;Mario BP
         mov r0, #0x0
 
@@ -809,6 +812,29 @@
 
     .org EMBLEM_INV_TEXT
         db "Beanstar Emblems", 0x0
+
+
+
+
+
+
+    .org EMBLEM_SELL_BLOCK_SUBR
+    push r1, lr
+    add r0, r2
+    ldr r1, =0x03002339
+    ldrb r1, [r1]
+    cmp r1, #0x1
+    bne .sell_norm
+    ldr r1, =0x020048FB
+    cmp r0, r1
+    bne .sell_norm
+    mov r0, #0x0
+    bl .sell_skip
+    .sell_norm:
+    ldrb r0, [r0]
+    .sell_skip:
+    pop r1, pc
+    .pool
 
 
 
@@ -1752,11 +1778,9 @@
     ldr r2, =0x176
     cmp r0, r2
     beq .surf
-    ldr r2, =0xB0
-    cmp r0, r2
+    cmp r0, #0xB0
     beq .hand
-    ldr r2, =0xB4
-    cmp r0, r2
+    cmp r0, #0xB4
     beq .hand
     ldr r2, =0x191
     cmp r0, r2
@@ -2197,8 +2221,35 @@
     .shop_bros:
     cmp r2, #0x8
     bgt .shop_hands
-    ; Insert hammer code here
-    bl .shop_inject_skip 
+    push r4
+    mov r4, #0x1
+    bl SHOP_FLAG_FUNC
+    pop r4
+    bne .shop_inject_skip
+    ldr r1, =0x02004338
+    ldrb r2, [r1]
+    mov r4, #0x8
+    and r4, r2
+    cmp r4, #0x8
+    beq .shop_super
+    mov r4, #0x8
+    orr r2, r4
+    strb r2, [r1]
+    bl .shop_inject_skip
+    .shop_super:
+    mov r4, #0x10
+    and r4, r2
+    cmp r4, #0x10
+    beq .shop_ultra
+    mov r4, #0x10
+    orr r2, r4
+    strb r2, [r1]
+    bl .shop_inject_skip
+    .shop_ultra:
+    mov r4, #0x20
+    orr r2, r4
+    strb r2, [r1]
+    bl .shop_inject_skip
     .shop_hands:
     cmp r2, #0xE
     beq .shop_inject_emblem
@@ -2211,6 +2262,11 @@
     strb r4, [r1, #0x1]
     bl .shop_inject_skip
     .shop_inject_emblem:
+    push r4
+    mov r4, #0x1
+    bl SHOP_FLAG_FUNC
+    pop r4
+    bne .shop_inject_skip
     ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
@@ -2227,6 +2283,10 @@
     .shop_inject_skip:
     pop r1
     add r3, r1, #0x0
+    push r4
+    mov r4, #0x0
+    bl SHOP_FLAG_FUNC
+    pop r4
     pop { r2, r4, r5 }
     add r2, #0x1
     bx r2
@@ -2290,6 +2350,18 @@
 
     .org SHOP_TEXT_DATA
     push r2-r4
+    push r4-r5
+    mov r5, r4
+    mov r4, #0x2
+    bl SHOP_FLAG_FUNC
+    pop r4-r5
+    beq .text_cont2
+    mov r2, r9
+    cmp r2, #0xB
+    beq .text_cont2
+    mov r2, #0x6
+    mov r9, r2
+    .text_cont2:
     ldr r2, =SHOP_RAM
     ldrb r2, [r2]
     cmp r2, #0x18
@@ -2327,7 +2399,8 @@
     .shop_text_bros:
     cmp r3, #0x8
     bgt .shop_text_hand
-    ;Insert hammer code here
+    ldr r1, =BROS_ITEM_SHOP_ARRAY
+    ldr r1, [r1]
     bl .shop_text_norm
     .shop_text_bro:
     ldr r3, =0x08DF0000
@@ -2426,7 +2499,8 @@
     .shop_desc_bros:
     cmp r3, #0x1
     bge .shop_desc_hand
-    ;Insert hammer code here
+    ldr r1, =BROS_ITEM_SHOP_ARRAY
+    ldr r1, [r1]
     bl .shop_desc_norm
     .shop_desc_bro:
     ldr r3, =0x8DF0000
@@ -3647,7 +3721,7 @@
     ldr r0, =EMBLEM_OPTION
     ldrb r0, [r0]
     cmp r0, #0x1
-    bne .end2
+    beq .end2
     ldr r0, =ROOM
     ldrb r0, [r0, #0x1]
     cmp r0, #0x1
