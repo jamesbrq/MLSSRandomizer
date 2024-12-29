@@ -143,6 +143,9 @@
     .org 0x082652BC ; Fast beanstar recovery
         db 0x2, 0x10, 0x74, 0x62, 0x26, 0x08
 
+    .org 0x08265353 ; Fast beanstar recovery
+        db 0x2, 0x10, 0x74, 0x62, 0x26, 0x08
+
     .org GUFAWHA_SKIP_ETR
         db 0x81, 0x52, 0x0, 0x6, 0x12, 0x8, 0x1 ;Removes 1 room in gufawha ruins
 
@@ -796,6 +799,9 @@
 
     .org EMBLEM_SELL_BLOCK_HOOK
         bl EMBLEM_SELL_BLOCK_SUBR
+        
+    .org BORDER_JUMP_HOOK
+        bl BORDER_JUMP_SUBR
 
     .org 0x080fde9a ;Mario BP
         mov r0, #0x0
@@ -834,6 +840,20 @@
     ldrb r0, [r0]
     .sell_skip:
     pop r1, pc
+    .pool
+
+
+
+
+    .org BORDER_JUMP_SUBR
+    push r3, lr
+    mov r4, #0x3
+    mov r3, #0x68
+    str r4, [r6, r3]
+    mov r4, #0x0
+    mov r3, #0x6C
+    str r4, [r6, r3]
+    pop r3, pc
     .pool
 
 
@@ -1778,9 +1798,11 @@
     ldr r2, =0x176
     cmp r0, r2
     beq .surf
-    cmp r0, #0xB0
+    mov r2, #0xB0
+    cmp r0, r2
     beq .hand
-    cmp r0, #0xB4
+    mov r2, #0xB4
+    cmp r0, r2
     beq .hand
     ldr r2, =0x191
     cmp r0, r2
@@ -6079,14 +6101,21 @@
     .bshop_norm:
     ldr r0, =0x02004300
     ldrb r0, [r0]
-    mov r1, #0x80
+    mov r1, #0x40
     and r0, r1
     cmp r0, #0x0
-    beq .bshop_skip
+    bne .bshop_block
     ldr r0, =0x0200436D ;unlock badge shop
     ldrb r1, [r0]
     mov r2, #0x80
     orr r1, r2
+    strb r1, [r0]
+    bl .bshop_skip
+    .bshop_block:
+    ldr r0, =0x0200436D
+    ldrb r1, [r0]
+    mov r2, #0x80
+    bic r1, r2
     strb r1, [r0]
     .bshop_skip:
     ldr r0, =ROOM
@@ -6285,9 +6314,12 @@
     strb r1, [r0]
     ldr r0, =0x02004741 ; Continue from castle
     ldrb r1, [r0]
+    cmp r1, #0x0
+    bne .castle_skip
     mov r2, #0x1
     orr r1, r2
     strb r1, [r0]
+    .castle_skip:
     ldr r0, =0x02004410 ; Chuckleroot Grandaughter Gate Flag
     ldrb r1, [r0]
     mov r2, #0x7
@@ -6585,21 +6617,6 @@
 
     .org SEWER_BLOCK
     push lr
-    ldr r0, =0x02004300
-    ldrb r1, [r0]
-    mov r2, #0x4
-    and r2, r1
-    cmp r2, #0x4
-    bne .sewer_remove
-    mov r2, #0x8
-    orr r1, r2
-    strb r1, [r0]
-    bl .sewer_norm
-    .sewer_remove:
-    mov r2, #0x8
-    bic r1, r2
-    strb r1, [r0]
-    .sewer_norm:
     ldr r0, =ROOM
     ldrh r0, [r0]
     cmp r0, #0x3D
