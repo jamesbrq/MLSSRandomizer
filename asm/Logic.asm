@@ -7,6 +7,16 @@
     .include "Sprites.asm"
     .include "Pipes.asm"
 
+
+    .org 0x08289EFA ; Mom piranha battle script disable
+        db 0x2, 0x20, 0x60, 0x9F, 0x28, 0x8
+
+    .org 0x0829008E ; Mom piranha healing disable
+        db 0x2, 0x20, 0x96, 0x00, 0x29, 0x8
+
+    .org 0x08292187 ; Hermie healing disable
+        db 0x2, 0x20, 0x8F, 0x21, 0x29, 0x8
+
     .org 0x08240290 ; Prevent neon egg turn in from removing 7 beanfruits
         db 0x2, 0x0
         dw 0x082402C1
@@ -6086,6 +6096,36 @@
 
 
 
+    .org MOM_PIRANHA
+    push lr
+    ldr r0, =0x02004309
+    ldrb r0, [r0]
+    mov r1, #0x8
+    and r1, r0
+    cmp r1, #0x8
+    bne .mp_end
+    ldr r0, =0x0200433D
+    ldrb r1, [r0]
+    mov r2, #0x2
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x0200433E
+    ldrb r1, [r0]
+    mov r2, #0x80
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =0x0200433F
+    ldrb r1, [r0]
+    mov r2, #0x7
+    orr r1, r2
+    strb r1, [r0]
+    .mp_end:
+    pop pc
+    .pool
+
+
+
+
 
     .org ROCK_BLOCK
     push lr
@@ -7116,6 +7156,7 @@
     bl BLABLANADON
     bl PEACH_ARRIVAL
     bl ULTRA_HAMMERS
+    bl MOM_PIRANHA
     ldr r0, =FAWFUL_STONE
     ldrb r0, [r0]
     mov r1, #0x1
