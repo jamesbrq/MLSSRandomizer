@@ -141,14 +141,18 @@ namespace MLSSRandomizerForm
 
         public string MD5Hash()
         {
-            using (MD5 md5 = MD5.Create())
+            if (File.Exists(filePath))
             {
-                using (FileStream fileStream = File.OpenRead(filePath))
+                using (MD5 md5 = MD5.Create())
                 {
-                    byte[] hashBytes = md5.ComputeHash(fileStream);
-                    return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                    using (FileStream fileStream = File.OpenRead(filePath))
+                    {
+                        byte[] hashBytes = md5.ComputeHash(fileStream);
+                        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                    }
                 }
             }
+            return "0";
         }
 
         public void SetConfig()
@@ -405,8 +409,8 @@ namespace MLSSRandomizerForm
 
         private void SelectRomButton_Click(object sender, EventArgs e)
         {
-            openFileDialog1.ShowDialog();
-            textBox1.Text = openFileDialog1.FileName;
+            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+                textBox1.Text = openFileDialog1.FileName;
         }
 
         private void label1_Click(object sender, EventArgs e)
@@ -421,6 +425,7 @@ namespace MLSSRandomizerForm
                 if (filePath == null)
                 {
                     MessageBox.Show("Please select a ROM.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    textBox1.Text = "";
                     return;
                 }
                 Console.WriteLine(ComputeHash());
