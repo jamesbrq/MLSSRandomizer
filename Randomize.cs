@@ -371,7 +371,7 @@ namespace MLSSRandomizerForm
         [Serializable]
         public class LocationData
         {
-            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi)
+            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi, int emblems = 0)
             {
                 this.location = location;
                 this.item = item;
@@ -397,6 +397,7 @@ namespace MLSSRandomizerForm
                 this.pieces = pieces;
                 this.mario = mario;
                 this.luigi = luigi;
+                this.emblems = emblems;
             }
 
             public LocationData(int def)
@@ -451,6 +452,7 @@ namespace MLSSRandomizerForm
             public int pieces;
             public bool mario;
             public bool luigi;
+            public int emblems = 0;
         }
 
         public struct BiSLocationData
@@ -1055,6 +1057,10 @@ namespace MLSSRandomizerForm
                     gameState.thunder = true;
                     break;
 
+                case 0x3E:
+                    gameState.emblems += 1;
+                    break;
+
                 case 0x40:
                     gameState.membership = true;
                     break;
@@ -1124,7 +1130,10 @@ namespace MLSSRandomizerForm
                 ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
                 ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
                 ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
-                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
+                if(Form1.emblemsEnabled)
+                    ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Emblem.txt"));
+                else
+                    ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
             }
 
             if (gameId == 3)
@@ -1142,6 +1151,18 @@ namespace MLSSRandomizerForm
                 {
                     if (i <= validityArray.Count - 1)
                     {
+                        if(Form1.emblemsEnabled)
+                        {
+                            if (validityArray[i].dress)
+                            {
+                                if(gameState.hammerState >= validityArray[i].hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(validityArray[i].rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(validityArray[i].brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(validityArray[i].fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(validityArray[i].thunder) && gameState.fruitState >= validityArray[i].fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(validityArray[i].membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(validityArray[i].winkle) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(validityArray[i].mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(validityArray[i].under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(validityArray[i].dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(validityArray[i].crash) && gameState.neon >= validityArray[i].neon && gameState.currentBeanfruit >= validityArray[i].totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(validityArray[i].spangle) && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi) && Convert.ToInt32(gameState.emblems) >= Convert.ToInt32(validityArray[i].emblems))
+                                {
+                                    validLocations.Add(validityArray[i]);
+                                    validityArray = validityArray.Where(x => x.location != validityArray[i].location).ToList();
+                                    continue;
+                                }
+                            }
+                        }
                         if (Form1.pieces && validityArray[i].pieces != 0 && !validityArray[i].dress)
                         {
                             if (gameState.pieces == 4 && gameState.brooch && gameState.rose && gameState.fruitState == 3 && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi))
@@ -1152,7 +1173,7 @@ namespace MLSSRandomizerForm
                         }
                         else if (gameState.hammerState >= validityArray[i].hammerState && Convert.ToInt32(gameState.rose) >= Convert.ToInt32(validityArray[i].rose) && Convert.ToInt32(gameState.brooch) >= Convert.ToInt32(validityArray[i].brooch) && Convert.ToInt32(gameState.fire) >= Convert.ToInt32(validityArray[i].fire) && Convert.ToInt32(gameState.thunder) >= Convert.ToInt32(validityArray[i].thunder) && gameState.fruitState >= validityArray[i].fruitState && Convert.ToInt32(gameState.membership) >= Convert.ToInt32(validityArray[i].membership) && Convert.ToInt32(gameState.winkle) >= Convert.ToInt32(validityArray[i].winkle) && Convert.ToInt32(gameState.beanstar) >= Convert.ToInt32(validityArray[i].beanstar) && Convert.ToInt32(gameState.dress) >= Convert.ToInt32(validityArray[i].dress) && Convert.ToInt32(gameState.mini) >= Convert.ToInt32(validityArray[i].mini) && Convert.ToInt32(gameState.under) >= Convert.ToInt32(validityArray[i].under) && Convert.ToInt32(gameState.dash) >= Convert.ToInt32(validityArray[i].dash) && Convert.ToInt32(gameState.crash) >= Convert.ToInt32(validityArray[i].crash) && gameState.neon >= validityArray[i].neon && gameState.currentBeanfruit >= validityArray[i].totalBeanfruit && Convert.ToInt32(gameState.spangle) >= Convert.ToInt32(validityArray[i].spangle) && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi))
                         {
-                            if(Form1.pieces && validityArray[i].pieces != 0)
+                            if (Form1.pieces && validityArray[i].pieces != 0)
                             {
                                 if (gameState.pieces == 4 && gameState.brooch && gameState.rose && gameState.fruitState == 3 && Convert.ToInt32(gameState.mario) >= Convert.ToInt32(validityArray[i].mario) && Convert.ToInt32(gameState.luigi) >= Convert.ToInt32(validityArray[i].luigi))
                                 {
@@ -1415,6 +1436,16 @@ namespace MLSSRandomizerForm
                 }
                 else
                 {
+                    if(Form1.emblemsEnabled)
+                        if (gameState.emblems >= Form1.emblemsRequired)
+                            if(Form1.seedType == 1)
+                                if(gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fruitState == 3 && gameState.pieces == 4 && gameState.fire && gameState.thunder && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.mario && gameState.luigi)
+                                    return true;
+                                else
+                                    return false;
+                            else
+                                return true;
+
                     if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.mario && gameState.luigi)
                     {
                         if (Form1.pieces)
@@ -1427,7 +1458,8 @@ namespace MLSSRandomizerForm
                         else
                             return true;
                     }
-                    Console.WriteLine(gameState.hammerState + " " + gameState.rose + " " + gameState.brooch + " " + gameState.fire + " " + gameState.thunder + " " + gameState.fruitState + " " + gameState.membership + " " + gameState.winkle + " " + gameState.dress + " " + gameState.beanstar + " " + gameState.mini + " " + gameState.under + " " + gameState.dash + " " + gameState.crash + " " + gameState.totalBeanfruit + " " + gameState.neon + " " + gameState.spangle + " " + gameState.pieces); ;
+                    Console.WriteLine(gameState.hammerState + " " + gameState.rose + " " + gameState.brooch + " " + gameState.fire + " " + gameState.thunder + " " + gameState.fruitState + " " + gameState.membership + " " + gameState.winkle + " " + gameState.dress + " " + gameState.beanstar + " " + gameState.mini + " " + gameState.under + " " + gameState.dash + " " + gameState.crash + " " + gameState.totalBeanfruit + " " + gameState.neon + " " + gameState.spangle + " " + gameState.pieces);
+                    Console.WriteLine(gameState.emblems);
                     if (Form1.seedType == 2 && gameState.hammerState == 3 && gameState.rose && gameState.brooch && gameState.fire && gameState.thunder && gameState.fruitState == 3 && gameState.membership && gameState.winkle && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.neon == 7 && gameState.totalBeanfruit == 7 && gameState.spangle && gameState.pieces == 4 && gameState.mario && gameState.luigi)
                         return true;
                 }
@@ -1464,7 +1496,10 @@ namespace MLSSRandomizerForm
                 ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/AllAddresses.txt"));
                 if(!Form1.castle)
                 {
-                    ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
+                    if(Form1.emblemsEnabled)
+                        ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Emblem.txt"), true);
+                    else
+                        ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
                 }
                 LocationData tempData = new LocationData(0);
                 foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
@@ -2474,7 +2509,7 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public void ArrayInitialize(int array, string[] data)
+        public void ArrayInitialize(int array, string[] data, bool emblems = false)
         {
             if (gameId == 1)
             {
@@ -2504,7 +2539,8 @@ namespace MLSSRandomizerForm
                                                            Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16)),
                                                            Convert.ToInt32(data[i + 20], 16),
                                                            Convert.ToBoolean(Convert.ToInt32(data[i + 21], 16)),
-                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 22], 16))));
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 22], 16)),
+                                                           emblems ? Form1.emblemsRequired : 0));
                     }
 
                     if (array == 2)
@@ -2531,7 +2567,8 @@ namespace MLSSRandomizerForm
                                                            Convert.ToBoolean(Convert.ToInt32(data[i + 19], 16)),
                                                            Convert.ToInt32(data[i + 20], 16),
                                                            Convert.ToBoolean(Convert.ToInt32(data[i + 21], 16)),
-                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 22], 16))));
+                                                           Convert.ToBoolean(Convert.ToInt32(data[i + 22], 16)),
+                                                           emblems ? Form1.emblemsRequired : 0));
                     }
                 }
             }
@@ -2572,11 +2609,23 @@ namespace MLSSRandomizerForm
             random = new Random(hash);
         }
 
+        public List<dynamic> ItemArrayInit()
+        {
+            List<dynamic> arrayCopy = new List<dynamic>(freshItemArray);
+            List<dynamic> keyItems = arrayCopy.Where(c => c >= 0x30).ToList();
+            if(Form1.emblemsEnabled)
+                for (int i = 0; i < Form1.emblemsTotal; i++)
+                    keyItems.Add((byte)0x3E);
+            List<dynamic> filler = arrayCopy.Where(c => c < 0x30).ToList();
+            filler.Shuffle(random);
+            return keyItems.Concat(filler.Take(arrayCopy.Count - keyItems.Count)).ToList();
+        }
+
         public void Randomize()
         {
             if (gameId == 1)
             {
-                List<dynamic> itemArray = new List<dynamic>(freshItemArray);
+                List<dynamic> itemArray = ItemArrayInit();
                 List<dynamic> locationArray = new List<dynamic>(validLocationArray);
                 locationArray.Reverse();
 

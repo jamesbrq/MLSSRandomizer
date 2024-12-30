@@ -150,6 +150,11 @@ namespace MLSSRandomizerForm
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label16 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -169,6 +174,8 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.romBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             this.SuspendLayout();
             // 
             // SelectRomButton
@@ -878,6 +885,11 @@ namespace MLSSRandomizerForm
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.label17);
+            this.tabPage5.Controls.Add(this.label16);
+            this.tabPage5.Controls.Add(this.checkBox1);
+            this.tabPage5.Controls.Add(this.numericUpDown6);
+            this.tabPage5.Controls.Add(this.numericUpDown5);
             this.tabPage5.Controls.Add(this.checkBox43);
             this.tabPage5.Controls.Add(this.checkBox39);
             this.tabPage5.Controls.Add(this.checkBox38);
@@ -901,7 +913,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox43.AutoSize = true;
             this.checkBox43.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox43.Location = new System.Drawing.Point(92, 139);
+            this.checkBox43.Location = new System.Drawing.Point(88, 160);
             this.checkBox43.Name = "checkBox43";
             this.checkBox43.Size = new System.Drawing.Size(85, 17);
             this.checkBox43.TabIndex = 46;
@@ -916,7 +928,7 @@ namespace MLSSRandomizerForm
             this.checkBox39.AutoSize = true;
             this.checkBox39.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.checkBox39.Enabled = false;
-            this.checkBox39.Location = new System.Drawing.Point(251, 24);
+            this.checkBox39.Location = new System.Drawing.Point(147, 182);
             this.checkBox39.Name = "checkBox39";
             this.checkBox39.Size = new System.Drawing.Size(116, 17);
             this.checkBox39.TabIndex = 43;
@@ -931,7 +943,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox38.AutoSize = true;
             this.checkBox38.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox38.Location = new System.Drawing.Point(243, 93);
+            this.checkBox38.Location = new System.Drawing.Point(239, 114);
             this.checkBox38.Name = "checkBox38";
             this.checkBox38.Size = new System.Drawing.Size(124, 17);
             this.checkBox38.TabIndex = 42;
@@ -944,7 +956,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox37.AutoSize = true;
             this.checkBox37.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox37.Location = new System.Drawing.Point(269, 139);
+            this.checkBox37.Location = new System.Drawing.Point(265, 160);
             this.checkBox37.Name = "checkBox37";
             this.checkBox37.Size = new System.Drawing.Size(98, 17);
             this.checkBox37.TabIndex = 41;
@@ -958,7 +970,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox36.AutoSize = true;
             this.checkBox36.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox36.Location = new System.Drawing.Point(214, 70);
+            this.checkBox36.Location = new System.Drawing.Point(210, 91);
             this.checkBox36.Name = "checkBox36";
             this.checkBox36.Size = new System.Drawing.Size(153, 17);
             this.checkBox36.TabIndex = 40;
@@ -973,7 +985,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox32.AutoSize = true;
             this.checkBox32.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox32.Location = new System.Drawing.Point(18, 93);
+            this.checkBox32.Location = new System.Drawing.Point(14, 114);
             this.checkBox32.Name = "checkBox32";
             this.checkBox32.Size = new System.Drawing.Size(159, 17);
             this.checkBox32.TabIndex = 39;
@@ -987,7 +999,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox30.AutoSize = true;
             this.checkBox30.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox30.Location = new System.Drawing.Point(186, 47);
+            this.checkBox30.Location = new System.Drawing.Point(182, 68);
             this.checkBox30.Name = "checkBox30";
             this.checkBox30.Size = new System.Drawing.Size(181, 17);
             this.checkBox30.TabIndex = 31;
@@ -1000,7 +1012,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox29.AutoSize = true;
             this.checkBox29.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox29.Location = new System.Drawing.Point(251, 116);
+            this.checkBox29.Location = new System.Drawing.Point(247, 137);
             this.checkBox29.Name = "checkBox29";
             this.checkBox29.Size = new System.Drawing.Size(116, 17);
             this.checkBox29.TabIndex = 30;
@@ -1013,7 +1025,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox24.AutoSize = true;
             this.checkBox24.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox24.Location = new System.Drawing.Point(47, 116);
+            this.checkBox24.Location = new System.Drawing.Point(43, 137);
             this.checkBox24.Name = "checkBox24";
             this.checkBox24.Size = new System.Drawing.Size(130, 17);
             this.checkBox24.TabIndex = 28;
@@ -1027,7 +1039,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox23.AutoSize = true;
             this.checkBox23.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox23.Location = new System.Drawing.Point(40, 70);
+            this.checkBox23.Location = new System.Drawing.Point(36, 91);
             this.checkBox23.Name = "checkBox23";
             this.checkBox23.Size = new System.Drawing.Size(137, 17);
             this.checkBox23.TabIndex = 27;
@@ -1040,7 +1052,7 @@ namespace MLSSRandomizerForm
             // 
             this.checkBox20.AutoSize = true;
             this.checkBox20.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox20.Location = new System.Drawing.Point(47, 47);
+            this.checkBox20.Location = new System.Drawing.Point(43, 68);
             this.checkBox20.Name = "checkBox20";
             this.checkBox20.Size = new System.Drawing.Size(130, 17);
             this.checkBox20.TabIndex = 26;
@@ -1631,6 +1643,84 @@ namespace MLSSRandomizerForm
             this.checkBox49.UseVisualStyleBackColor = true;
             this.checkBox49.CheckedChanged += new System.EventHandler(this.checkBox49_CheckedChanged);
             // 
+            // numericUpDown5
+            // 
+            this.numericUpDown5.Enabled = false;
+            this.numericUpDown5.Location = new System.Drawing.Point(307, 42);
+            this.numericUpDown5.Maximum = new decimal(new int[] {
+            150,
+            0,
+            0,
+            0});
+            this.numericUpDown5.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown5.Name = "numericUpDown5";
+            this.numericUpDown5.Size = new System.Drawing.Size(36, 20);
+            this.numericUpDown5.TabIndex = 47;
+            this.numericUpDown5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDown5.Value = new decimal(new int[] {
+            75,
+            0,
+            0,
+            0});
+            this.numericUpDown5.ValueChanged += new System.EventHandler(this.numericUpDown5_ValueChanged);
+            // 
+            // numericUpDown6
+            // 
+            this.numericUpDown6.Enabled = false;
+            this.numericUpDown6.Location = new System.Drawing.Point(307, 16);
+            this.numericUpDown6.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown6.Name = "numericUpDown6";
+            this.numericUpDown6.Size = new System.Drawing.Size(36, 20);
+            this.numericUpDown6.TabIndex = 48;
+            this.numericUpDown6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDown6.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDown6.ValueChanged += new System.EventHandler(this.numericUpDown6_ValueChanged);
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox1.Location = new System.Drawing.Point(30, 31);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(161, 17);
+            this.checkBox1.TabIndex = 49;
+            this.checkBox1.Text = "Enable Emblem Hunt Mode?";
+            this.toolTip1.SetToolTip(this.checkBox1, resources.GetString("checkBox1.ToolTip"));
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(203, 18);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(98, 13);
+            this.label16.TabIndex = 50;
+            this.label16.Text = "Emblems Required:";
+            this.toolTip1.SetToolTip(this.label16, "The required number of emblems to progress to Bowser\'s Castle in Embelm Hunt.");
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(222, 44);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 13);
+            this.label17.TabIndex = 51;
+            this.label17.Text = "Total Emblems:";
+            this.toolTip1.SetToolTip(this.label17, "The total number of Beanstar Emblems in the item pool in Emblem Hunt.");
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1682,6 +1772,8 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.romBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1801,6 +1893,11 @@ namespace MLSSRandomizerForm
         private CheckBox checkBox52;
         private NumericUpDown numericUpDown2;
         private Label label15;
+        private NumericUpDown numericUpDown6;
+        private NumericUpDown numericUpDown5;
+        private CheckBox checkBox1;
+        private Label label16;
+        private Label label17;
     }
 }
 

@@ -857,9 +857,26 @@
 
     .org BORDER_JUMP_SUBR
     push r3, lr
+    ldr r3, =0x02004678
+    ldrb r3, [r3]
+    cmp r3, #0x5
+    blt .border_norm
+    ldr r3, =BORDER_RAM
+    ldrb r3, [r3]
+    cmp r3, #0x1
+    beq .border_norm
+    ldr r3, =BORDER_RAM
+    mov r4, #0x1
+    strb r4, [r3]
     mov r4, #0x3
     mov r3, #0x68
     str r4, [r6, r3]
+    bl .border_skip
+    .border_norm:
+    mov r4, #0x0
+    mov r3, #0x68
+    str r4, [r6, r3]
+    .border_skip:
     mov r4, #0x0
     mov r3, #0x6C
     str r4, [r6, r3]
@@ -5166,7 +5183,7 @@
     bl .kib_end
     .kib_emblem:
     mov r0, #0x18
-    ldr r1, =0x020048FD
+    ldr r1, =0x020048FB
     ldrb r2, [r1]
     cmp r2, #0xFF
     bne .kib_emblem_norm
@@ -6143,7 +6160,7 @@
     ldrb r0, [r0]
     mov r1, #0x40
     and r0, r1
-    cmp r0, #0x0
+    cmp r0, #0x40
     bne .bshop_block
     ldr r0, =0x0200436D ;unlock badge shop
     ldrb r1, [r0]
@@ -6300,6 +6317,11 @@
     ldr r0, =0x0200430B ;ss_chuckola
     ldrb r1, [r0]
     mov r2, #0x4
+    orr r1, r2
+    strb r1, [r0]
+     ldr r0, =0x02004376 ;sewer_1
+    ldrb r1, [r0]
+    mov r2, #0x40
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x020043E6 ;sewer_1
@@ -7133,6 +7155,9 @@
     .org KOOPA_BLOCK_DATA
     push r1
     ldr r0, =PEARL_SPOIL_RAM
+    mov r1, #0x0
+    strb r1, [r0]
+    ldr r0, =BORDER_RAM
     mov r1, #0x0
     strb r1, [r0]
     ldr r0, =YOSHI_DISPLAY_RAM

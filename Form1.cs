@@ -67,6 +67,9 @@ namespace MLSSRandomizerForm
         public static bool items = true;
         public static bool coins = false;
         public static bool harhall = false;
+        public static bool emblemsEnabled = false;
+        public static int emblemsRequired = 50;
+        public static int emblemsTotal = 75;
         public static int seedType = 1;
         public static string mColor = "Red";
         public static string lColor = "Green";
@@ -1075,6 +1078,22 @@ namespace MLSSRandomizerForm
         private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
             mul = (int)numericUpDown2.Value;
+        }
+
+        private void numericUpDown6_ValueChanged(object sender, EventArgs e)
+        {
+            emblemsRequired = (int)numericUpDown6.Value;
+        }
+        private void numericUpDown5_ValueChanged(object sender, EventArgs e)
+        {
+            emblemsTotal = (int)numericUpDown5.Value;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            emblemsEnabled = checkBox1.Checked;
+            numericUpDown5.Enabled = checkBox1.Checked;
+            numericUpDown6.Enabled = checkBox1.Checked;
         }
     }
 }
