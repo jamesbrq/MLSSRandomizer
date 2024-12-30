@@ -1444,7 +1444,10 @@ namespace MLSSRandomizerForm
                                 else
                                     return false;
                             else
-                                return true;
+                                if(gameState.hammerState == 3 && gameState.fire && gameState.thunder && gameState.mini && gameState.under && gameState.dash && gameState.crash)
+                                    return true;
+                                else
+                                    return false;
 
                     if (Form1.seedType == 1 && gameState.hammerState == 3 && gameState.rose && gameState.fire && gameState.thunder && gameState.beanstar && gameState.dress && gameState.mini && gameState.under && gameState.dash && gameState.crash && gameState.mario && gameState.luigi)
                     {
@@ -2734,6 +2737,13 @@ namespace MLSSRandomizerForm
                 {
                     stream.Position = 0xD00000;
                     stream.WriteByte(0x1);
+                }
+                if(Form1.emblemsEnabled)
+                {
+                    stream.Position = 0xD00008;
+                    stream.WriteByte(0x1);
+                    stream.Position = 0xD00009;
+                    stream.WriteByte((byte)Form1.emblemsRequired);
                 }
                 stream.Seek(0xD00003, SeekOrigin.Begin);
                 stream.WriteByte((byte)Form1.mul);
