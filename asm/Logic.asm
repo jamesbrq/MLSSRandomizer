@@ -7000,7 +7000,7 @@
     ldrh r0, [r0]
     cmp r0, #0x51
     beq .blab_skip
-    ldr r0, =EMBLEMS
+    ldr r0, =0x0200430B
     ldrb r1, [r0]
     mov r2, #0x40
     orr r1, r2
@@ -7015,10 +7015,18 @@
     beq .blab_norm
     ldr r0, =EMBLEMS
     ldrb r0, [r0]
+    cmp r0, #0xFF
+    beq .blab_block
     ldr r1, =EMBLEM_REQUIRED
     ldrb r1, [r1]
     cmp r0, r1
     blt .blab_block
+    ldr r0, =0x0200430B
+    ldrb r1, [r0]
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    bl .blab_norm
     .blab_block:
     ldr r0, =ROOM
     ldrh r0, [r0]

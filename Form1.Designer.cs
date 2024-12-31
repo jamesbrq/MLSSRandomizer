@@ -90,6 +90,11 @@ namespace MLSSRandomizerForm
             this.checkBox27 = new System.Windows.Forms.CheckBox();
             this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
+            this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
             this.checkBox43 = new System.Windows.Forms.CheckBox();
             this.checkBox39 = new System.Windows.Forms.CheckBox();
             this.checkBox38 = new System.Windows.Forms.CheckBox();
@@ -150,11 +155,6 @@ namespace MLSSRandomizerForm
             this.form1BindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.form1BindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.romBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.numericUpDown5 = new System.Windows.Forms.NumericUpDown();
-            this.numericUpDown6 = new System.Windows.Forms.NumericUpDown();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
             this.Colors.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -162,6 +162,8 @@ namespace MLSSRandomizerForm
             this.tabPage4.SuspendLayout();
             this.tabPage6.SuspendLayout();
             this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
             this.tabPage7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
@@ -174,8 +176,6 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.romBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).BeginInit();
             this.SuspendLayout();
             // 
             // SelectRomButton
@@ -908,6 +908,84 @@ namespace MLSSRandomizerForm
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "Misc.";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(222, 44);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(79, 13);
+            this.label17.TabIndex = 51;
+            this.label17.Text = "Total Emblems:";
+            this.toolTip1.SetToolTip(this.label17, "The total number of Beanstar Emblems in the item pool in Emblem Hunt.");
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(203, 18);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(98, 13);
+            this.label16.TabIndex = 50;
+            this.label16.Text = "Emblems Required:";
+            this.toolTip1.SetToolTip(this.label16, "The required number of emblems to progress to Bowser\'s Castle in Embelm Hunt.");
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox1.Location = new System.Drawing.Point(30, 28);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(161, 17);
+            this.checkBox1.TabIndex = 49;
+            this.checkBox1.Text = "Enable Emblem Hunt Mode?";
+            this.toolTip1.SetToolTip(this.checkBox1, resources.GetString("checkBox1.ToolTip"));
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // numericUpDown6
+            // 
+            this.numericUpDown6.Enabled = false;
+            this.numericUpDown6.Location = new System.Drawing.Point(307, 16);
+            this.numericUpDown6.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown6.Name = "numericUpDown6";
+            this.numericUpDown6.Size = new System.Drawing.Size(43, 20);
+            this.numericUpDown6.TabIndex = 48;
+            this.numericUpDown6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDown6.Value = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.numericUpDown6.ValueChanged += new System.EventHandler(this.numericUpDown6_ValueChanged);
+            // 
+            // numericUpDown5
+            // 
+            this.numericUpDown5.Enabled = false;
+            this.numericUpDown5.Location = new System.Drawing.Point(307, 42);
+            this.numericUpDown5.Maximum = new decimal(new int[] {
+            150,
+            0,
+            0,
+            0});
+            this.numericUpDown5.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown5.Name = "numericUpDown5";
+            this.numericUpDown5.Size = new System.Drawing.Size(43, 20);
+            this.numericUpDown5.TabIndex = 47;
+            this.numericUpDown5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDown5.Value = new decimal(new int[] {
+            75,
+            0,
+            0,
+            0});
+            this.numericUpDown5.ValueChanged += new System.EventHandler(this.numericUpDown5_ValueChanged);
             // 
             // checkBox43
             // 
@@ -1643,84 +1721,6 @@ namespace MLSSRandomizerForm
             this.checkBox49.UseVisualStyleBackColor = true;
             this.checkBox49.CheckedChanged += new System.EventHandler(this.checkBox49_CheckedChanged);
             // 
-            // numericUpDown5
-            // 
-            this.numericUpDown5.Enabled = false;
-            this.numericUpDown5.Location = new System.Drawing.Point(307, 42);
-            this.numericUpDown5.Maximum = new decimal(new int[] {
-            150,
-            0,
-            0,
-            0});
-            this.numericUpDown5.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDown5.Name = "numericUpDown5";
-            this.numericUpDown5.Size = new System.Drawing.Size(36, 20);
-            this.numericUpDown5.TabIndex = 47;
-            this.numericUpDown5.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.numericUpDown5.Value = new decimal(new int[] {
-            75,
-            0,
-            0,
-            0});
-            this.numericUpDown5.ValueChanged += new System.EventHandler(this.numericUpDown5_ValueChanged);
-            // 
-            // numericUpDown6
-            // 
-            this.numericUpDown6.Enabled = false;
-            this.numericUpDown6.Location = new System.Drawing.Point(307, 16);
-            this.numericUpDown6.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericUpDown6.Name = "numericUpDown6";
-            this.numericUpDown6.Size = new System.Drawing.Size(36, 20);
-            this.numericUpDown6.TabIndex = 48;
-            this.numericUpDown6.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.numericUpDown6.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.numericUpDown6.ValueChanged += new System.EventHandler(this.numericUpDown6_ValueChanged);
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox1.Location = new System.Drawing.Point(30, 31);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(161, 17);
-            this.checkBox1.TabIndex = 49;
-            this.checkBox1.Text = "Enable Emblem Hunt Mode?";
-            this.toolTip1.SetToolTip(this.checkBox1, resources.GetString("checkBox1.ToolTip"));
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(203, 18);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(98, 13);
-            this.label16.TabIndex = 50;
-            this.label16.Text = "Emblems Required:";
-            this.toolTip1.SetToolTip(this.label16, "The required number of emblems to progress to Bowser\'s Castle in Embelm Hunt.");
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(222, 44);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(79, 13);
-            this.label17.TabIndex = 51;
-            this.label17.Text = "Total Emblems:";
-            this.toolTip1.SetToolTip(this.label17, "The total number of Beanstar Emblems in the item pool in Emblem Hunt.");
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1757,6 +1757,8 @@ namespace MLSSRandomizerForm
             this.tabPage6.PerformLayout();
             this.tabPage5.ResumeLayout(false);
             this.tabPage5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
             this.tabPage7.ResumeLayout(false);
             this.tabPage7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown4)).EndInit();
@@ -1772,8 +1774,6 @@ namespace MLSSRandomizerForm
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.form1BindingSource1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.romBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown5)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown6)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
