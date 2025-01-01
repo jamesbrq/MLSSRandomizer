@@ -38,10 +38,7 @@ namespace MLSSRandomizerForm
             if (gameId == 1)
             {
                 rom = new Rom(path, seed, gameId);
-                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/pipe.ips");
-                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/castle.ips");
-                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/chuckola.ips");
-                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/ruins.ips");
+                rom.ApplyIpsPatch(Environment.CurrentDirectory + "/asm/patch.ips");
                 rom.Randomize();
                 rom.SpoilerFill();
                 rom.SpoilerGen();
