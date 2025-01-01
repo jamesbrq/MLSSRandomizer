@@ -6319,7 +6319,7 @@
     mov r2, #0x4
     orr r1, r2
     strb r1, [r0]
-     ldr r0, =0x02004376 ;sewer_1
+    ldr r0, =0x02004376 ;sewer_1
     ldrb r1, [r0]
     mov r2, #0x40
     orr r1, r2
