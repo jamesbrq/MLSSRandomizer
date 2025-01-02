@@ -17,6 +17,9 @@
     .org 0x08292187 ; Hermie healing disable
         db 0x2, 0x20, 0x8F, 0x21, 0x29, 0x8
 
+    .org 0x82EECDC ; Disable S.S Chuckola Door
+        db 0x3C
+
     .org 0x08240290 ; Prevent neon egg turn in from removing 7 beanfruits
         db 0x2, 0x0
         dw 0x082402C1
@@ -835,10 +838,12 @@
 
 
     .org EMBLEM_SELL_BLOCK_SUBR
-    push r1, lr
+    push r1-r2, lr
     add r0, r2
     ldr r1, =0x03002339
     ldrb r1, [r1]
+    mov r2, #0x3
+    and r1, r2
     cmp r1, #0x1
     bne .sell_norm
     ldr r1, =0x020048FB
@@ -849,7 +854,7 @@
     .sell_norm:
     ldrb r0, [r0]
     .sell_skip:
-    pop r1, pc
+    pop r1-r2, pc
     .pool
 
 
@@ -2043,11 +2048,16 @@
     mov r1, #0x1E
     bl .price_end
     .price_key:
+    cmp r1, #0x3E
+    beq .price_emblem
     cmp r1, #0x9E
     bge .price_badge
     cmp r1, #0x3F
     bne .price_key_norm
     mov r1, #0x96
+    bl .price_end
+    .price_emblem:
+    mov r1, #0x32
     bl .price_end
     .price_key_norm:
     ldr r1, =0x012C
@@ -3003,6 +3013,10 @@
     ldrb r1, [r1]
     cmp r1, #0x0
     bne .pipe_skip2
+    ldr r1, =0x03002430
+    ldrb r1, [r1]
+    cmp r1, #0x13
+    beq .pipe_skip2
     ldr r1, =CUTSCENE_ACTIVE_ONE
     ldrb r1, [r1]
     cmp r1, #0x0
@@ -3263,6 +3277,10 @@
     cmp r2, #0x2
     beq .warning_end
     .chucklissa:
+    ldr r0, =EMBLEM_OPTION
+    ldrb r0, [r0]
+    cmp r0, #0x1
+    beq .warning_end
     ldr r3, =CHUCKLISSA_WARNING
     bl .warning_ram
     .warning_rose:
