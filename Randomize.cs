@@ -533,7 +533,7 @@ namespace MLSSRandomizerForm
         {
             Form1.chuckle = random.Next(1, 4);
             Form1.bosses = random.Next(1, 4);
-            Form1.intro = Convert.ToBoolean(random.Next(0, 2));
+            Form1.mul = random.Next(1, 5);
             Form1.mush = Convert.ToBoolean(random.Next(0, 2));
             Form1.rose = Convert.ToBoolean(random.Next(0, 2));
             Form1.brooch = Convert.ToBoolean(random.Next(0, 2));
@@ -579,6 +579,12 @@ namespace MLSSRandomizerForm
             Form1.items = true;
             Form1.harhall = Convert.ToBoolean(random.Next(0, 2));
             Form1.coins = Convert.ToBoolean(random.Next(0, 2));
+            Form1.emblemsEnabled = Convert.ToBoolean(random.Next(0, 2));
+            if(Form1.emblemsEnabled)
+            { 
+                Form1.emblemsRequired = random.Next(1, 101);
+                Form1.emblemsTotal = random.Next(Form1.emblemsRequired, 150);
+            }
             Form1.mColor = "Random";
             Form1.lColor = "Random";
             Form1.mPants = "Random";
@@ -1372,11 +1378,13 @@ namespace MLSSRandomizerForm
                 list.Add("BP Costs: " + Form1.brosBp.ToString());
                 list.Add("Item Heal: " + Form1.itemHeal.ToString());
                 list.Add("Espresso Stats: " + Form1.coffeeValue.ToString());
+                list.Add("Emblem Hunt: " + Form1.emblemsEnabled.ToString());
+                list.Add("Emblems Required: " + Form1.emblemsRequired.ToString());
+                list.Add("Emblems Total: " + Form1.emblemsTotal.ToString());
                 list.Add("Disable Mush: " + Form1.mush.ToString());
                 list.Add("Disable Surf: " + Form1.surf.ToString());
                 list.Add("Skip Minecart: " + Form1.minecart.ToString());
                 list.Add("Skip Bowsers: " + Form1.castle.ToString());
-                list.Add("Skip intro: " + Form1.intro.ToString());
                 list.Add("Extra Pipes: " + Form1.castletown.ToString());
                 list.Add("Minigame Spoilers: " + Form1.minigame.ToString());
                 list.Add("Random Enemies: " + Form1.enemy.ToString());
@@ -2588,7 +2596,9 @@ namespace MLSSRandomizerForm
 
         public static string[] StreamInitialize(string path)
         {
-            var str = new StreamReader(path).ReadToEnd();
+            var reader = new StreamReader(path);
+            var str = reader.ReadToEnd();
+            reader.Close();
             string[] lines = str.Split(new char[] { ',' });
             for (int i = 0; i < lines.Length; i++)
             {

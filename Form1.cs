@@ -342,6 +342,15 @@ namespace MLSSRandomizerForm
             this.config.TryGetValue("harhall", out num);
             harhall = Convert.ToBoolean(num);
             this.checkBox52.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("emblems_enabled", out num);
+            emblemsEnabled = Convert.ToBoolean(num);
+            this.checkBox1.Checked = Convert.ToBoolean(num);
+            this.config.TryGetValue("emblems_total", out num);
+            emblemsTotal = num;
+            this.numericUpDown5.Value = num;
+            this.config.TryGetValue("emblems_required", out num);
+            emblemsRequired = num;
+            this.numericUpDown6.Value = num;
         }
 
 
@@ -390,7 +399,6 @@ namespace MLSSRandomizerForm
             contents.Add("brosbp," + Convert.ToInt32(brosBp).ToString() + ",");
             contents.Add("itemheal," + Convert.ToInt32(itemHeal).ToString() + ",");
             contents.Add("coffeevalue," + Convert.ToInt32(coffeeValue).ToString() + ",");
-            contents.Add("intro," + Convert.ToInt32(intro).ToString() + ",");
             contents.Add("castle," + Convert.ToInt32(castle).ToString() + ",");
             contents.Add("minecart," + Convert.ToInt32(minecart).ToString() + ",");
             contents.Add("mush," + Convert.ToInt32(mush).ToString() + ",");
@@ -399,6 +407,9 @@ namespace MLSSRandomizerForm
             contents.Add("doors," + Convert.ToInt32(doors).ToString() + ",");
             contents.Add("mdisable," + Convert.ToInt32(mDisable).ToString() + ",");
             contents.Add("castletown," + Convert.ToInt32(castletown).ToString() + ",");
+            contents.Add("emblems_enabled," + Convert.ToInt32(emblemsEnabled).ToString() + ",");
+            contents.Add("emblems_total," + emblemsTotal.ToString("X") + ",");
+            contents.Add("emblems_required," + emblemsRequired.ToString("X") + ",");
             contents.Add("scale," + Convert.ToInt32(scale).ToString() + ",");
             contents.Add("tattle," + Convert.ToInt32(tattle).ToString() + ",");
             contents.Add("enemy," + Convert.ToInt32(enemy).ToString() + ",");
@@ -1013,6 +1024,7 @@ namespace MLSSRandomizerForm
 
         private void checkBox49_CheckedChanged(object sender, EventArgs e)
         {
+            this.checkBox1.Enabled = !this.checkBox49.Checked;
             this.checkBox2.Enabled = !this.checkBox49.Checked;
             this.checkBox3.Enabled = !this.checkBox49.Checked;
             this.checkBox4.Enabled = !this.checkBox49.Checked;
@@ -1071,8 +1083,11 @@ namespace MLSSRandomizerForm
             this.comboBox3.Enabled = !this.checkBox49.Checked;
             this.comboBox4.Enabled = !this.checkBox49.Checked;
             this.numericUpDown1.Enabled = !this.checkBox49.Checked;
+            this.numericUpDown2.Enabled = !this.checkBox49.Checked;
             this.numericUpDown3.Enabled = !this.checkBox49.Checked;
             this.numericUpDown4.Enabled = !this.checkBox49.Checked;
+            this.numericUpDown5.Enabled = !this.checkBox49.Checked;
+            this.numericUpDown6.Enabled = !this.checkBox49.Checked;
             this.button1.Enabled = !this.checkBox49.Checked;
             this.button3.Enabled = !this.checkBox49.Checked;
             this.button4.Enabled = !this.checkBox49.Checked;
