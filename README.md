@@ -30,8 +30,6 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 
 ### Misc. Features
 
-**Skip intro:** Enabling this will put you right after the border Jump Minigame, skipping the intro sequence.
-
 **Castle Start:** Enabling this will have you start in Beanbean Castle Town rather than stardust fields.
 
 **Skip Bowsers Castle:** Enabling this will let you skip all of bowsers castle and go straight to Bowletta once you go through the first door.
@@ -51,8 +49,6 @@ Both the Hat and Pants colors can be changed resulting in a lot of fun color pal
 **Disable Music:** Enabling this will disable all music. Enable this if you like to listen to your own music, or just want to hear the sounds of mario jumping nice and clearly :)
 
 **Randomize Battle Backgrounds:** Enabling this will randomize the background of any enemy you fight including bosses, including some unused backgrounds.
-
-**Randomize Mario/Luigi:** Enabling this will turn Luigi or Mario into an item! Until you find them, you can play the game as a solo brother and adventure with a new twist!
 
 **Text Turbo:** At any point in the game, you can hold L/R + A to turbo through text. Note that this only works for text and nothing else.
 
