@@ -9,13 +9,20 @@
 
 
     .org 0x08289EFA ; Mom piranha battle script disable
-        db 0x2, 0x20, 0x60, 0x9F, 0x28, 0x8
+        db 0x2, 0x20
+        dw 0x08289F60
 
     .org 0x0829008E ; Mom piranha healing disable
-        db 0x2, 0x20, 0x96, 0x00, 0x29, 0x8
+        db 0x2, 0x20
+        dw 0x08290096
 
     .org 0x08292187 ; Hermie healing disable
-        db 0x2, 0x20, 0x8F, 0x21, 0x29, 0x8
+        db 0x2, 0x20
+        dw 0x0829218F
+
+    .org 0x08240A98 ; Harhall flag script disable
+        db 0x2, 0x20
+        dw 0x08230AA7
 
     .org 0x82EECDC ; Disable S.S Chuckola Door
         db 0x3C
@@ -816,6 +823,9 @@
     .org BORDER_JUMP_HOOK
         bl BORDER_JUMP_SUBR
 
+    .org INFINITE_WATER_HOOK
+    	bl INFINITE_WATER_SUBR
+
     .org 0x080fde9a ;Mario BP
         mov r0, #0x0
 
@@ -831,6 +841,24 @@
 
     .org EMBLEM_INV_TEXT
         db "Beanstar Emblems", 0x0
+
+
+
+
+
+    .org INFINITE_WATER_SUBR
+    push { r1, lr }
+    ldr r1, =0x03002415
+    ldrb r1, [r1]
+    cmp r1, #0x40
+    bne .iwater_norm
+    bl .iwater_end
+    .iwater_norm:
+    strb r0, [r3]
+    .iwater_end:
+    lsl r0, r0, #0x18
+    pop { r1, pc }
+    .pool
 
 
 
@@ -7010,23 +7038,10 @@
 
     .org BLABLANADON
     push { r0-r2, lr }
-    ldr r0, =BLAB_RAM
-    ldrb r1, [r0]
-    cmp r1, #0x1
-    bne .blab_skip
     ldr r0, =ROOM
-    ldrh r0, [r0]
-    cmp r0, #0x51
-    beq .blab_skip
-    ldr r0, =0x0200430B
-    ldrb r1, [r0]
-    mov r2, #0x40
-    orr r1, r2
-    strb r1, [r0]
-    ldr r0, =BLAB_RAM
-    mov r1, #0x0
-    strb r1, [r0]
-    .blab_skip:
+    ldrh r1, [r0]
+    cmp r1, #0x51
+    bne .blab_ram
     ldr r0, =EMBLEM_OPTION
     ldrb r0, [r0]
     cmp r0, #0x0
@@ -7042,14 +7057,17 @@
     ldr r0, =0x0200430B
     ldrb r1, [r0]
     mov r2, #0x40
+    and r2, r1
+    cmp r2, #0x40
+    beq .blab_norm
+    mov r2, #0x40
     orr r1, r2
+    strb r1, [r0]
+    ldr r0, =BLAB_RAM
+    mov r1, #0x2
     strb r1, [r0]
     bl .blab_norm
     .blab_block:
-    ldr r0, =ROOM
-    ldrh r0, [r0]
-    cmp r0, #0x51
-    bne .blab_end
     ldr r0, =0x0200430B
     ldrb r1, [r0]
     mov r2, #0x40
@@ -7061,6 +7079,32 @@
     strb r1, [r0]
     ldr r0, =BLAB_RAM
     mov r1, #0x1
+    strb r1, [r0]
+    bl .blab_norm
+    .blab_ram:
+    ldr r0, =BLAB_RAM
+    ldrb r1, [r0]
+    cmp r1, #0x1
+    beq .blab_restore
+    cmp r1, #0x2
+    bne .blab_norm
+    ldr r0, =0x0200430B
+    ldrb r1, [r0]
+    mov r2, #0x40
+    bic r1, r2
+    strb r1, [r0]
+    ldr r0, =BLAB_RAM
+    mov r1, #0x0
+    strb r1, [r0]
+    bl .blab_norm
+    .blab_restore:
+    ldr r0, =0x0200430B
+    ldrb r1, [r0]
+    mov r2, #0x40
+    orr r1, r2
+    strb r1, [r0]
+    ldr r0, =BLAB_RAM
+    mov r1, #0x0
     strb r1, [r0]
     .blab_norm:
     ldr r0, =0x0200430B
