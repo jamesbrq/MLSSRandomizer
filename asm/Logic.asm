@@ -8,6 +8,11 @@
     .include "Pipes.asm"
 
 
+
+    .org 0x08483820 ; Invincishroom text
+        db 0xFF, 0x11, 0x0, 0xFF, 0x1, 0x0, 0xFF, 0xB, 0x1, "Unfortunately, I have nothing.", 0xFF, 0x0, "I'm sure there are other things", 0xFF, 0x0, "to do elsewhere.", 0xFF, 0x11, 0x0, 0xFF, 0xA, 0x0
+
+
     .org 0x08289EFA ; Mom piranha battle script disable
         db 0x2, 0x20
         dw 0x08289F60
@@ -20,9 +25,9 @@
         db 0x2, 0x20
         dw 0x0829218F
 
-    .org 0x08240A98 ; Harhall flag script disable
+    .org 0x08240A98 ; Beanstar Flag script disable
         db 0x2, 0x20
-        dw 0x08230AA7
+        dw 0x08240AA7
 
     .org 0x82EECDC ; Disable S.S Chuckola Door
         db 0x3C
@@ -1045,7 +1050,7 @@
 
 
     .org AP_ITEM
-    push { r0-r4, lr }
+    push { r0-r5, lr }
     ldr r0, =AP_READ_INIT
     ldrb r0, [r0]
     cmp r0, #0x0
@@ -1073,9 +1078,9 @@
     mov r2, #0x0
     strb r2, [r1]
     cmp r0, #0x0
-    beq .ap_end
+    beq .ap_end2
     cmp r0, #0x30
-    blt .ap_norm
+    blt .ap_norm3
     cmp r0, #0x9E
     bge .ap_badge
     sub r0, #0x30
@@ -1091,6 +1096,33 @@
     ldrb r4, [r2, r0]
     orr r4, r3
     strb r4, [r2, r0]
+    ldr r4, =ROOM
+    ldr r5, =0x1CC
+    ldrh r4, [r4]
+    cmp r4, r5
+    bne .ap_end2
+    cmp r0, #0x2
+    beq .ap_egg
+    cmp r0, #0x3
+    bne .ap_end2
+    mov r4, #0x1F
+    and r4, r3
+    cmp r4, #0x0
+    beq .ap_end2
+    ldr r4, =EGG_VALUE
+    ldrb r5, [r4]
+    add r5, #0x1
+    strb r5, [r4]
+    bl .ap_end
+    .ap_egg:
+    mov r4, #0xC0
+    and r4, r3
+    cmp r4, #0x0
+    beq .ap_end
+    ldr r4, =EGG_VALUE
+    ldrb r5, [r4]
+    add r5, #0x1
+    strb r5, [r4]
     bl .ap_end
     .ap_badge:
     sub r0, #0x9E
@@ -1124,6 +1156,10 @@
     orr r2, r1
     strb r2, [r0]
     bl .ap_end
+    .ap_end2:
+    bl .ap_end
+    .ap_norm3:
+    bl .ap_norm
     .ap_super:
     mov r1, #0x10
     and r1, r2
@@ -1204,7 +1240,7 @@
     mov r2, #0x1
     strb r2, [r1, r0]
     .ap_end:
-    pop { r0-r4, pc }
+    pop { r0-r5, pc }
     .pool
 
 
@@ -2232,6 +2268,8 @@
 
     .org SHOP_INJECT_DATA
     push { r1, r2, r4, r5 }
+    ldr r1, =SHOP_COUNT
+    strb r0, [r1]
     ldr r1, =AP_INIT_L
     mov r2, #0x1
     strb r2, [r1]
@@ -2368,6 +2406,9 @@
     .shop_inject_norm:
     strb r0, [r3]
     .shop_inject_skip:
+    ldr r1, =SHOP_COUNT
+    mov r2, #0x0
+    strb r2, [r1]
     pop r1
     add r3, r1, #0x0
     push r4
@@ -3018,6 +3059,7 @@
         
     .org TEXT_MASH_DATA
     push r1
+    bl WIGGLER_FIX
     bl MOVES_CHECK
     bl SAVE_BLOCK
     bl PEARL_SPOILER
@@ -3130,13 +3172,12 @@
     cmp r1, r2
     blt .pipe_cont
     ldr r2, =0x1DD
+    cmp r1, r2
     ble .pipe_skip2
     .pipe_cont:
     cmp r1, #0xFD
     beq .pipe_skip2
     cmp r1, #0xA3
-    beq .pipe_skip2
-    cmp r1, #0x40
     beq .pipe_skip2
     ldr r1, =0x02004A24
     ldr r2, =0x08270AE5
@@ -3176,6 +3217,29 @@
     pop r1
     add r1, #0x1
     bx r1
+    .pool
+
+
+
+
+
+
+    .org WIGGLER_FIX
+    push { r0-r1, lr }
+    ldr r0, =0x020183A8
+    ldr r0, [r0]
+    ldr r1, =0x08287E4B
+    cmp r0, r1
+    bne .wiggler_end
+    ldr r1, =0x03003F51
+    ldrb r1, [r1]
+    cmp r1, #0x0
+    bne .wiggler_end
+    ldr r0, =0x020183A8
+    ldr r1, =0x08287E22
+    str r1, [r0]
+    .wiggler_end:
+    pop { r0-r1, pc }
     .pool
 
 
@@ -3268,8 +3332,12 @@
     beq .warning_rose_flag
     ldr r1, =0x190
     cmp r0, r1
+    beq .warning_chuckliss_flag
+    cmp r0, #0x3E
     bne .warning_end
-    ;Warning Chucklissa
+    mov r0, #0x3
+    bl .warning_front
+    .warning_chuckliss_flag:
     mov r0, #0x2
     bl .warning_front
     .warning_rose_flag:
@@ -3287,7 +3355,22 @@
     cmp r0, #0x1
     beq .warning_rose
     cmp r0, #0x2
+    beq .warning_chucklissa
+    cmp r0, #0x3
     bne .warning_end
+    ldrh r2, [r1]
+    ldr r0, =0x800
+    cmp r2, r0
+    bgt .warning_end
+    ldr r0, =0x0200490A
+    ldrb r1, [r0]
+    mov r2, #0x2
+    and r2, r1
+    cmp r2, #0x2
+    beq .warning_end
+    ldr r3, =ROSE_WARNING
+    bl .warning_ram
+    .warning_chucklissa:
     ldr r2, [r1]
     ldr r0, =0x1D800
     cmp r2, r0
@@ -3742,6 +3825,8 @@
     ldrb r0, [r0]
     cmp r0, #0x36
     beq .castle_door
+    cmp r0, #0x3E
+    beq .sewer_door
     cmp r0, #0x90
     beq .dress_door
     cmp r0, #0x5A
@@ -3759,6 +3844,19 @@
     cmp r0, #0xB7
     beq .thunder_door3
     bl .end2
+
+    .sewer_door:
+    ldr r0, =0x0200490A
+    ldrb r0, [r0]
+    mov r6, #0x2
+    and r6, r0
+    cmp r6, #0x2
+    beq .end2
+    ldr r0, =0x083AC3B8
+    cmp r0, r9
+    bne .end2
+    mov r3, 0xFF
+    bl .end3
 
     .fire_door:
     ldr r0, =0x020043E5

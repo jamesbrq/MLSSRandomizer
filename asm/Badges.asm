@@ -5,7 +5,7 @@ BADGE_FLAGS equ 0x02004992
 PANTS_FLAGS equ 0x020049CA
 SPECIAL_FLAGS equ 0x02004A02
 BADGE_ADD equ 0x08E019B0
-PANTS_ADD equ 0x08E01A00
+PANTS_ADD equ 0x08E01A50
 SPECIAL_ADD equ 0x08E01B00
 BADGE_SHOP_HOOK equ 0x0812AE7C
 BADGE_SHOP_SUBR equ 0x081E0490
@@ -651,18 +651,34 @@ bx r1
 
 .org BADGE_ADD
 push { r1-r3 }
-mov r3, #0x0
 ldr r1, =BADGE
 ldrb r2, [r1, r0]
 cmp r2, #0xff
 beq .badge_clause
-add r2, #0x1
+ldr r3, =0x0200302C
+ldrb r3, [r3]
+cmp r3, #0x0
+beq .badge_add_skip
+sub r3, #0x01
+.badge_add_skip:
+add r3, #0x1
+add r2, r3
 strb r2, [r1, r0]
 bl .badge_flag
 .badge_clause:
+ldr r3, =0x0200302C
+ldrb r3, [r3]
+cmp r3, #0x0
+beq .badge_clause_norm
+mov r2, r3
+bl .badge_clause_skip
+.badge_clause_norm:
 mov r2, #0x1
+.badge_clause_skip:
 strb r2, [r1, r0]
 .badge_flag:
+mov r3, #0x0
+.badge_loop:
 ldr r1, =BADGE_FLAGS
 ldrb r2, [r1, r3]
 cmp r2, r0
@@ -670,7 +686,7 @@ beq .badge_end
 cmp r2, #0xFF
 beq .bflag_set
 add r3, #0x1
-bl .badge_flag
+bl .badge_loop
 .bflag_set:
 strb r0, [r1, r3]
 .badge_end:
@@ -682,18 +698,34 @@ bx r1
 .org PANTS_ADD
 push { r0-r3 }
 sub r0, #0x2C
-mov r3, #0x0
 ldr r1, =PANTS
 ldrb r2, [r1, r0]
 cmp r2, #0xff
 beq .pants_clause
-add r2, #0x1
+ldr r3, =0x0200302C
+ldrb r3, [r3]
+cmp r3, #0x0
+beq .pants_add_skip
+sub r3, #0x01
+.pants_add_skip:
+add r3, #0x1
+add r2, r3
 strb r2, [r1, r0]
 bl .pants_flag
 .pants_clause:
+ldr r3, =0x0200302C
+ldrb r3, [r3]
+cmp r3, #0x0
+beq .pants_clause_norm
+mov r2, r3
+bl .pants_clause_skip
+.pants_clause_norm:
 mov r2, #0x1
+.pants_clause_skip:
 strb r2, [r1, r0]
 .pants_flag:
+mov r3, #0x0
+.pants_loop:
 ldr r1, =PANTS_FLAGS
 ldrb r2, [r1, r3]
 cmp r2, r0
@@ -701,7 +733,7 @@ beq .pants_end
 cmp r2, #0xFF
 beq .pflag_set
 add r3, #0x1
-bl .pants_flag
+bl .pants_loop
 .pflag_set:
 strb r0, [r1, r3]
 .pants_end:
