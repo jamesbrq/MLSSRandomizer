@@ -6296,6 +6296,14 @@
     and r2, r1
     cmp r2, #0x40
     bne .bshop_norm
+    ldr r0, =ROOM
+    ldrb r0, [r0]
+    cmp r0, #0x79
+    beq .bshop_norm
+    cmp r0, #0x92
+    beq .bshop_norm
+    cmp r0, #0x93
+    beq .bshop_norm
     mov r2, #0x80
     orr r1, r2
     strb r1, [r0]
@@ -7421,8 +7429,10 @@
     .queen_restore:
     ldr r0, =ROOM
     ldrh r0, [r0]
-    cmp r0, #0x3D
-    bne .koopa_norm2
+    cmp r0, #0x40
+    beq .koopa_norm2
+    cmp r0, #0xBF
+    beq .koopa_norm2
     mov r1, #0x0
     ldr r0, =QUEEN_RAM
     strb r1, [r0]
