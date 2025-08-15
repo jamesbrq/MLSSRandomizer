@@ -2126,7 +2126,7 @@ namespace MLSSRandomizerForm
         {
             if (Form1.background)
             {
-                var location = Enumerable.Range(0, 0x4740).ToList();
+                var location = Enumerable.Range(0, 0x4741).ToList();
                 location.RemoveAll(x => x != (x / 0x20) * 0x20);
 
                 foreach (int address in location)
