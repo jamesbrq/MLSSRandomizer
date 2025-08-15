@@ -2126,12 +2126,12 @@ namespace MLSSRandomizerForm
         {
             if (Form1.background)
             {
-                string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
-                string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
-                location = location.Concat(boss).ToArray();
-                foreach (string str in location)
+                var location = Enumerable.Range(0, 0x4740).ToList();
+                location.RemoveAll(x => x != (x / 0x20) * 0x20);
+
+                foreach (int address in location)
                 {
-                    stream.Seek(Convert.ToUInt32(str, 16) + 3, SeekOrigin.Begin);
+                    stream.Seek(address + 0x50300C + 3, SeekOrigin.Begin);
                     stream.WriteByte((byte)random.Next(0, 0x27));
                 }
             }
