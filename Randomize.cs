@@ -2124,16 +2124,40 @@ namespace MLSSRandomizerForm
 
         public void BackgroundRandomize()
         {
-            if (Form1.background)
-            {
-                var location = Enumerable.Range(0, 0x4740).ToList();
-                location.RemoveAll(x => x != (x / 0x20) * 0x20);
+            var location = Enumerable.Range(0, 0x1741).ToList();
+            location.RemoveAll(x => x != (x / 0x20) * 0x20);
 
-                foreach (int address in location)
+            foreach (int address in location)
+            {
+                stream.Seek(address + 0x50300C + 8, SeekOrigin.Begin);
+                int enemy = stream.ReadByte();
+
+                if ((enemy == 0x9B) || (enemy == 0x9E)) // Checks enemies with wave attack (Morton, Roy) (note: double check Wiggler)
+                {
+                    stream.Seek(address + 0x50300C + 3, SeekOrigin.Begin);
+                    if (Form1.background)
+                    {
+                        int[] wavey_backgrounds = { 0x02, 0x03, 0x05, 0x06, 0x0D, 0x22, 0x23, 0x24, 0x26 }; // Wave-acceptable backgrounds
+                        stream.WriteByte((byte)wavey_backgrounds[random.Next(wavey_backgrounds.Length)]);
+                    }
+                    else
+                    {
+                        if (enemy == 0x9B)
+                        {
+                            stream.WriteByte((byte)0x24);
+                        }
+                        else
+                        {
+                            stream.WriteByte((byte)0x23);
+                        }
+                    }
+                }
+                else if(Form1.background)
                 {
                     stream.Seek(address + 0x50300C + 3, SeekOrigin.Begin);
                     stream.WriteByte((byte)random.Next(0, 0x27));
                 }
+
             }
         }
 
