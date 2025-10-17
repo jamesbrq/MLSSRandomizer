@@ -12,7 +12,6 @@ namespace MLSSRandomizerForm
 {
     public partial class Form1 : Form
     {
-        public int gameId;
         public static string progVersion;
         private string filePath;
         private string seed = "";
@@ -346,11 +345,11 @@ namespace MLSSRandomizerForm
             emblemsEnabled = Convert.ToBoolean(num);
             this.checkBox1.Checked = Convert.ToBoolean(num);
             this.config.TryGetValue("emblems_total", out num);
-            emblemsTotal = num;
-            this.numericUpDown5.Value = num;
+            emblemsTotal = num > 0 ? num : 75;
+            this.numericUpDown5.Value = num > 0 ? num : 75;
             this.config.TryGetValue("emblems_required", out num);
-            emblemsRequired = num;
-            this.numericUpDown6.Value = num;
+            emblemsRequired = num > 0 ? num : 50;
+            this.numericUpDown6.Value = num > 0 ? num : 50;
         }
 
 
@@ -440,15 +439,13 @@ namespace MLSSRandomizerForm
                     return;
                 }
                 Console.WriteLine(ComputeHash());
-                (string newFile, int hash) = Randomize.Random(filePath, seed, gameId);
+                (string newFile, int hash) = Randomize.Random(filePath, seed);
                 // Hexadecimal ConfigHash is constant regardless of seed, and helps to identify equal settings.
                 var list = new List<string>();
                 Rom.ConfigInfo(list);
                 uint configHash = (uint)string.Join("\n", list).GetHashCode();
                 // Identical ROMs generated on same progVersion will have the same (seed, configHash) tuple
                 // Default file name when saving contains this info for convenience
-                if (gameId == 1)
-                {
                     saveFileDialog1.FileName = $"MLSSRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.gba";
                     saveFileDialog1.ShowDialog();
                     if (File.Exists(saveFileDialog1.FileName) && File.Exists(newFile))
@@ -464,23 +461,6 @@ namespace MLSSRandomizerForm
                             File.Delete(Environment.CurrentDirectory + "/spoilers/" + Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + "-Spoiler.txt");
                         File.Move(Environment.CurrentDirectory + "/spoilers/" + hash + " Spoiler.txt", Environment.CurrentDirectory + "/spoilers/" + Path.GetFileNameWithoutExtension(saveFileDialog1.FileName) + "-Spoiler.txt");
                     }
-                }
-                else if (gameId == 3)
-                {
-                    saveFileDialog2.FileName = $"BISRandomizer-{progVersion} Seed={hash} ConfigHash={configHash:X}.nds";
-                    saveFileDialog2.ShowDialog();
-
-                    if (File.Exists(saveFileDialog2.FileName))
-                        File.Delete(saveFileDialog2.FileName);
-                    if (saveFileDialog2.FileName != "")
-                    {
-                        File.Copy(newFile, saveFileDialog2.FileName);
-                        File.Delete(newFile);
-                        Console.WriteLine("Seed: " + hash);
-                        if (MessageBox.Show("Do you want to copy your seed?", "Done", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                            Clipboard.SetText(Convert.ToString(hash), TextDataFormat.Text);
-                    }
-                }
             }
             catch (Exception err)
             {
@@ -502,19 +482,16 @@ namespace MLSSRandomizerForm
             string hash = MD5Hash();
             if (hash == mlssHash)
             {
-                gameId = 1;
                 tabControl2.Visible = true;
                 Colors.Visible = true;
             }
             else if (hash == bisHash)
             {
-                gameId = 3;
                 tabControl2.Visible = true;
                 Colors.Visible = false;
             }
             else
             {
-                gameId = 0;
                 tabControl2.Visible = false;
                 Colors.Visible = false;
                 MessageBox.Show("Invalid ROM Selected.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -780,11 +757,6 @@ namespace MLSSRandomizerForm
         private void comboBox4_SelectedIndexChanged(object sender, EventArgs e)
         {
             lPants = comboBox4.Text;
-        }
-
-        private void checkBox35_CheckedChanged(object sender, EventArgs e)
-        {
-            bItems = checkBox35.Checked;
         }
 
         private void saveFileDialog2_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
@@ -1058,7 +1030,6 @@ namespace MLSSRandomizerForm
             this.checkBox32.Enabled = !this.checkBox49.Checked;
             this.checkBox33.Enabled = !this.checkBox49.Checked;
             this.checkBox34.Enabled = !this.checkBox49.Checked;
-            this.checkBox35.Enabled = !this.checkBox49.Checked;
             this.checkBox36.Enabled = !this.checkBox49.Checked;
             this.checkBox37.Enabled = !this.checkBox49.Checked;
             this.checkBox38.Enabled = !this.checkBox49.Checked;
