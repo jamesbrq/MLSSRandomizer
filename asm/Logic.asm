@@ -1573,8 +1573,6 @@
     ldrh r2, [r2]
     cmp r2, #0x40
     beq .scale_norm
-    cmp r2, #0xF5
-    beq .scale_norm
     ldr r3, =0x1A0
     cmp r2, r3
     beq .scale_norm
@@ -1620,8 +1618,6 @@
     ldr r2, =ROOM
     ldrh r2, [r2]
     cmp r2, #0x40
-    beq .scale_end
-    cmp r2, #0xF5
     beq .scale_end
     ldr r1, =0x1A0
     cmp r2, r1
@@ -5841,7 +5837,8 @@
     cmp r0, #0xB0
     ble .unblock_hand
     cmp r0, 0xB8
-    bge .check_end
+    bge .unblock_hand
+    bl .check_end
     .unblock_hand:
     ldr r0, =REMOVE_RAM
     mov r1, #0x0
@@ -5906,6 +5903,9 @@
     ldrb r0, [r0]
     cmp r0, #0x0
     bne .check_end
+    ldr r0, =0x03002440
+    mov r1, #0x0
+    strb r1, [r0]
     ldr r0, =0x02004336
     ldrb r0, [r0]
     mov r1, #0x80

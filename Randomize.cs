@@ -2755,7 +2755,7 @@ namespace MLSSRandomizerForm
         public void ItemInject(uint location, int itemType, byte item)
         {
             if (item == 0x0)
-                Console.WriteLine(location.ToString("X"));
+                item = (byte)0xA;
             switch (itemType)
             {
 
