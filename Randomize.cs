@@ -2008,16 +2008,50 @@ namespace MLSSRandomizerForm
 
         public void BackgroundRandomize()
         {
-            if (Form1.background)
+            var location = Enumerable.Range(0, 0x1741).ToList();
+            location.RemoveAll(x => x != (x / 0x20) * 0x20);
+
+            foreach (int address in location)
             {
-                string[] location = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/Encounters.txt");
-                string[] boss = StreamInitialize(Environment.CurrentDirectory + "/items/Enemies/BossEncounters.txt");
-                location = location.Concat(boss).ToArray();
-                foreach (string str in location)
+                stream.Seek(address + 0x50300C + 8, SeekOrigin.Begin);
+                int enemy = stream.ReadByte();
+
+                if ((enemy == 0x9B) || (enemy == 0x9E)) // Checks enemies with wave attack (Morton, Roy)
                 {
-                    stream.Seek(Convert.ToUInt32(str, 16) + 3, SeekOrigin.Begin);
+                    stream.Seek(address + 0x50300C + 3, SeekOrigin.Begin);
+                    if (Form1.background)
+                    {
+                        int[] wavey_backgrounds = { 0x02, 0x03, 0x05, 0x06, 0x0D, 0x22, 0x23, 0x24, 0x26 }; // Wave-acceptable backgrounds
+                        stream.WriteByte((byte)wavey_backgrounds[random.Next(wavey_backgrounds.Length)]);
+                    }
+                    else if (enemy == 0x9B)
+                    {
+                        stream.WriteByte((byte)0x24);
+                    }
+                    else
+                    {
+                        stream.WriteByte((byte)0x23);
+                    }
+                }
+                else if (enemy == 0x70) // Wiggler has different waves
+                {
+                    stream.Seek(address + 0x50300C + 3, SeekOrigin.Begin);
+                    if (Form1.background)
+                    {
+                        int[] wavey_backgrounds = { 0x01, 0x03, 0x05, 0x06, 0x07, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x20, 0x21, 0x23, 0x24, 0x25, 0x26, 0x27 };
+                        stream.WriteByte((byte)wavey_backgrounds[random.Next(wavey_backgrounds.Length)]);
+                    }
+                    else
+                    {
+                        stream.WriteByte((byte)0x0F);
+                    }
+                }
+                else if (Form1.background)
+                {
+                    stream.Seek(address + 0x50300C + 3, SeekOrigin.Begin);
                     stream.WriteByte((byte)random.Next(0, 0x27));
                 }
+
             }
         }
 
