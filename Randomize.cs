@@ -340,7 +340,7 @@ namespace MLSSRandomizerForm
         [Serializable]
         public class LocationData
         {
-            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi, int emblems = 0)
+            public LocationData(uint location, uint item, int itemType, int hammerState, bool rose, bool brooch, bool fire, bool thunder, int fruitState, bool membership, bool winkle, bool beanstar, bool dress, bool mini, bool under, bool dash, bool crash, int neon, int beanfruit, bool spangle, int pieces, bool mario, bool luigi, List<int> forbiddenItems = null, int emblems = 0)
             {
                 this.location = location;
                 this.item = item;
@@ -367,6 +367,7 @@ namespace MLSSRandomizerForm
                 this.mario = mario;
                 this.luigi = luigi;
                 this.emblems = emblems;
+                this.forbiddenItems = (forbiddenItems != null ? forbiddenItems : new List<int>());
             }
 
             public LocationData(int def)
@@ -422,6 +423,7 @@ namespace MLSSRandomizerForm
             public bool mario;
             public bool luigi;
             public int emblems = 0;
+            public List<int> forbiddenItems = new List<int>();
         }
 
         public void ApplyIpsPatch(string patchFilePath)
@@ -1070,13 +1072,13 @@ namespace MLSSRandomizerForm
             ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/BrosItems.txt"));
             ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/KeyItems.txt"));
             ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Shops.txt"));
-            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
+            ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"), false, false, Form1.espressoKey);
             ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Pants.txt"));
             ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Badges.txt"));
             if(Form1.emblemsEnabled)
-                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Emblem.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Emblem.txt"), false, true);
             else
-                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
+                ArrayInitialize(2, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"), false, true);
         }
 
         public void UpdateList()
@@ -1407,9 +1409,9 @@ namespace MLSSRandomizerForm
             if(!Form1.castle)
             {
                 if(Form1.emblemsEnabled)
-                    ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Emblem.txt"), true);
+                    ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Emblem.txt"), true, true);
                 else
-                    ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"));
+                    ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Bowser.txt"), false, true);
             }
             LocationData tempData = new LocationData(0);
             foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
@@ -1534,14 +1536,11 @@ namespace MLSSRandomizerForm
 
             }
             optionsArray = new List<LocationData>();
-            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"));
+            ArrayInitialize(1, StreamInitialize(Environment.CurrentDirectory + "/items/Espresso.txt"), false, false, Form1.espressoKey);
             foreach (LocationData data in optionsArray.ToList().Where(d => d.itemType != 4 && d.itemType != 5))
             {
                 if (Form1.espresso)
                 {
-                    if(Form1.espressoKey)
-                        ValidArrayAdd(new LocationData(data.location, data.item, data.itemType, 3, true, true, true, true, 3, true, true, true, true, true, true, true, true, 7, 0, true, 4, true, true));
-                    else
                         ValidArrayAdd(data);
                 }
                 else
@@ -2402,7 +2401,7 @@ namespace MLSSRandomizerForm
             }
         }
 
-        public void ArrayInitialize(int array, string[] data, bool emblems = false)
+        public void ArrayInitialize(int array, string[] data, bool emblems = false, bool bowsers = false, bool espresso = false)
         {
             for (int i = 0; i < data.Length; i += 23)
             {
@@ -2431,6 +2430,7 @@ namespace MLSSRandomizerForm
                                                         Convert.ToInt32(data[i + 20], 16),
                                                         Convert.ToBoolean(Convert.ToInt32(data[i + 21], 16)),
                                                         Convert.ToBoolean(Convert.ToInt32(data[i + 22], 16)),
+                                                        bowsers ? new List<int> { 0x3E } : espresso ? Enumerable.Range(0x30, 0x97 - 0x30 + 1).ToList() : null,
                                                         emblems ? Form1.emblemsRequired : 0));
                 }
 
@@ -2459,6 +2459,7 @@ namespace MLSSRandomizerForm
                                                         Convert.ToInt32(data[i + 20], 16),
                                                         Convert.ToBoolean(Convert.ToInt32(data[i + 21], 16)),
                                                         Convert.ToBoolean(Convert.ToInt32(data[i + 22], 16)),
+                                                        bowsers ? new List<int> { 0x3E } : espresso ? Enumerable.Range(0x30, 0x97 - 0x30 + 1).ToList() : null,
                                                         emblems ? Form1.emblemsRequired : 0));
                 }
             }
@@ -2526,7 +2527,12 @@ namespace MLSSRandomizerForm
                     if (retryCount > maxRetries || !tempLocationArray.Any())
                         break;
 
-                    if (CheckValidSpot(tempLocationArray[0], tempItemArray[0]))
+                    List<byte> validItems = tempItemArray.Where(x => tempLocationArray[0].forbiddenItems.Contains(x) == false).ToList();
+                    if (validItems.Count == 0)
+                        break;
+                    byte item = validItems.First();
+
+                    if (CheckValidSpot(tempLocationArray[0], item))
                     {
                         retryCount++;
                         tempItemArray.Shuffle(random);
@@ -2535,8 +2541,8 @@ namespace MLSSRandomizerForm
 
                     var temp = tempLocationArray[0];
                     tempLocationArray.RemoveAt(0);
-                    temp.item = tempItemArray[0];
-                    tempItemArray.RemoveAt(0);
+                    temp.item = item;
+                    tempItemArray.Remove(item);
                     fakeLocationsArray.Add(temp);
                 }
 
