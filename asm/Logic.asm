@@ -5817,6 +5817,10 @@
     beq .fire_check
     cmp r0, #0xB7
     beq .thunder_check
+    ldr r0, =0x03002478
+    ldrb r0, [r0]
+    cmp r0, #0x0
+    bne .check_end2
     ldr r0, =REMOVE_RAM
     ldrb r1, [r0]
     cmp r1, #0x1
@@ -5850,6 +5854,9 @@
     ldrb r0, [r0]
     cmp r0, #0x0
     bne .check_end
+    ldr r0, =0x03002428
+    mov r1, #0x0
+    strh r1, [r0]
     ldr r0, =0x02004337
     ldrb r0, [r0]
     mov r1, #0x2
@@ -5880,6 +5887,9 @@
     strb r0, [r1]
     bl .check_end
 
+    .check_end2:
+    bl .check_end
+
     .fire_remove:
     ldr r0, =ROOM
     ldrh r0, [r0]
@@ -5905,7 +5915,8 @@
     bne .check_end
     ldr r0, =0x03002440
     mov r1, #0x0
-    strb r1, [r0]
+    strh r1, [r0]
+    strb r1, [r0, #0x2]
     ldr r0, =0x02004336
     ldrb r0, [r0]
     mov r1, #0x80
