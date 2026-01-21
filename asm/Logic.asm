@@ -6399,7 +6399,7 @@
     strb r1, [r0]
     ldr r0, =0x02004306 ;sewers cork
     ldrb r1, [r0]
-    mov r2, #0x1
+    mov r2, #0x21
     orr r1, r2
     strb r1, [r0]
     ldr r0, =0x0200435C ;ss chuckola dynamite
@@ -6542,11 +6542,6 @@
 	mov r2, #0x01
 	orr r1, r2
 	strb r1, [r0]
-	ldr r0, =0x02004306 ; Woohoo Hooniversity first cutscene
-	ldrb r1, [r0]
-	mov r2, #0x20
-	orr r1, r2
-	strb r1, [r0]
 	ldr r0, =0x02004316 ; Castle being destroyed post-Birdo cutscene
 	ldrb r1, [r0]
 	mov r2, #0x80
@@ -6585,7 +6580,7 @@
 	push {r0-r2, lr}
 	ldr r0, =ROOM
 	ldrh r0, [r0]
-	cmp r0, #0x01F
+	cmp r0, #0x1F
 	beq .skip_castle_spawn
 	ldr r0, =BEANSTAR_OPTION
 	ldrb r0, [r0]
@@ -6593,9 +6588,9 @@
 	bne .skip_castle_spawn
 	ldr r0, =0x02004344
 	ldrb r0, [r0]
-	mov r1, #0x04
+	mov r1, #0x4
 	and r1, r0
-	cmp r1, #0x04
+	cmp r1, #0x4
 	bne .skip_castle_spawn
 	ldr r0, =0x0200430B ; Unlock castle: this is overridden by Blablanadon, and doesnt trigger on Vanilla Goal
 	ldrb r1, [r0]
@@ -6604,7 +6599,7 @@
 	strb r1, [r0]
 	ldr r0, =0x02004317 ; Remove cutscene right after castle unlock
 	ldrb r1, [r0]
-	mov r2, #0x01
+	mov r2, #0x1
 	orr r1, r2
 	strb r1, [r0]
 	.skip_castle_spawn:
@@ -6618,7 +6613,7 @@
 	push {r0-r2, lr}
 	ldr r0, =ROOM ; Start checking
 	ldrh r0, [r0]
-	cmp r0, #0x01F
+	cmp r0, #0x1F
 	bne .restore_castle_spawn
 	ldr r1, =BC_UNLOCK_RAM
 	ldrb r2, [r1]
@@ -6664,7 +6659,7 @@
 	push {r0-r2, lr}
 	ldr r0, =ROOM
 	ldrb r0, [r0]
-	cmp r0, #0x027 ; Hammerhead House
+	cmp r0, #0x27 ; Hammerhead House
 	bne .restore_popple2_flag
 	ldr r1, =POPPLE2_DEFEAT_RAM
 	ldrb r2, [r1]
