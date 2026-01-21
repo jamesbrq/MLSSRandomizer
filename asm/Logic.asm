@@ -6537,6 +6537,21 @@
     mov r2, #0x98
     orr r1, r2
     strb r1, [r0]
+	ldr r0, =0x0200435D ; Bowletta birth cutscene
+	ldrb r1, [r0]
+	mov r2, #0x01
+	orr r1, r2
+	strb r1, [r0]
+	ldr r0, =0x02004306 ; Woohoo Hooniversity first cutscene
+	ldrb r1, [r0]
+	mov r2, #0x20
+	orr r1, r2
+	strb r1, [r0]
+	ldr r0, =0x02004316 ; Castle being destroyed post-Birdo cutscene
+	ldrb r1, [r0]
+	mov r2, #0x80
+	orr r1, r2
+	strb r1, [r0]
     ldr r0, =0x02004741 ; Continue from castle
     ldrb r1, [r0]
     cmp r1, #0x0
@@ -6561,6 +6576,132 @@
     strb r1, [r0]
     pop pc
     .pool
+
+
+
+
+
+	.org POST_BIRDO_CASTLE_FIX
+	push {r0-r2, lr}
+	ldr r0, =ROOM
+	ldrh r0, [r0]
+	cmp r0, #0x01F
+	beq .skip_castle_spawn
+	ldr r0, =BEANSTAR_OPTION
+	ldrb r0, [r0]
+	cmp r0, #0x1
+	bne .skip_castle_spawn
+	ldr r0, =0x02004344
+	ldrb r0, [r0]
+	mov r1, #0x04
+	and r1, r0
+	cmp r1, #0x04
+	bne .skip_castle_spawn
+	ldr r0, =0x0200430B ; Unlock castle: this is overridden by Blablanadon, and doesnt trigger on Vanilla Goal
+	ldrb r1, [r0]
+	mov r2, #0x40
+	orr r1, r2
+	strb r1, [r0]
+	ldr r0, =0x02004317 ; Remove cutscene right after castle unlock
+	ldrb r1, [r0]
+	mov r2, #0x01
+	orr r1, r2
+	strb r1, [r0]
+	.skip_castle_spawn:
+	pop {r0-r2, pc}
+	.pool
+	
+	
+	
+	
+	.org POST_BIRDO_BEANSTAR_FIX
+	push {r0-r2, lr}
+	ldr r0, =ROOM ; Start checking
+	ldrh r0, [r0]
+	cmp r0, #0x01F
+	bne .restore_castle_spawn
+	ldr r1, =BC_UNLOCK_RAM
+	ldrb r2, [r1]
+	mov r0, #0x40
+	and r0, r2
+	cmp r0, #0x40
+	beq .skip_beanstar_spawn
+	ldr r1, =0x0200430B
+	ldrb r2, [r1]
+	mov r0, #0x40
+	and r0, r2
+	cmp r0, #0x40
+	bne .skip_beanstar_spawn
+	bic r2, r0
+	strb r2, [r1]
+	ldr r1, =BC_UNLOCK_RAM
+	ldrb r2, [r1]
+	orr r2, r0
+	strb r2, [r1]
+	b .skip_beanstar_spawn
+	.restore_castle_spawn:
+	ldr r1, =BC_UNLOCK_RAM
+	ldrb r2, [r1]
+	mov r0, #0x40
+	and r0, r2
+	cmp r0, #0x40
+	bne .skip_beanstar_spawn
+	bic r2, r0
+	strb r2, [r1]
+	ldr r1, =0x0200430B
+	ldrb r2, [r1]
+	orr r2, r0
+	strb r2, [r1]
+	.skip_beanstar_spawn:
+	pop {r0-r2, pc}
+	.pool
+
+
+
+
+
+	.org HAMMERHEAD_FIX
+	push {r0-r2, lr}
+	ldr r0, =ROOM
+	ldrb r0, [r0]
+	cmp r0, #0x027 ; Hammerhead House
+	bne .restore_popple2_flag
+	ldr r1, =POPPLE2_DEFEAT_RAM
+	ldrb r2, [r1]
+	mov r0, #0x10
+	and r0, r2
+	cmp r0, #0x10
+	beq .skip_hammer_fix
+	ldr r1, =0x02004309
+	ldrb r2, [r1]
+	mov r0, #0x10
+	and r0, r2
+	cmp r0, #0x10
+	bne .skip_hammer_fix
+	bic r2, r0
+	strb r2, [r1]
+	ldr r1, =POPPLE2_DEFEAT_RAM
+	ldrb r2, [r1]
+	orr r2, r0
+	strb r2, [r1]
+	b .skip_hammer_fix
+	.restore_popple2_flag:
+	ldr r1, =POPPLE2_DEFEAT_RAM
+	ldrb r2, [r1]
+	mov r0, #0x10
+	and r0, r2
+	cmp r0, #0x10
+	bne .skip_hammer_fix
+	bic r2, r0
+	strb r2, [r1]
+	ldr r1, =0x02004309
+	ldrb r2, [r1]
+	orr r2, r0
+	strb r2, [r1]
+	.skip_hammer_fix:
+	pop {r0-r2, pc}
+	.pool
+
 
 
 
@@ -7365,8 +7506,11 @@
     bl ESCORT_FIX
     bl SEWER_BLOCK
     bl ESCORT_CUTSCENE
+	bl POST_BIRDO_CASTLE_FIX
+	bl POST_BIRDO_BEANSTAR_FIX
     bl BLABLANADON
     bl PEACH_ARRIVAL
+	bl HAMMERHEAD_FIX
     bl ULTRA_HAMMERS
     bl MOM_PIRANHA
     ldr r0, =FAWFUL_STONE
